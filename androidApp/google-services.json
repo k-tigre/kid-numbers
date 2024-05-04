@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "752247170809",
+    "project_id": "numbers-44f4d",
+    "storage_bucket": "numbers-44f4d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752247170809:android:729762e9c33b31ae482428",
+        "android_client_info": {
+          "package_name": "by.tigre.numbers.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYTtxyrVsZwtqhi_xRiA9Xmttq6xFwZNE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

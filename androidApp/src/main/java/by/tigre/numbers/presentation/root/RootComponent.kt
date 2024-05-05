@@ -1,15 +1,15 @@
 package by.tigre.numbers.presentation.root
 
 import android.os.Parcelable
-import by.tigre.numbers.presentation.additional.RootAdditionalComponent
+import by.tigre.numbers.di.GameDependencies
+import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.menu.MenuComponent
-import by.tigre.numbers.presentation.menu.MenuNavigator
-import by.tigre.numbers.presentation.multiplication.component.RootMultiplicationComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildStack
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import kotlinx.parcelize.Parcelize
 
@@ -19,23 +19,13 @@ interface RootComponent {
 
     sealed interface PageChild {
         class Menu(val component: MenuComponent) : PageChild
-        class Multiplication(val component: RootMultiplicationComponent) : PageChild
-        class Additional(val component: RootAdditionalComponent) : PageChild
+        class Game(val component: RootGameComponent) : PageChild
     }
 
     class Impl(
         context: BaseComponentContext,
+        gameDependencies: GameDependencies
     ) : RootComponent, BaseComponentContext by context {
-
-        private val navigator: MenuNavigator = object : MenuNavigator {
-            override fun showMultiplicationScreen() {
-                pagesNavigation.bringToFront(PagesConfig.Multiplication)
-            }
-
-            override fun showAdditionScreen() {
-                pagesNavigation.bringToFront(PagesConfig.Additional)
-            }
-        }
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
 
@@ -48,15 +38,13 @@ interface RootComponent {
             ) { config, componentContext ->
                 when (config) {
                     PagesConfig.Menu -> PageChild.Menu(
-                        MenuComponent.Impl(componentContext, navigator = navigator)
+                        MenuComponent.Impl(componentContext) { type ->
+                            pagesNavigation.push(PagesConfig.Game(type))
+                        }
                     )
 
-                    PagesConfig.Multiplication -> PageChild.Multiplication(
-                        RootMultiplicationComponent.Impl(componentContext)
-                    )
-
-                    PagesConfig.Additional -> PageChild.Additional(
-                        RootAdditionalComponent.Impl(componentContext)
+                    is PagesConfig.Game -> PageChild.Game(
+                        RootGameComponent.Impl(componentContext, config.type, gameDependencies)
                     )
                 }
             }
@@ -66,10 +54,7 @@ interface RootComponent {
             data object Menu : PagesConfig
 
             @Parcelize
-            data object Multiplication : PagesConfig
-
-            @Parcelize
-            data object Additional : PagesConfig
+            data class Game(val type: GameType) : PagesConfig
         }
 
     }

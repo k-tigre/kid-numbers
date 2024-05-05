@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val graph = (application as App).graph
         val root = RootComponent.Impl(
             context = BaseComponentContextImpl(defaultComponentContext()),
+            gameDependencies = graph
         )
 
         setContent {

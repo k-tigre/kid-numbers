@@ -37,18 +37,18 @@ class MenuView(
                 )
             }
 
-//            Button(
-//                modifier = Modifier
-//                    .padding(16.dp),
-//                onClick = component::onAdditionClicked
-//            ) {
-//                Text(
-//                    text = "Учить сложение",
-//                    style = MaterialTheme.typography.titleLarge,
-//                    modifier = Modifier
-//                        .padding(top = 4.dp)
-//                )
-//            }
+            Button(
+                modifier = Modifier
+                    .padding(16.dp),
+                onClick = component::onAdditionClicked
+            ) {
+                Text(
+                    text = "Учить сложение",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                )
+            }
         }
     }
 }

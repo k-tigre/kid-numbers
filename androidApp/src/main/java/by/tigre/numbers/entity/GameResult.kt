@@ -1,4 +1,4 @@
-package by.tigre.numbers.presentation.multiplication
+package by.tigre.numbers.entity
 
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
@@ -20,8 +20,5 @@ data class GameResult(
     val totalCount by lazy { results.size }
 
     @Parcelize
-    data class Result(val isCorrect: Boolean, val question: Question) : Parcelable
-
-    @Parcelize
-    data class Question(val first: Int, val second: Int, val answer: Int?, val correctAnswer: Int?) : Parcelable
+    data class Result(val isCorrect: Boolean, val question: GameOptions.Question, val answer: Int?) : Parcelable
 }

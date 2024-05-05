@@ -1,6 +1,6 @@
-package by.tigre.numbers.presentation.multiplication.component
+package by.tigre.numbers.presentation.game.result
 
-import by.tigre.numbers.presentation.multiplication.GameResult
+import by.tigre.numbers.entity.GameResult
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

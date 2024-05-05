@@ -1,4 +1,4 @@
-package by.tigre.numbers.presentation.multiplication.view
+package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
@@ -22,12 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import by.tigre.numbers.presentation.multiplication.GameSettings
-import by.tigre.numbers.presentation.multiplication.component.MultiplicationSettingsComponent
+import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.entity.GameSettings
 import by.tigre.tools.tools.platform.compose.ComposableView
 
-class MultiplicationSettingsView(
-    private val component: MultiplicationSettingsComponent,
+class AdditionalSettingsView(
+    private val component: AdditionalSettingsComponent,
 ) : ComposableView {
 
     @Composable
@@ -46,29 +44,33 @@ class MultiplicationSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(32.dp),
-                text = "Выбери цифры, с которыми хочешь проверить умножение"
+                text = "Выбери порядок чисел, с которыми хочешь проверить сложение"
             )
 
             val numbers = component.numbersForSelection.collectAsState()
-            LazyVerticalGrid(
+            LazyColumn(
                 modifier = Modifier
-                    .size(300.dp)
                     .align(Alignment.CenterHorizontally),
-                columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+
+                ) {
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
-
+                        val title = when (number) {
+                            GameSettings.Additional.NumberType.Single -> "0-10"
+                            GameSettings.Additional.NumberType.Double -> "10-100"
+                            GameSettings.Additional.NumberType.Triples -> "100-1000"
+                            GameSettings.Additional.NumberType.SingleDoubleTriples -> "0-1000"
+                            GameSettings.Additional.NumberType.SingleDouble -> "0-100"
+                        }
                         if (isSelected) {
-                            Button(onClick = { component.onNumberSelectionChanged(number, isSelected.not()) }) {
-                                Text(text = "$number")
+                            Button(onClick = { component.onNumberTypeSelectionChanged(number, isSelected.not()) }) {
+                                Text(text = "Числа в диапазоне $title")
                             }
                         } else {
-                            ElevatedButton(onClick = { component.onNumberSelectionChanged(number, isSelected.not()) }) {
-                                Text(text = "$number")
+                            ElevatedButton(onClick = { component.onNumberTypeSelectionChanged(number, isSelected.not()) }) {
+                                Text(text = "Числа в диапазоне $title")
                             }
                         }
                     }
@@ -87,6 +89,7 @@ class MultiplicationSettingsView(
         }
     }
 
+
     @Composable
     private fun DrawDifficult() {
         Row(
@@ -94,7 +97,7 @@ class MultiplicationSettingsView(
             horizontalArrangement = Arrangement.Center
         ) {
             val current = component.difficultSelection.collectAsState().value
-            GameSettings.Difficult.entries.forEach { difficult ->
+            Difficult.entries.forEach { difficult ->
                 Column(
                     Modifier
                         .heightIn(min = 56.dp)
@@ -113,9 +116,9 @@ class MultiplicationSettingsView(
 
                     Text(
                         text = when (difficult) {
-                            GameSettings.Difficult.Easy -> "Просто"
-                            GameSettings.Difficult.Medium -> "Средне"
-                            GameSettings.Difficult.Hard -> "Сложно"
+                            Difficult.Easy -> "Просто"
+                            Difficult.Medium -> "Средне"
+                            Difficult.Hard -> "Сложно"
                         },
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding()

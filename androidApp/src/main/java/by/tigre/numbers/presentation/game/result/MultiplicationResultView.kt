@@ -1,4 +1,4 @@
-package by.tigre.numbers.presentation.multiplication.view
+package by.tigre.numbers.presentation.game.result
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -27,15 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.presentation.multiplication.GameResult
-import by.tigre.numbers.presentation.multiplication.component.MultiplicationResultComponent
+import by.tigre.numbers.entity.GameOptions
+import by.tigre.numbers.entity.GameResult
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
 import by.tigre.tools.tools.platform.compose.LocalCustomColorsPalette
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MultiplicationResultView(
+class ResultView(
     private val component: MultiplicationResultComponent,
 ) : ComposableView {
 
@@ -108,14 +108,14 @@ class MultiplicationResultView(
             Spacer(modifier = Modifier.size(8.dp))
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                text = "${result.question.first} * ${result.question.second} = ${result.question.correctAnswer ?: "***"}",
+                text = "${result.question.title} = ${if (result.answer != null) result.question.result else "***"}",
                 color = colors.onColorContainer
             )
 
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp),
                 style = MaterialTheme.typography.titleSmall,
-                text = "Твой ответ: ${result.question.answer ?: ""}",
+                text = "Твой ответ: ${result.answer ?: ""}",
                 color = colors.onColorContainer
             )
             Spacer(modifier = Modifier.size(8.dp))
@@ -130,11 +130,27 @@ private fun Preview() {
     val component = object : MultiplicationResultComponent {
         override val results: StateFlow<GameResult> = MutableStateFlow(
             GameResult(
-                results = (1..20).map {
+                results = (1..4).map {
                     listOf(
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
-                            question = GameResult.Question(it, 2, 2, 3)
+                            question = GameOptions.Question.Multiplication(it, 2),
+                            answer = 1
+                        ),
+                        GameResult.Result(
+                            isCorrect = it % 2 == 0,
+                            question = GameOptions.Question.Multiplication(it, 2),
+                            answer = null
+                        ),
+                        GameResult.Result(
+                            isCorrect = it % 2 == 0,
+                            question = GameOptions.Question.Additional(it, 2),
+                            answer = 1
+                        ),
+                        GameResult.Result(
+                            isCorrect = it % 2 == 0,
+                            question = GameOptions.Question.Additional(it, 2),
+                            answer = null
                         )
                     )
                 }.flatten(),
@@ -149,7 +165,7 @@ private fun Preview() {
 
     AppTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-            MultiplicationResultView(
+            ResultView(
                 component = component,
             ).Draw(Modifier)
         }

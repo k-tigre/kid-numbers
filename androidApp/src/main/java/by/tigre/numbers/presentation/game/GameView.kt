@@ -1,4 +1,4 @@
-package by.tigre.numbers.presentation.multiplication.view
+package by.tigre.numbers.presentation.game
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -25,15 +25,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import by.tigre.numbers.presentation.multiplication.component.MultiplicationGameComponent
-import by.tigre.numbers.presentation.multiplication.component.MultiplicationGameComponent.TimeState
+import by.tigre.numbers.entity.GameOptions
+import by.tigre.numbers.presentation.game.GameComponent.TimeState
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MultiplicationGameView(
-    private val component: MultiplicationGameComponent,
+class GameView(
+    private val component: GameComponent,
 ) : ComposableView {
 
     @Composable
@@ -86,7 +86,7 @@ class MultiplicationGameView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(32.dp),
-            text = "${question.first} * ${question.second} = ?",
+            text = "${question.title} = ?",
             style = MaterialTheme.typography.titleLarge,
         )
     }
@@ -160,12 +160,11 @@ class MultiplicationGameView(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    val component = object : MultiplicationGameComponent {
+    val component = object : GameComponent {
         override val isEnterEnabled: StateFlow<Boolean> = MutableStateFlow(true)
-        override val question: StateFlow<MultiplicationGameComponent.Question> =
-            MutableStateFlow(MultiplicationGameComponent.Question(1, 3, 4))
-        override val questionsState: StateFlow<MultiplicationGameComponent.QuestionsState> =
-            MutableStateFlow(MultiplicationGameComponent.QuestionsState(3, 1, 12))
+        override val question: StateFlow<GameOptions.Question> = MutableStateFlow(GameOptions.Question.Multiplication(1, 3))
+        override val questionsState: StateFlow<GameComponent.QuestionsState> =
+            MutableStateFlow(GameComponent.QuestionsState(3, 1, 12))
         override val answer: StateFlow<String> = MutableStateFlow("12")
         override val answerResult: StateFlow<Boolean?> = MutableStateFlow(true)
         override val timeState: StateFlow<TimeState> = MutableStateFlow(TimeState("19:19", true))
@@ -182,7 +181,7 @@ private fun Preview() {
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
         ) {
-            MultiplicationGameView(
+            GameView(
                 component = component,
             ).Draw(Modifier)
         }

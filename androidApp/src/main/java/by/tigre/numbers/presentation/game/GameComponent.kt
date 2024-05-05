@@ -1,7 +1,9 @@
-package by.tigre.numbers.presentation.multiplication.component
+package by.tigre.numbers.presentation.game
 
-import by.tigre.numbers.presentation.multiplication.GameResult
-import by.tigre.numbers.presentation.multiplication.GameSettings
+import by.tigre.numbers.domain.GameProvider
+import by.tigre.numbers.entity.GameOptions
+import by.tigre.numbers.entity.GameResult
+import by.tigre.numbers.entity.GameSettings
 import by.tigre.tools.logger.extensions.debugLog
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.tools.coroutines.extensions.tickerFlow
@@ -18,10 +20,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-interface MultiplicationGameComponent {
+interface GameComponent {
 
     val isEnterEnabled: StateFlow<Boolean>
-    val question: StateFlow<Question>
+    val question: StateFlow<GameOptions.Question>
     val questionsState: StateFlow<QuestionsState>
     val answer: StateFlow<String>
     val answerResult: StateFlow<Boolean?>
@@ -32,27 +34,20 @@ interface MultiplicationGameComponent {
     fun onDoneClicked()
     fun onNextClicked()
 
-    data class Question(val first: Int, val second: Int, val result: Int)
     data class QuestionsState(val current: Int, val total: Int, val correctCount: Int)
     data class TimeState(val value: String, val isEnding: Boolean)
 
     class Impl(
         context: BaseComponentContext,
         settings: GameSettings,
+        provider: GameProvider,
         private val onFinish: (GameResult) -> Unit
-    ) : MultiplicationGameComponent, BaseComponentContext by context {
+    ) : GameComponent, BaseComponentContext by context {
+
+        private val gameOption = provider.provide(settings)
 
         private val resultQuestions = mutableListOf<GameResult.Result>()
-        private val allQuestions = settings.selectedNumbers
-            .flatMap { first ->
-                val questions = (1..10).map { second -> Question(first, second, result = first * second) }
-                if (settings.difficult == GameSettings.Difficult.Hard) {
-                    questions + questions
-                } else {
-                    questions
-                }
-            }
-            .shuffled()
+        private val allQuestions = gameOption.questions
 
         private val time = tickerFlow(1000, 0)
             .stateIn(this, SharingStarted.WhileSubscribed(), 0)
@@ -65,15 +60,15 @@ interface MultiplicationGameComponent {
             .stateIn(this, SharingStarted.Eagerly, false)
 
         override val questionsState = MutableStateFlow(QuestionsState(current = 1, total = allQuestions.size, correctCount = 0))
-        override val question: StateFlow<Question> = questionsState
+        override val question: StateFlow<GameOptions.Question> = questionsState
             .map { (current, _) -> allQuestions[current - 1] }
             .stateIn(this, SharingStarted.Eagerly, allQuestions[0])
 
         override val timeState: StateFlow<TimeState> = time
             .map { time ->
                 TimeState(
-                    TIME_FORMAT.format((settings.totalTime - time).coerceAtLeast(0) * 1000),
-                    isEnding = time > settings.totalTime * 0.8
+                    TIME_FORMAT.format((gameOption.duration - time).coerceAtLeast(0) * 1000),
+                    isEnding = time > gameOption.duration * 0.8
                 )
             }
             .stateIn(this, SharingStarted.WhileSubscribed(), TimeState("", false))
@@ -89,7 +84,7 @@ interface MultiplicationGameComponent {
             launch {
                 time
                     .filter {
-                        it > settings.totalTime
+                        it > gameOption.duration
                     }
                     .take(1)
                     .collect {
@@ -115,12 +110,8 @@ interface MultiplicationGameComponent {
                 if (index >= state.current) {
                     val result = GameResult.Result(
                         isCorrect = false,
-                        GameResult.Question(
-                            first = question.first,
-                            second = question.second,
-                            correctAnswer = null,
-                            answer = null
-                        )
+                        question = question,
+                        answer = null
                     )
                     resultQuestions.add(result)
                 }
@@ -153,7 +144,8 @@ interface MultiplicationGameComponent {
             val question = question.value
             val result = GameResult.Result(
                 isCorrect = answer == question.result,
-                GameResult.Question(first = question.first, second = question.second, correctAnswer = question.result, answer = answer)
+                question = question,
+                answer = answer
             )
             resultQuestions.add(result)
             answerResult.tryEmit(result.isCorrect)

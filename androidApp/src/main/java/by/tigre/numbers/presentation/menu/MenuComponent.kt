@@ -1,5 +1,6 @@
 package by.tigre.numbers.presentation.menu
 
+import by.tigre.numbers.entity.GameType
 import by.tigre.tools.presentation.base.BaseComponentContext
 
 interface MenuComponent {
@@ -8,14 +9,14 @@ interface MenuComponent {
 
     class Impl(
         context: BaseComponentContext,
-        private val navigator: MenuNavigator
+        private val onGameTypeSelected: (GameType) -> Unit
     ) : MenuComponent, BaseComponentContext by context {
         override fun onMultiplicationClicked() {
-            navigator.showMultiplicationScreen()
+            onGameTypeSelected(GameType.Multiplication)
         }
 
         override fun onAdditionClicked() {
-            navigator.showAdditionScreen()
+            onGameTypeSelected(GameType.Additional)
         }
     }
 }

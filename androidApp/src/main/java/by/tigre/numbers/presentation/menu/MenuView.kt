@@ -24,31 +24,38 @@ class MenuView(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(
-                modifier = Modifier
-                    .padding(16.dp),
-                onClick = component::onMultiplicationClicked
-            ) {
-                Text(
-                    text = "Учить умножение",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                )
-            }
+            DrawItem(
+                title = "Учить сложение",
+                action = component::onAdditionClicked
+            )
+            DrawItem(
+                title = "Учить умножение",
+                action = component::onMultiplicationClicked
+            )
+            DrawItem(
+                title = "Учить вычитание",
+                action = component::onSubtractionClicked
+            )
+            DrawItem(
+                title = "Учить деление",
+                action = component::onDivisionClicked
+            )
+        }
+    }
 
-            Button(
+    @Composable
+    private fun DrawItem(title: String, action: () -> Unit) {
+        Button(
+            modifier = Modifier
+                .padding(16.dp),
+            onClick = action
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
-                    .padding(16.dp),
-                onClick = component::onAdditionClicked
-            ) {
-                Text(
-                    text = "Учить сложение",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                )
-            }
+                    .padding(top = 4.dp)
+            )
         }
     }
 }

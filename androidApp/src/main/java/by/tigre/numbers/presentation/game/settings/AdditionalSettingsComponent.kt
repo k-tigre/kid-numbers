@@ -3,7 +3,7 @@ package by.tigre.numbers.presentation.game.settings
 import androidx.compose.runtime.Immutable
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
-import by.tigre.numbers.entity.GameSettings.Additional.NumberType
+import by.tigre.numbers.entity.GameSettings.NumberType
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 interface AdditionalSettingsComponent {
+    val isPositive: Boolean
     val numbersForSelection: StateFlow<List<Pair<NumberType, Boolean>>>
     val difficultSelection: StateFlow<Difficult>
     val isStartEnabled: StateFlow<Boolean>
@@ -22,6 +23,7 @@ interface AdditionalSettingsComponent {
     @Immutable
     class Impl(
         context: BaseComponentContext,
+        override val isPositive: Boolean,
         private val onStartGame: (GameSettings) -> Unit
     ) : AdditionalSettingsComponent, BaseComponentContext by context {
         private val numbers: MutableMap<NumberType, Boolean> = mutableMapOf(
@@ -52,6 +54,7 @@ interface AdditionalSettingsComponent {
                 GameSettings.Additional(
                     type = numbers.mapNotNull { if (it.value) it.key else null },
                     difficult = difficultSelection.value,
+                    isPositive = isPositive
                 )
             )
         }

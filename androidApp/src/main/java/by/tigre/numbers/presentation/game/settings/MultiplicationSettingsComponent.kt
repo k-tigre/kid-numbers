@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 interface MultiplicationSettingsComponent {
+    val isPositive: Boolean
     val numbersForSelection: StateFlow<List<Pair<Int, Boolean>>>
     val difficultSelection: StateFlow<Difficult>
     val isStartEnabled: StateFlow<Boolean>
@@ -22,6 +23,7 @@ interface MultiplicationSettingsComponent {
     @Immutable
     class Impl(
         context: BaseComponentContext,
+        override val isPositive: Boolean,
         private val onStartGame: (GameSettings) -> Unit
     ) : MultiplicationSettingsComponent, BaseComponentContext by context {
         private val numbers: MutableMap<Int, Boolean> = (1..9).map { it to false }.toMutableStateMap()
@@ -45,7 +47,8 @@ interface MultiplicationSettingsComponent {
             onStartGame(
                 GameSettings.Multiplication(
                     selectedNumbers = numbers.mapNotNull { if (it.value) it.key else null },
-                    difficult = difficultSelection.value
+                    difficult = difficultSelection.value,
+                    isPositive = isPositive
                 )
             )
         }

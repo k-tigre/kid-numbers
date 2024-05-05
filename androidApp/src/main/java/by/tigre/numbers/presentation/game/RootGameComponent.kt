@@ -34,8 +34,10 @@ interface RootGameComponent {
     ) : RootGameComponent, BaseComponentContext by context {
 
         private val initialSettings = when (gameType) {
-            GameType.Additional -> PagesConfig.SettingsAdditional
-            GameType.Multiplication -> PagesConfig.SettingsMultiplication
+            GameType.Additional -> PagesConfig.SettingsAdditional(isPositive = true)
+            GameType.Multiplication -> PagesConfig.SettingsMultiplication(isPositive = true)
+            GameType.Division -> PagesConfig.SettingsMultiplication(isPositive = false)
+            GameType.Subtraction -> PagesConfig.SettingsAdditional(isPositive = false)
         }
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
@@ -48,14 +50,14 @@ interface RootGameComponent {
                 handleBackButton = true
             ) { config, componentContext ->
                 when (config) {
-                    PagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
-                        MultiplicationSettingsComponent.Impl(componentContext) { settings ->
+                    is PagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
+                        MultiplicationSettingsComponent.Impl(componentContext, config.isPositive) { settings ->
                             pagesNavigation.replaceCurrent(PagesConfig.Game(settings))
                         }
                     )
 
-                    PagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
-                        AdditionalSettingsComponent.Impl(componentContext) { settings ->
+                    is PagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
+                        AdditionalSettingsComponent.Impl(componentContext, config.isPositive) { settings ->
                             pagesNavigation.replaceCurrent(PagesConfig.Game(settings))
                         }
                     )
@@ -77,10 +79,10 @@ interface RootGameComponent {
 
         private sealed interface PagesConfig : Parcelable {
             @Parcelize
-            data object SettingsAdditional : PagesConfig
+            data class SettingsAdditional(val isPositive: Boolean) : PagesConfig
 
             @Parcelize
-            data object SettingsMultiplication : PagesConfig
+            data class SettingsMultiplication(val isPositive: Boolean) : PagesConfig
 
             @Parcelize
             data class Game(val settings: GameSettings) : PagesConfig

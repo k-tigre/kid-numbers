@@ -2,6 +2,7 @@ package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,20 +33,17 @@ class MultiplicationSettingsView(
     @Composable
     override fun Draw(modifier: Modifier) {
         Column(modifier) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(32.dp),
-                text = "Выбери сложность"
-            )
-
             DrawDifficult()
 
             Text(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(32.dp),
-                text = "Выбери цифры, с которыми хочешь проверить умножение"
+                text = if (component.isPositive) {
+                    "Выбери цифры, с которыми хочешь проверить умножение"
+                } else {
+                    "Выбери цифры, с которыми хочешь проверить деление"
+                }
             )
 
             val numbers = component.numbersForSelection.collectAsState()
@@ -87,7 +85,14 @@ class MultiplicationSettingsView(
     }
 
     @Composable
-    private fun DrawDifficult() {
+    private fun ColumnScope.DrawDifficult() {
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(32.dp),
+            text = "Выбери сложность"
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center

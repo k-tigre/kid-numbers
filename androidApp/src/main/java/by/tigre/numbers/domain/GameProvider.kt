@@ -3,7 +3,6 @@ package by.tigre.numbers.domain
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameSettings
-import by.tigre.numbers.entity.GameType
 import kotlin.random.Random
 
 interface GameProvider {
@@ -21,7 +20,13 @@ interface GameProvider {
         private fun generateQuestions(settings: GameSettings.Multiplication): GameOptions {
             val allQuestions = settings.selectedNumbers
                 .flatMap { first ->
-                    val questions = (1..10).map { second -> GameOptions.Question.Multiplication(first = first, second = second) }
+                    val questions = (1..10).map { second ->
+                        if (settings.isPositive) {
+                            GameOptions.Question.Multiplication(first = first, second = second)
+                        } else {
+                            GameOptions.Question.Division(result = second, second = first)
+                        }
+                    }
                     if (settings.difficult == Difficult.Hard) {
                         questions + questions
                     } else {
@@ -33,7 +38,7 @@ interface GameProvider {
             val duration = settings.selectedNumbers.size * settings.difficult.time
 
             return GameOptions(
-                questions = allQuestions, type = GameType.Multiplication, duration = duration
+                questions = allQuestions, duration = duration
             )
         }
 
@@ -46,11 +51,11 @@ interface GameProvider {
 
             val allQuestions = settings.type.map { type ->
                 val (min, max) = when (type) {
-                    GameSettings.Additional.NumberType.Single -> 0 to 10
-                    GameSettings.Additional.NumberType.Double -> 10 to 100
-                    GameSettings.Additional.NumberType.Triples -> 100 to 1000
-                    GameSettings.Additional.NumberType.SingleDoubleTriples -> 0 to 1000
-                    GameSettings.Additional.NumberType.SingleDouble -> 0 to 100
+                    GameSettings.NumberType.Single -> 0 to 10
+                    GameSettings.NumberType.Double -> 10 to 100
+                    GameSettings.NumberType.Triples -> 100 to 1000
+                    GameSettings.NumberType.SingleDoubleTriples -> 0 to 1000
+                    GameSettings.NumberType.SingleDouble -> 0 to 100
                 }
 
                 (1..count).map {
@@ -58,14 +63,18 @@ interface GameProvider {
                     val first = Random.nextInt(min, result + 1 - min)
                     val second = result - first
 
-                    GameOptions.Question.Additional(first = first, second = second)
+                    if (settings.isPositive) {
+                        GameOptions.Question.Additional(first = first, second = second)
+                    } else {
+                        GameOptions.Question.Subtraction(result = first, second = second)
+                    }
                 }
             }.flatten()
 
             val duration = settings.type.size * settings.difficult.time * 2
 
             return GameOptions(
-                questions = allQuestions, type = GameType.Additional, duration = duration
+                questions = allQuestions, duration = duration
             )
         }
 

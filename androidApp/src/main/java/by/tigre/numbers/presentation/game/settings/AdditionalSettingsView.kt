@@ -2,6 +2,7 @@ package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,20 +32,17 @@ class AdditionalSettingsView(
     @Composable
     override fun Draw(modifier: Modifier) {
         Column(modifier) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(32.dp),
-                text = "Выбери сложность"
-            )
-
             DrawDifficult()
 
             Text(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(32.dp),
-                text = "Выбери порядок чисел, с которыми хочешь проверить сложение"
+                text = if (component.isPositive) {
+                    "Выбери порядок чисел, с которыми хочешь проверить сложение"
+                } else {
+                    "Выбери порядок чисел, с которыми хочешь проверить вычитание"
+                }
             )
 
             val numbers = component.numbersForSelection.collectAsState()
@@ -58,11 +56,11 @@ class AdditionalSettingsView(
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
                         val title = when (number) {
-                            GameSettings.Additional.NumberType.Single -> "0-10"
-                            GameSettings.Additional.NumberType.Double -> "10-100"
-                            GameSettings.Additional.NumberType.Triples -> "100-1000"
-                            GameSettings.Additional.NumberType.SingleDoubleTriples -> "0-1000"
-                            GameSettings.Additional.NumberType.SingleDouble -> "0-100"
+                            GameSettings.NumberType.Single -> "0-10"
+                            GameSettings.NumberType.Double -> "10-100"
+                            GameSettings.NumberType.Triples -> "100-1000"
+                            GameSettings.NumberType.SingleDoubleTriples -> "0-1000"
+                            GameSettings.NumberType.SingleDouble -> "0-100"
                         }
                         if (isSelected) {
                             Button(onClick = { component.onNumberTypeSelectionChanged(number, isSelected.not()) }) {
@@ -91,7 +89,14 @@ class AdditionalSettingsView(
 
 
     @Composable
-    private fun DrawDifficult() {
+    private fun ColumnScope.DrawDifficult() {
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(32.dp),
+            text = "Выбери сложность"
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center

@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class GameOptions(
     val questions: List<Question>,
     val duration: Long,
-    val type: GameType
+//    val type: GameType
 ) {
 
     sealed interface Question : Parcelable {
@@ -36,6 +36,30 @@ data class GameOptions(
 
             @IgnoredOnParcel
             override val result: Int = first + second
+        }
+
+        @Parcelize
+        data class Division(
+            val second: Int,
+            override val result: Int,
+        ) : Question {
+            @IgnoredOnParcel
+            val first: Int = result * second // (first / second = result)
+
+            @IgnoredOnParcel
+            override val title: String = "$first ÷ $second"
+        }
+
+        @Parcelize
+        data class Subtraction(
+            val second: Int,
+            override val result: Int,
+        ) : Question {
+            @IgnoredOnParcel
+            val first: Int = result + second // (first - second = result)
+
+            @IgnoredOnParcel
+            override val title: String = "$first - $second"
         }
     }
 }

@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import by.tigre.numbers.R
 import by.tigre.tools.tools.platform.compose.ComposableView
 
 class MenuView(
@@ -25,23 +27,23 @@ class MenuView(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             DrawItem(
-                title = "Учить сложение",
+                title = stringResource(R.string.main_manu_learn_addition),
                 action = component::onAdditionClicked
             )
             DrawItem(
-                title = "Учить умножение",
+                title = stringResource(R.string.main_manu_lean_multiplication),
                 action = component::onMultiplicationClicked
             )
             DrawItem(
-                title = "Учить вычитание",
+                title = stringResource(R.string.main_manu_learn_subtraction),
                 action = component::onSubtractionClicked
             )
             DrawItem(
-                title = "Учить деление",
+                title = stringResource(R.string.main_menu_learn_division),
                 action = component::onDivisionClicked
             )
             DrawItem(
-                title = "История",
+                title = stringResource(R.string.main_menu_history),
                 action = component::onHistoryClicked
             )
         }
@@ -57,8 +59,6 @@ class MenuView(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(top = 4.dp)
             )
         }
     }

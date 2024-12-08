@@ -19,17 +19,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
+import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class AdditionalSettingsView(
     private val component: AdditionalSettingsComponent,
 ) : ScreenComposableView(
     ToolbarConfig.Default(
-        title = { "Настройки сложности" },
+        title = { stringResource(R.string.screen_game_settings_title) },
         onBackClicked = component::onBackClicked
     )
 ) {
@@ -43,11 +46,13 @@ class AdditionalSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(32.dp),
-                text = if (component.isPositive) {
-                    "Выбери порядок чисел, с которыми хочешь проверить сложение"
-                } else {
-                    "Выбери порядок чисел, с которыми хочешь проверить вычитание"
-                }
+                text = stringResource(
+                    if (component.isPositive) {
+                        R.string.screen_game_settings_select_numbers_for_addition
+                    } else {
+                        R.string.screen_game_settings_select_numbers_for_subtraction
+                    }
+                )
             )
 
             val numbers = component.numbersForSelection.collectAsState()
@@ -60,7 +65,7 @@ class AdditionalSettingsView(
                 ) {
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
-                        val title = when (number) {
+                        val range = when (number) {
                             GameSettings.NumberType.Single -> "0-10"
                             GameSettings.NumberType.Double -> "10-100"
                             GameSettings.NumberType.Triples -> "100-1000"
@@ -68,12 +73,12 @@ class AdditionalSettingsView(
                             GameSettings.NumberType.SingleDouble -> "0-100"
                         }
                         if (isSelected) {
-                            Button(onClick = { component.onNumberTypeSelectionChanged(number, isSelected.not()) }) {
-                                Text(text = "Числа в диапазоне $title")
+                            Button(onClick = { component.onNumberTypeSelectionChanged(type = number, isSelected = false) }) {
+                                Text(text = stringResource(R.string.screen_game_settings_number_range, range))
                             }
                         } else {
-                            ElevatedButton(onClick = { component.onNumberTypeSelectionChanged(number, isSelected.not()) }) {
-                                Text(text = "Числа в диапазоне $title")
+                            ElevatedButton(onClick = { component.onNumberTypeSelectionChanged(type = number, isSelected = true) }) {
+                                Text(text = stringResource(R.string.screen_game_settings_number_range, range))
                             }
                         }
                     }
@@ -87,7 +92,7 @@ class AdditionalSettingsView(
                 onClick = component::onStartGameClicked,
                 enabled = component.isStartEnabled.collectAsState().value
             ) {
-                Text(text = "Начать")
+                Text(text = stringResource(R.string.screen_game_settings_start))
             }
         }
     }
@@ -99,7 +104,7 @@ class AdditionalSettingsView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(32.dp),
-            text = "Выбери сложность"
+            text = stringResource(R.string.screen_game_settings_select_difficult)
         )
 
         Row(
@@ -125,11 +130,7 @@ class AdditionalSettingsView(
                     )
 
                     Text(
-                        text = when (difficult) {
-                            Difficult.Easy -> "Просто"
-                            Difficult.Medium -> "Средне"
-                            Difficult.Hard -> "Сложно"
-                        },
+                        text = difficult.toLabel(),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding()
                     )

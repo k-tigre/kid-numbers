@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
+import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
 import by.tigre.tools.tools.platform.compose.LocalCustomColorsPalette
@@ -53,26 +55,26 @@ class ResultView(
             Text(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
-                text = "Время выполнения: ${result.time}",
+                text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.time)),
             )
 
             Text(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
-                text = "Результат ответов на ${result.totalCount} вопросов"
+                text = stringResource(R.string.screen_game_result_total_questions, result.totalCount)
             )
 
             Text(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
-                text = "Всего правильных ответов: ${result.correctCount}",
+                text = stringResource(R.string.screen_game_result_total_correct_answers, result.correctCount),
                 color = MaterialTheme.colorScheme.primary
             )
 
             Text(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
-                text = "Всего НЕ правильных ответов: ${result.inCorrectCount}",
+                text = stringResource(R.string.screen_game_result_total_correct_answers, result.inCorrectCount),
                 color = MaterialTheme.colorScheme.error,
             )
 
@@ -117,7 +119,7 @@ class ResultView(
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp),
                 style = MaterialTheme.typography.titleSmall,
-                text = "Твой ответ: ${result.answer ?: ""}",
+                text = stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: ""),
                 color = colors.onColorContainer
             )
             Spacer(modifier = Modifier.size(8.dp))

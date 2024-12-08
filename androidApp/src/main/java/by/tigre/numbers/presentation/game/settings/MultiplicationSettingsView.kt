@@ -21,16 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class MultiplicationSettingsView(
     private val component: MultiplicationSettingsComponent,
 ) : ScreenComposableView(
     ToolbarConfig.Default(
-        title = { "Настройки сложности" },
+        title = { stringResource(R.string.screen_game_settings_title) },
         onBackClicked = component::onBackClicked
     )
 ) {
@@ -44,11 +47,13 @@ class MultiplicationSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(32.dp),
-                text = if (component.isPositive) {
-                    "Выбери цифры, с которыми хочешь проверить умножение"
-                } else {
-                    "Выбери цифры, с которыми хочешь проверить деление"
-                }
+                text = stringResource(
+                    if (component.isPositive) {
+                        R.string.screen_game_settings_select_numbers_for_multiplication
+                    } else {
+                        R.string.screen_game_settings_select_numbers_for_division
+                    }
+                )
             )
 
             val numbers = component.numbersForSelection.collectAsState()
@@ -65,11 +70,11 @@ class MultiplicationSettingsView(
                     item(key = number) {
 
                         if (isSelected) {
-                            Button(onClick = { component.onNumberSelectionChanged(number, isSelected.not()) }) {
+                            Button(onClick = { component.onNumberSelectionChanged(number = number, isSelected = false) }) {
                                 Text(text = "$number")
                             }
                         } else {
-                            ElevatedButton(onClick = { component.onNumberSelectionChanged(number, isSelected.not()) }) {
+                            ElevatedButton(onClick = { component.onNumberSelectionChanged(number = number, isSelected = true) }) {
                                 Text(text = "$number")
                             }
                         }
@@ -84,7 +89,7 @@ class MultiplicationSettingsView(
                 onClick = component::onStartGameClicked,
                 enabled = component.isStartEnabled.collectAsState().value
             ) {
-                Text(text = "Начать")
+                Text(text = stringResource(R.string.screen_game_settings_start))
             }
         }
     }
@@ -95,7 +100,7 @@ class MultiplicationSettingsView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(32.dp),
-            text = "Выбери сложность"
+            text = stringResource(R.string.screen_game_settings_select_difficult)
         )
 
         Row(
@@ -121,11 +126,7 @@ class MultiplicationSettingsView(
                     )
 
                     Text(
-                        text = when (difficult) {
-                            Difficult.Easy -> "Просто"
-                            Difficult.Medium -> "Средне"
-                            Difficult.Hard -> "Сложно"
-                        },
+                        text = difficult.toLabel(),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding()
                     )

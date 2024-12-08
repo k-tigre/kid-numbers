@@ -77,6 +77,7 @@ android {
                     firebaseAppDistribution {
                         artifactType = "APK"
                         groups = "test-group"
+                        releaseNotes = System.getenv("NOTES")
                     }
                 }
             }

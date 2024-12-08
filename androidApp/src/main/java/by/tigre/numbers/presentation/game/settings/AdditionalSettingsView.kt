@@ -23,15 +23,20 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
-import by.tigre.tools.tools.platform.compose.ComposableView
+import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class AdditionalSettingsView(
     private val component: AdditionalSettingsComponent,
-) : ComposableView {
+) : ScreenComposableView(
+    ToolbarConfig.Default(
+        title = { "Настройки сложности" },
+        onBackClicked = component::onBackClicked
+    )
+) {
 
     @Composable
-    override fun Draw(modifier: Modifier) {
-        Column(modifier) {
+    override fun DrawContent(innerPadding: PaddingValues) {
+        Column(Modifier.padding(innerPadding)) {
             DrawDifficult()
 
             Text(

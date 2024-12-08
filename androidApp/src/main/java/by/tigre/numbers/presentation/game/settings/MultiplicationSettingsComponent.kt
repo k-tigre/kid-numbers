@@ -19,12 +19,14 @@ interface MultiplicationSettingsComponent {
     fun onNumberSelectionChanged(number: Int, isSelected: Boolean)
     fun onDifficultChanged(difficult: Difficult)
     fun onStartGameClicked()
+    fun onBackClicked()
 
     @Immutable
     class Impl(
         context: BaseComponentContext,
         override val isPositive: Boolean,
-        private val onStartGame: (GameSettings) -> Unit
+        private val onStartGame: (GameSettings) -> Unit,
+        private val onClose: () -> Unit
     ) : MultiplicationSettingsComponent, BaseComponentContext by context {
         private val numbers: MutableMap<Int, Boolean> = (1..9).map { it to false }.toMutableStateMap()
 
@@ -51,6 +53,10 @@ interface MultiplicationSettingsComponent {
                     isPositive = isPositive
                 )
             )
+        }
+
+        override fun onBackClicked() {
+            onClose()
         }
 
         private fun getState() = numbers.map { it.key to it.value }

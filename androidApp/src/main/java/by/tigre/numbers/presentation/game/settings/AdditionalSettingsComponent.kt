@@ -19,12 +19,14 @@ interface AdditionalSettingsComponent {
     fun onNumberTypeSelectionChanged(type: NumberType, isSelected: Boolean)
     fun onDifficultChanged(difficult: Difficult)
     fun onStartGameClicked()
+    fun onBackClicked()
 
     @Immutable
     class Impl(
         context: BaseComponentContext,
         override val isPositive: Boolean,
-        private val onStartGame: (GameSettings) -> Unit
+        private val onStartGame: (GameSettings) -> Unit,
+        private val onClose: () -> Unit
     ) : AdditionalSettingsComponent, BaseComponentContext by context {
         private val numbers: MutableMap<NumberType, Boolean> = mutableMapOf(
             NumberType.Single to false,
@@ -57,6 +59,10 @@ interface AdditionalSettingsComponent {
                     isPositive = isPositive
                 )
             )
+        }
+
+        override fun onBackClicked() {
+            onClose()
         }
 
         private fun getState() = numbers.map { it.key to it.value }

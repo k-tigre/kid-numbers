@@ -18,13 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.HistoryGameResult
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
+import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +38,7 @@ class HistoryView(
     private val component: HistoryComponent,
 ) : ScreenComposableView(
     ToolbarConfig.Default(
-        title = { "История" },
+        title = { stringResource(R.string.screen_history_title) },
         onBackClicked = component::onCloseClicked
     )
 ) {
@@ -44,7 +47,10 @@ class HistoryView(
     override fun DrawContent(innerPadding: PaddingValues) {
         val results = component.results.collectAsState()
         when (val state = results.value) {
-            is HistoryComponent.ScreenState.Loading -> {}
+            is HistoryComponent.ScreenState.Loading -> {
+                // TODO add loading indicator
+            }
+
             is HistoryComponent.ScreenState.Empty -> {
                 Box(
                     Modifier
@@ -52,8 +58,10 @@ class HistoryView(
                         .fillMaxSize()
                 ) {
                     Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = "Тут пока ничего нету",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 24.dp),
+                        text = stringResource(R.string.screen_history_empty),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -72,11 +80,36 @@ class HistoryView(
                     state.items.forEach {
                         item(key = it.date) {
                             Column {
-                                Text(text = "Дата ${SimpleDateFormat.getDateTimeInstance().format(it.date)}")
-                                Text(text = "Длительность ${TIME_FORMAT.format(it.duration * 1000)}")
-                                Text(text = "Всего вопросов ${it.totalCount}")
-                                Text(text = "Всего правильных ${it.correctCount}")
-                                Text(text = "Сложность ${it.difficult}")
+                                Text(
+                                    text = stringResource(
+                                        R.string.screen_history_item_date,
+                                        SimpleDateFormat.getDateTimeInstance().format(it.date)
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.screen_history_item_duration,
+                                        TIME_FORMAT.format(it.duration)
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.screen_history_item_total_questions,
+                                        it.totalCount
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.screen_history_item_correct_answers,
+                                        it.correctCount
+                                    )
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.screen_history_item_difficulty,
+                                        it.difficult.toLabel()
+                                    )
+                                )
                             }
                         }
                     }

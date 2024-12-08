@@ -4,4 +4,45 @@
     <string name="button_got_it">Got It</string>
     <string name="button_continue">Continue</string>
 
+    <string name="main_manu_learn_addition">Practice addition</string>
+    <string name="main_manu_lean_multiplication">Practice multiplication</string>
+    <string name="main_manu_learn_subtraction">Practice subtraction</string>
+    <string name="main_menu_learn_division">Practice division</string>
+    <string name="main_menu_history">History</string>
+
+    <string name="screen_history_title">History</string>
+    <string name="screen_history_empty">There is nothing here yet, go through the training and the result will be displayed</string>
+    <string name="screen_history_item_date">Date: %s</string>
+    <string name="screen_history_item_duration">Duration: %s</string>
+    <string name="screen_history_item_total_questions">Total questions: %d</string>
+    <string name="screen_history_item_correct_answers">Correct answers: %d</string>
+    <string name="screen_history_item_difficulty">Difficulty: %s</string>
+
+    <string name="screen_game_time_left">Time left %s</string>
+    <string name="screen_game_current_question">Question %1$d from %2$d</string>
+    <string name="screen_game_correct_answers">Correct answers given: %d</string>
+    <string name="screen_game_field_answer_hint">Your answer</string>
+    <string name="screen_game_button_submit_answer">Answer</string>
+    <string name="screen_game_next_question">Next question</string>
+    <string name="screen_game_result_wrong">Wrong, try again</string>
+    <string name="screen_game_result_correct">Well done, that\'s right!</string>
+
+    <string name="screen_game_difficult_easy">Easy</string>
+    <string name="screen_game_difficult_medium">Medium</string>
+    <string name="screen_game_difficult_hard">Hard</string>
+
+    <string name="screen_game_settings_title">Difficulty settings</string>
+    <string name="screen_game_settings_select_difficult">Select difficulty</string>
+    <string name="screen_game_settings_start">Start</string>
+    <string name="screen_game_settings_select_numbers_for_addition">Select the range of numbers you want to test addition with</string>
+    <string name="screen_game_settings_select_numbers_for_subtraction">Select the range of numbers you want to test subtraction with</string>
+    <string name="screen_game_settings_select_numbers_for_multiplication">Select the numbers you want to test multiplication with</string>
+    <string name="screen_game_settings_select_numbers_for_division">Select the numbers you want to test division with</string>
+    <string name="screen_game_settings_number_range">Numbers in range %s</string>
+
+    <string name="screen_game_result_duration">Execution time: %s</string>
+    <string name="screen_game_result_total_questions">Result of answers to %d questions</string>
+    <string name="screen_game_result_total_correct_answers">Total correct answers: %d</string>
+    <string name="screen_game_result_total_wrong_answers">Total NOT correct answers: %d</string>
+    <string name="screen_game_result_item_user_answer">Your answer: %s</string>
 </resources>

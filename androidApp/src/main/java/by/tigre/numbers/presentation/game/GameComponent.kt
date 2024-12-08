@@ -5,9 +5,9 @@ import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
-import by.tigre.tools.logger.extensions.debugLog
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.tools.coroutines.extensions.tickerFlow
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +36,7 @@ interface GameComponent {
     data class QuestionsState(val current: Int, val total: Int, val correctCount: Int)
     data class TimeState(val value: String, val isEnding: Boolean)
 
+    @OptIn(FlowPreview::class)
     class Impl(
         context: BaseComponentContext,
         settings: GameSettings,
@@ -49,6 +50,7 @@ interface GameComponent {
         private val allQuestions = gameOption.questions
 
         private val time = tickerFlow(1000, 0)
+            .map { it * 1000 }
             .stateIn(this, SharingStarted.WhileSubscribed(), 0)
 
         override val answerResult = MutableStateFlow<Boolean?>(null)
@@ -66,7 +68,7 @@ interface GameComponent {
         override val timeState: StateFlow<TimeState> = time
             .map { time ->
                 TimeState(
-                    value = TIME_FORMAT.format((gameOption.duration - time).coerceAtLeast(0) * 1000),
+                    value = TIME_FORMAT.format((gameOption.duration - time).coerceAtLeast(0)),
                     isEnding = time > gameOption.duration * 0.8
                 )
             }
@@ -94,8 +96,7 @@ interface GameComponent {
 
             launch {
                 answerResult
-                    .debugLog("answerResult")
-                    .debounce(3000)
+                    .debounce(NEXT_QUESTION_DELAY)
                     .filter { it != null }
                     .collect {
                         onNextClicked()
@@ -162,6 +163,10 @@ interface GameComponent {
             } else {
                 onNextClicked()
             }
+        }
+
+        private companion object {
+            const val NEXT_QUESTION_DELAY = 3000L
         }
     }
 }

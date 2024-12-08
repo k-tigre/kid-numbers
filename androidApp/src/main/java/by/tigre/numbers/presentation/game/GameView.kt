@@ -21,10 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.tigre.numbers.R
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.presentation.game.GameComponent.TimeState
 import by.tigre.tools.tools.platform.compose.AppTheme
@@ -55,7 +57,7 @@ class GameView(
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(horizontal = 32.dp, vertical = 8.dp),
-            text = "Осталось ${state.value}",
+            text = stringResource(R.string.screen_game_time_left, state.value),
             color = if (state.isEnding) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             style = if (state.isEnding) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleSmall,
         )
@@ -68,14 +70,14 @@ class GameView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 8.dp),
-            text = "Вопрос ${state.current} из ${state.total}"
+            text = stringResource(R.string.screen_game_current_question, state.current, state.total)
         )
 
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 32.dp),
-            text = "Дано правильных ответов: ${state.correctCount}"
+            text = stringResource(R.string.screen_game_correct_answers, state.correctCount)
         )
     }
 
@@ -105,7 +107,7 @@ class GameView(
             keyboardActions = KeyboardActions(
                 onDone = { component.onDoneClicked() },
             ),
-            label = { Text("Ответ") }
+            label = { Text(stringResource(R.string.screen_game_field_answer_hint)) }
         )
     }
 
@@ -118,7 +120,7 @@ class GameView(
             onClick = component::onEnterClicked,
             enabled = component.isEnterEnabled.collectAsState().value
         ) {
-            Text(text = "Ответить")
+            Text(text = stringResource(R.string.screen_game_button_submit_answer))
         }
     }
 
@@ -138,7 +140,7 @@ class GameView(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(32.dp),
-                        text = if (result) "Молодец, правильно!" else "Неправильно, попробуй еще",
+                        text = stringResource(if (result) R.string.screen_game_result_correct else R.string.screen_game_result_wrong),
                         color = if (result) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.titleLarge,
                     )
@@ -149,7 +151,7 @@ class GameView(
                             .padding(16.dp),
                         onClick = component::onNextClicked,
                     ) {
-                        Text(text = "Следующий вопрос")
+                        Text(text = stringResource(R.string.screen_game_next_question))
                     }
                 }
             }

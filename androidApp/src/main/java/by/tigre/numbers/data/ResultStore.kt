@@ -19,7 +19,7 @@ interface ResultStore {
         override suspend fun save(result: GameResult) {
             database.historyQueries.transaction {
                 database.historyQueries.insertHistory(
-                    date = result.time,
+                    date = System.currentTimeMillis(), // TODO make it more testable
                     correctCount = result.correctCount,
                     difficult = result.difficult,
                     totalCount = result.totalCount,

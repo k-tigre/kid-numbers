@@ -5,6 +5,7 @@ import by.tigre.numbers.entity.GameResult
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 interface ResultComponent {
 
@@ -24,8 +25,7 @@ interface ResultComponent {
         override fun onClose() = onFinish()
 
         init {
-            resultStore.save(result)
+            launch { resultStore.save(result) }
         }
     }
-
 }

@@ -56,7 +56,7 @@ interface RootComponent {
                     )
 
                     PagesConfig.History -> PageChild.History(
-                        HistoryComponent.Impl(componentContext, gameDependencies.getResultStore(), onClose = { pagesNavigation.pop() })
+                        HistoryComponent.Impl(componentContext, gameDependencies.resultStore, onClose = { pagesNavigation.pop() })
                     )
                 }
             }

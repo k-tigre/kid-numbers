@@ -4,6 +4,7 @@ import by.tigre.numbers.domain.GameProvider
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
+import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.logger.extensions.debugLog
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.tools.coroutines.extensions.tickerFlow
@@ -17,8 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 interface GameComponent {
 
@@ -67,7 +66,7 @@ interface GameComponent {
         override val timeState: StateFlow<TimeState> = time
             .map { time ->
                 TimeState(
-                    TIME_FORMAT.format((gameOption.duration - time).coerceAtLeast(0) * 1000),
+                    value = TIME_FORMAT.format((gameOption.duration - time).coerceAtLeast(0) * 1000),
                     isEnding = time > gameOption.duration * 0.8
                 )
             }
@@ -130,7 +129,7 @@ interface GameComponent {
                 onFinish(
                     GameResult(
                         results = resultQuestions,
-                        time = TIME_FORMAT.format(time.value * 1000),
+                        time = time.value,
                         difficult = gameOption.difficult
                     )
                 )
@@ -163,10 +162,6 @@ interface GameComponent {
             } else {
                 onNextClicked()
             }
-        }
-
-        private companion object {
-            val TIME_FORMAT = SimpleDateFormat("mm:ss", Locale.US)
         }
     }
 }

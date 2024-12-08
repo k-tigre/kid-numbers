@@ -157,7 +157,7 @@ private fun Preview() {
                         )
                     )
                 }.flatten(),
-                time = "19:10",
+                time = 23823,
                 difficult = Difficult.Easy
             )
         )

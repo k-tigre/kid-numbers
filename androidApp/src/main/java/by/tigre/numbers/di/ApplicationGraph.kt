@@ -1,15 +1,18 @@
 package by.tigre.numbers.di
 
 import android.content.Context
-import by.tigre.numbers.data.ResultStore
+import by.tigre.tools.tools.coroutines.CoroutineModule
 
-class ApplicationGraph(private val context: Context) : GameDependencies {
-
-    override fun getResultStore(): ResultStore = ResultStore.Impl(context)
+class ApplicationGraph(
+    storeModule: StoreModule
+) : GameDependencies,
+    StoreModule by storeModule {
 
     companion object {
         fun create(context: Context): ApplicationGraph {
-            return ApplicationGraph(context)
+            val coroutineModule = CoroutineModule.Impl()
+            val storeModule = StoreModule.Impl(context, coroutineModule = coroutineModule)
+            return ApplicationGraph(storeModule)
         }
     }
 }

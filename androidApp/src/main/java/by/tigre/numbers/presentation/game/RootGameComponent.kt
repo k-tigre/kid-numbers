@@ -83,7 +83,7 @@ interface RootGameComponent {
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
-                            resultStore = gameDependencies.getResultStore(),
+                            resultStore = gameDependencies.resultStore,
                             onFinish = onClose
                         )
                     )

@@ -52,7 +52,7 @@ interface RootComponent {
                     )
 
                     is PagesConfig.Game -> PageChild.Game(
-                        RootGameComponent.Impl(componentContext, config.type, gameDependencies)
+                        RootGameComponent.Impl(componentContext, config.type, gameDependencies, onClose = { pagesNavigation.pop() })
                     )
 
                     PagesConfig.History -> PageChild.History(

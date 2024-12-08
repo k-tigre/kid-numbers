@@ -30,7 +30,8 @@ interface RootGameComponent {
     class Impl(
         context: BaseComponentContext,
         gameType: GameType,
-        gameDependencies: GameDependencies
+        gameDependencies: GameDependencies,
+        private val onClose: () -> Unit
     ) : RootGameComponent, BaseComponentContext by context {
 
         private val initialSettings = when (gameType) {
@@ -51,28 +52,40 @@ interface RootGameComponent {
             ) { config, componentContext ->
                 when (config) {
                     is PagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
-                        MultiplicationSettingsComponent.Impl(componentContext, config.isPositive) { settings ->
-                            pagesNavigation.replaceCurrent(PagesConfig.Game(settings))
-                        }
+                        MultiplicationSettingsComponent.Impl(
+                            context = componentContext,
+                            isPositive = config.isPositive,
+                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onClose = onClose
+                        )
                     )
 
                     is PagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
-                        AdditionalSettingsComponent.Impl(componentContext, config.isPositive) { settings ->
-                            pagesNavigation.replaceCurrent(PagesConfig.Game(settings))
-                        }
+                        AdditionalSettingsComponent.Impl(
+                            context = componentContext,
+                            isPositive = config.isPositive,
+                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onClose = onClose
+                        )
                     )
 
 
                     is PagesConfig.Game -> PageChild.Game(
-                        GameComponent.Impl(componentContext, config.settings, gameDependencies.getGameProvider()) { result ->
-                            pagesNavigation.replaceCurrent(PagesConfig.Result(result))
-                        }
+                        GameComponent.Impl(
+                            context = componentContext,
+                            settings = config.settings,
+                            provider = gameDependencies.getGameProvider(),
+                            onFinish = { result -> pagesNavigation.replaceCurrent(PagesConfig.Result(result)) }
+                        )
                     )
 
                     is PagesConfig.Result -> PageChild.Result(
-                        ResultComponent.Impl(componentContext, config.result, gameDependencies.getResultStore()) {
-                            pagesNavigation.replaceCurrent(initialSettings)
-                        }
+                        ResultComponent.Impl(
+                            context = componentContext,
+                            result = config.result,
+                            resultStore = gameDependencies.getResultStore(),
+                            onFinish = onClose
+                        )
                     )
                 }
             }

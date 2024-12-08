@@ -11,6 +11,7 @@ plugins {
     id(Plugin.Id.KotlinParcelize.value)
     id(Plugin.Id.GooglePlayPublisher.value)
     id(Plugin.Id.FirebasePublisher.value)
+    id(Plugin.Id.SQLDelight.value)
 }
 
 android {
@@ -94,6 +95,10 @@ dependencies {
     implementation(Library.AndroidXAppcompat)
     implementation(Library.CoroutinesAndroid)
 
+    implementation(Library.SQLDelightAndroid)
+    implementation(Library.SQLDelightCoroutines)
+    implementation(Library.SQLDelightApapter)
+
     implementation(Library.KotlinStd)
     implementation(Toolkit.UI)
 
@@ -108,6 +113,15 @@ dependencies {
 
     // debugImplementation because LeakCanary should only run in debug builds.
     debugImplementation(Library.Leakcanary)
+}
+
+sqldelight {
+    databases {
+        create("DatabaseNumbers") {
+            packageName = "by.tigre.numbers.core.data.storage"
+            generateAsync = true
+        }
+    }
 }
 
 play {

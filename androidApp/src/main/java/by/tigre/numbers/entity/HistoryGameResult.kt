@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class HistoryGameResult(
     val date: Long,
-    val duration: String,
+    val duration: Long,
     val difficult: Difficult,
     val correctCount: Int,
     val totalCount: Int

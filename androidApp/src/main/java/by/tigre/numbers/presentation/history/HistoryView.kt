@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.HistoryGameResult
+import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +73,7 @@ class HistoryView(
                         item(key = it.date) {
                             Column {
                                 Text(text = "Дата ${SimpleDateFormat.getDateTimeInstance().format(it.date)}")
-                                Text(text = "Длительность ${it.duration}")
+                                Text(text = "Длительность ${TIME_FORMAT.format(it.duration * 1000)}")
                                 Text(text = "Всего вопросов ${it.totalCount}")
                                 Text(text = "Всего правильных ${it.correctCount}")
                                 Text(text = "Сложность ${it.difficult}")
@@ -95,7 +96,7 @@ private fun Preview() {
                 items = (1..20).map {
                     HistoryGameResult(
                         date = Random.nextLong(),
-                        duration = "12:12",
+                        duration = 12128217,
                         difficult = Difficult.Hard,
                         correctCount = it * 10,
                         totalCount = 12

@@ -158,7 +158,7 @@ enum class Plugin(group: String, artifact: String, version: Version) {
         Versions("0.51.0"),
         SQLDelight(Library.Version.SQLDelight.value),
         GooglePlayPublisher("3.8.4"),
-        FirebasePublisher("4.0.0"),
+        FirebasePublisher("5.0.0"),
     }
 }
 

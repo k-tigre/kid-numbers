@@ -1,0 +1,24 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+
+jobs:
+  build_apk_aab:
+    name: Build qa artifacts
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v1
+        with: { java-version: 17 }
+      - name: Build and verify
+        run: |
+          ./gradlew testQaUnitTest assembleQa
+      - name: Upload to Firebase
+        run: |
+          ./gradlew appDistributionUploadQa
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

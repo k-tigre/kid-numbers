@@ -75,7 +75,7 @@ class GameView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 32.dp),
-            text = "Дано равильных ответов: ${state.correctCount}"
+            text = "Дано правильных ответов: ${state.correctCount}"
         )
     }
 

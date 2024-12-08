@@ -24,9 +24,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
+import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
 import by.tigre.tools.tools.platform.compose.AppTheme
@@ -36,7 +38,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ResultView(
-    private val component: MultiplicationResultComponent,
+    private val component: ResultComponent,
 ) : ComposableView {
 
     @Composable
@@ -78,7 +80,7 @@ class ResultView(
                 modifier = Modifier
                     .padding(bottom = 60.dp)
                     .align(Alignment.CenterHorizontally),
-                columns = GridCells.Adaptive(120.dp),
+                columns = GridCells.Adaptive(160.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -124,10 +126,11 @@ class ResultView(
 }
 
 @Preview(showSystemUi = true)
+@Preview(showSystemUi = true, device = Devices.NEXUS_10)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Preview() {
-    val component = object : MultiplicationResultComponent {
+    val component = object : ResultComponent {
         override val results: StateFlow<GameResult> = MutableStateFlow(
             GameResult(
                 results = (1..4).map {
@@ -135,7 +138,7 @@ private fun Preview() {
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
                             question = GameOptions.Question.Multiplication(it, 2),
-                            answer = 1
+                            answer = 19434
                         ),
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
@@ -145,7 +148,7 @@ private fun Preview() {
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
                             question = GameOptions.Question.Additional(it, 2),
-                            answer = 1
+                            answer = 109
                         ),
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
@@ -154,7 +157,8 @@ private fun Preview() {
                         )
                     )
                 }.flatten(),
-                time = "19:10"
+                time = "19:10",
+                difficult = Difficult.Easy
             )
         )
 

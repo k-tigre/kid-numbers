@@ -5,7 +5,7 @@ import by.tigre.numbers.di.GameDependencies
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameType
-import by.tigre.numbers.presentation.game.result.MultiplicationResultComponent
+import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.numbers.presentation.game.settings.AdditionalSettingsComponent
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
@@ -24,7 +24,7 @@ interface RootGameComponent {
         class SettingsMultiplication(val component: MultiplicationSettingsComponent) : PageChild
         class SettingsAdditional(val component: AdditionalSettingsComponent) : PageChild
         class Game(val component: GameComponent) : PageChild
-        class Result(val component: MultiplicationResultComponent) : PageChild
+        class Result(val component: ResultComponent) : PageChild
     }
 
     class Impl(
@@ -70,7 +70,7 @@ interface RootGameComponent {
                     )
 
                     is PagesConfig.Result -> PageChild.Result(
-                        MultiplicationResultComponent.Impl(componentContext, config.result) {
+                        ResultComponent.Impl(componentContext, config.result, gameDependencies.getResultStore()) {
                             pagesNavigation.replaceCurrent(initialSettings)
                         }
                     )

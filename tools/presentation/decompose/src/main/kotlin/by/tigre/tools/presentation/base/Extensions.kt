@@ -35,7 +35,7 @@ fun <C : Parcelable, T : Any> BaseComponentContext.appChildStack(
         )
     }
 
-fun <C : Parcelable, T : Any> BaseComponentContext.appChildSlotI(
+fun <C : Parcelable, T : Any> BaseComponentContext.appChildSlot(
     source: SlotNavigationSource<C>,
     initialConfiguration: () -> C? = { null },
     configurationClass: KClass<out C>,
@@ -84,7 +84,7 @@ inline fun <reified C : Parcelable, T : Any> BaseComponentContext.appChildSlot(
     persistent: Boolean = true,
     noinline childFactory: (configuration: C, BaseComponentContext) -> T
 ): Value<ChildSlot<C, T>> =
-    appChildSlotI(
+    appChildSlot(
         source = source,
         initialConfiguration = initialStack,
         configurationClass = C::class,

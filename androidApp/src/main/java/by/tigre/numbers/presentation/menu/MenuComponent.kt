@@ -8,10 +8,12 @@ interface MenuComponent {
     fun onAdditionClicked()
     fun onDivisionClicked()
     fun onSubtractionClicked()
+    fun onHistoryClicked()
 
     class Impl(
         context: BaseComponentContext,
-        private val onGameTypeSelected: (GameType) -> Unit
+        private val onGameTypeSelected: (GameType) -> Unit,
+        private val onShowHistory: () -> Unit
     ) : MenuComponent, BaseComponentContext by context {
         override fun onMultiplicationClicked() {
             onGameTypeSelected(GameType.Multiplication)
@@ -27,6 +29,10 @@ interface MenuComponent {
 
         override fun onSubtractionClicked() {
             onGameTypeSelected(GameType.Subtraction)
+        }
+
+        override fun onHistoryClicked() {
+            onShowHistory()
         }
     }
 }

@@ -127,7 +127,13 @@ interface GameComponent {
         override fun onNextClicked() {
             val state = questionsState.value
             if (state.total == state.current) {
-                onFinish(GameResult(results = resultQuestions, time = TIME_FORMAT.format(time.value * 1000)))
+                onFinish(
+                    GameResult(
+                        results = resultQuestions,
+                        time = TIME_FORMAT.format(time.value * 1000),
+                        difficult = gameOption.difficult
+                    )
+                )
             } else {
                 questionsState.tryEmit(
                     state.copy(

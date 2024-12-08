@@ -38,7 +38,7 @@ interface GameProvider {
             val duration = settings.selectedNumbers.size * settings.difficult.time
 
             return GameOptions(
-                questions = allQuestions, duration = duration
+                questions = allQuestions, duration = duration, difficult = settings.difficult
             )
         }
 
@@ -74,7 +74,7 @@ interface GameProvider {
             val duration = settings.type.size * settings.difficult.time * 2
 
             return GameOptions(
-                questions = allQuestions, duration = duration
+                questions = allQuestions, duration = duration, difficult = settings.difficult
             )
         }
 

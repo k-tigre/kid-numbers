@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class GameResult(
     val results: List<Result>,
-    val time: String
+    val time: String,
+    val difficult: Difficult
 ) : Parcelable {
 
     @IgnoredOnParcel

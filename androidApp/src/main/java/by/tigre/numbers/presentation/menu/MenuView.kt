@@ -40,13 +40,17 @@ class MenuView(
                 title = "Учить деление",
                 action = component::onDivisionClicked
             )
+            DrawItem(
+                title = "История",
+                action = component::onHistoryClicked
+            )
         }
     }
 
     @Composable
-    private fun DrawItem(title: String, action: () -> Unit) {
+    private fun DrawItem(modifier: Modifier = Modifier, title: String, action: () -> Unit) {
         Button(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp),
             onClick = action
         ) {

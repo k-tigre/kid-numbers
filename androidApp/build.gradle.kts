@@ -35,17 +35,17 @@ android {
             initWith(getAt(Environment.Debug.gradleName))
         }
 
-        val releaseStorePassword = System.getenv("NUMBERS_RELEASE_JKS_STORE_PASSWORD")
-        val releaseKeyPassword = System.getenv("NUMBERS_RELEASE_JKS_KEY_PASSWORD")
+        val releaseStorePassword = System.getenv("NUMBERS_RELEASE_JKS")
+        val releaseKeyPassword = System.getenv("NUMBERS_RELEASE_JKS")
 
         if (listOf(releaseStorePassword, releaseKeyPassword).any { it.isNullOrBlank() }) {
             System.err.println("Release JKS credentials are not available")
             System.err.println("Release signing config is not available")
         } else {
             create(Environment.Release.gradleName) {
-                storeFile = File(rootDir, "/keys/release.jks")
+                storeFile = File(rootDir, "/keys/upload.jks")
                 storePassword = releaseStorePassword
-                keyAlias = "upload_release"
+                keyAlias = "numbers"
                 keyPassword = releaseKeyPassword
             }
         }

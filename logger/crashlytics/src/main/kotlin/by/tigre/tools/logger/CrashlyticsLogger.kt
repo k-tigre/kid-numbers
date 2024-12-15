@@ -1,8 +1,15 @@
 package by.tigre.tools.logger
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.setCustomKeys
 
-class CrashlyticsLogger : Log.Logger {
+class CrashlyticsLogger(type: String) : Log.Logger {
+    init {
+        FirebaseCrashlytics.getInstance().setCustomKeys {
+            key("app_type", type)
+        }
+    }
+
     override fun log(level: Log.Level, vararg fields: Pair<String, String>) {
         if (level >= Log.Level.INFO) {
             val message = fields

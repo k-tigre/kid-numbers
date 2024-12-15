@@ -34,6 +34,8 @@ enum class Library(group: String, artifact: String, version: Version) {
 
     AccompanistPermission("com.google.accompanist", "accompanist-permissions", Version.Accompanist),
 
+    Mixpanel("com.mixpanel.android", "mixpanel-android", Version.Mixpanel),
+
     Decompose("com.arkivanov.decompose", "decompose", Version.Decompose),
     DecomposeExtensions("com.arkivanov.decompose", "extensions-compose-jetpack", Version.Decompose),
 
@@ -64,6 +66,7 @@ enum class Library(group: String, artifact: String, version: Version) {
         Accompanist("0.34.0") /*MUST BE CHANGED WITH COMPOSE VERSION*/,
         CoilCompose("2.5.0"),
         Decompose("2.2.2"),
+        Mixpanel("8.0.1"),
 
         DebugComposeCustomView("1.2.0-alpha02"),
         DebugComposeCustomViewPoolingcontainer("1.0.0"),

@@ -22,6 +22,8 @@ android {
         versionName = Application.version.name
         versionCode = Application.version.code
         resourceConfigurations.addAll(listOf("en", "ru"))
+
+        buildConfigField("String", "MiXPANEL_TOKEN", "\"${System.getenv("MiXPANEL_TOKEN") ?: ""}\"")
     }
 
     signingConfigs {
@@ -106,6 +108,7 @@ dependencies {
     implementation(Project.Tools.Coroutines)
     implementation(Library.AccompanistPermission)
     implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics)
+    implementation(Library.Mixpanel)
 
     implementation(Project.Logger.Core)
     implementation(Project.Logger.Crashlytics)

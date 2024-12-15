@@ -74,7 +74,7 @@ class ResultView(
             Text(
                 modifier = Modifier
                     .padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_correct_answers, result.inCorrectCount),
+                text = stringResource(R.string.screen_game_result_total_wrong_answers, result.inCorrectCount),
                 color = MaterialTheme.colorScheme.error,
             )
 

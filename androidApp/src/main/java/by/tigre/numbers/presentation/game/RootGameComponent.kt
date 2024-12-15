@@ -1,10 +1,13 @@
 package by.tigre.numbers.presentation.game
 
 import android.os.Parcelable
+import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.di.GameDependencies
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.numbers.presentation.game.settings.AdditionalSettingsComponent
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
@@ -14,6 +17,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 interface RootGameComponent {
@@ -31,6 +35,7 @@ interface RootGameComponent {
         context: BaseComponentContext,
         gameType: GameType,
         gameDependencies: GameDependencies,
+        analytics: ScreenAnalytics,
         private val onClose: () -> Unit
     ) : RootGameComponent, BaseComponentContext by context {
 
@@ -89,6 +94,30 @@ interface RootGameComponent {
                     )
                 }
             }
+
+        init {
+            launch {
+                pages.trackScreens<PagesConfig>(analytics) {
+                    when (it) {
+                        is PagesConfig.SettingsAdditional -> Event.Screen.GameSettings(
+                            if (it.isPositive) GameType.Additional else GameType.Subtraction
+                        )
+
+                        is PagesConfig.SettingsMultiplication -> Event.Screen.GameSettings(
+                            if (it.isPositive) GameType.Multiplication else GameType.Division
+                        )
+
+                        is PagesConfig.Game -> Event.Screen.Game(it.settings.difficult)
+                        is PagesConfig.Result -> Event.Screen.GameResult(
+                            correctCount = it.result.correctCount,
+                            inCorrectCount = it.result.inCorrectCount,
+                            totalCount = it.result.totalCount,
+                            difficult = it.result.difficult
+                        )
+                    }
+                }
+            }
+        }
 
         private sealed interface PagesConfig : Parcelable {
             @Parcelize

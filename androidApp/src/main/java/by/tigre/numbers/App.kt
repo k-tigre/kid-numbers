@@ -1,6 +1,10 @@
 package by.tigre.numbers
 
 import android.app.Application
+import by.tigre.numbers.analytics.FirebaseTracker
+import by.tigre.numbers.analytics.LogTracker
+import by.tigre.numbers.analytics.MixpanelTracker
+import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.di.ApplicationGraph
 import by.tigre.tools.logger.CrashlyticsLogger
 import by.tigre.tools.logger.DbLogger
@@ -15,7 +19,10 @@ class App : Application() {
         super.onCreate()
         initLoggers()
 
-        graph = ApplicationGraph.create(this)
+        graph = ApplicationGraph.create(
+            context = this,
+            tracker = Tracker.TrackerAggregator(LogTracker(), FirebaseTracker(this), MixpanelTracker(this))
+        )
     }
 
     private fun initLoggers() {

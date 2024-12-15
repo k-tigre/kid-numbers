@@ -9,6 +9,6 @@ interface CoreDispatchers {
 
     class Impl : CoreDispatchers {
         override val main: CoroutineDispatcher = Dispatchers.Main
-        override val io: CoroutineDispatcher = Dispatchers.Default
+        override val io: CoroutineDispatcher = Dispatchers.IO
     }
 }

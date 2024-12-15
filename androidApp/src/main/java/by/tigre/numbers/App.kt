@@ -13,12 +13,17 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Log.init(Log.Level.VERBOSE, LogcatLogger(), CrashlyticsLogger(), DbLogger(this))
-        } else {
-            Log.init(Log.Level.DEBUG, CrashlyticsLogger())
-        }
+        initLoggers()
 
         graph = ApplicationGraph.create(this)
+    }
+
+    private fun initLoggers() {
+        val crashlyticsLogger = CrashlyticsLogger(BuildConfig.BUILD_TYPE)
+        if (BuildConfig.DEBUG) {
+            Log.init(Log.Level.VERBOSE, LogcatLogger(), crashlyticsLogger, DbLogger(this))
+        } else {
+            Log.init(Log.Level.DEBUG, crashlyticsLogger)
+        }
     }
 }

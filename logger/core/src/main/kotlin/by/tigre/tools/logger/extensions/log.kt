@@ -21,3 +21,5 @@ fun <T : Any?> Flow<T>.debugLog(tag: String, name: String): Flow<T> = this
     .catch { Log.w(it, tag) { "$name: catch: $it" } }
     .onCompletion { Log.d(tag) { "$name: onCompletion - $it" } }
     .onEmpty { Log.d(tag) { "$name: onEmpty" } }
+
+const val TAG_UNEXPECTED = "UNEXPECTED"

@@ -1,8 +1,11 @@
 package by.tigre.numbers.presentation.root
 
 import android.os.Parcelable
+import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.di.GameDependencies
 import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
 import by.tigre.numbers.presentation.menu.MenuComponent
@@ -13,6 +16,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 interface RootComponent {
@@ -27,7 +31,8 @@ interface RootComponent {
 
     class Impl(
         context: BaseComponentContext,
-        gameDependencies: GameDependencies
+        gameDependencies: GameDependencies,
+        analytics: ScreenAnalytics,
     ) : RootComponent, BaseComponentContext by context {
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
@@ -41,7 +46,8 @@ interface RootComponent {
             ) { config, componentContext ->
                 when (config) {
                     PagesConfig.Menu -> PageChild.Menu(
-                        MenuComponent.Impl(componentContext,
+                        MenuComponent.Impl(
+                            context = componentContext,
                             onShowHistory = {
                                 pagesNavigation.push(PagesConfig.History)
                             },
@@ -52,14 +58,34 @@ interface RootComponent {
                     )
 
                     is PagesConfig.Game -> PageChild.Game(
-                        RootGameComponent.Impl(componentContext, config.type, gameDependencies, onClose = { pagesNavigation.pop() })
+                        RootGameComponent.Impl(
+                            context = componentContext,
+                            gameType = config.type,
+                            gameDependencies = gameDependencies,
+                            analytics = analytics,
+                            onClose = { pagesNavigation.pop() })
                     )
 
                     PagesConfig.History -> PageChild.History(
-                        HistoryComponent.Impl(componentContext, gameDependencies.resultStore, onClose = { pagesNavigation.pop() })
+                        HistoryComponent.Impl(
+                            context = componentContext,
+                            resultStore = gameDependencies.resultStore,
+                            onClose = { pagesNavigation.pop() })
                     )
                 }
             }
+
+        init {
+            launch {
+                pages.trackScreens<PagesConfig>(analytics) {
+                    when (it) {
+                        PagesConfig.Menu -> Event.Screen.MainMenu
+                        PagesConfig.History -> Event.Screen.History
+                        is PagesConfig.Game -> Event.Screen.RootGame(it.type)
+                    }
+                }
+            }
+        }
 
         private sealed interface PagesConfig : Parcelable {
             @Parcelize

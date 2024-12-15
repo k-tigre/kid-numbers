@@ -1,18 +1,25 @@
 package by.tigre.numbers.di
 
 import android.content.Context
+import by.tigre.numbers.analytics.Tracker
 import by.tigre.tools.tools.coroutines.CoroutineModule
 
 class ApplicationGraph(
-    storeModule: StoreModule
+    storeModule: StoreModule,
+    analyticsModule: AnalyticsModule
 ) : GameDependencies,
-    StoreModule by storeModule {
+    StoreModule by storeModule,
+    AnalyticsModule by analyticsModule {
 
     companion object {
-        fun create(context: Context): ApplicationGraph {
+        fun create(
+            context: Context,
+            tracker: Tracker
+        ): ApplicationGraph {
             val coroutineModule = CoroutineModule.Impl()
+            val analyticsModule = AnalyticsModule.Impl(tracker, coroutineModule)
             val storeModule = StoreModule.Impl(context, coroutineModule = coroutineModule)
-            return ApplicationGraph(storeModule)
+            return ApplicationGraph(storeModule, analyticsModule)
         }
     }
 }

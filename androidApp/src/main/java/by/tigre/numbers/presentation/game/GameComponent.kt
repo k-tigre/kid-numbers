@@ -104,7 +104,7 @@ interface GameComponent {
             }
         }
 
-        private fun completeQuestions() {
+        private suspend fun completeQuestions() {
             val state = questionsState.value
             allQuestions.forEachIndexed { index, question ->
                 if (index >= state.current) {
@@ -116,6 +116,9 @@ interface GameComponent {
                     resultQuestions.add(result)
                 }
             }
+
+            questionsState.emit(state.copy(current = state.total))
+            answer.emit("")
         }
 
         override fun onAnswerChanged(answer: String) {
@@ -126,7 +129,7 @@ interface GameComponent {
 
         override fun onNextClicked() {
             val state = questionsState.value
-            if (state.total == state.current) {
+            if (state.current >= state.total) {
                 onFinish(
                     GameResult(
                         results = resultQuestions,

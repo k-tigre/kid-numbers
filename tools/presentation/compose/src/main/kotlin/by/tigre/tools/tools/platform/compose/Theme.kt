@@ -23,8 +23,8 @@ import androidx.core.view.WindowCompat
 
 @Immutable
 data class ExtendedColorScheme(
-    val customColor1: ColorFamily = ColorFamily(Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified),
-    val customColor2: ColorFamily = ColorFamily(Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified),
+    val gameSuccess: ColorFamily = ColorFamily(Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified),
+    val gameFailed: ColorFamily = ColorFamily(Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified),
 )
 
 private val lightScheme = lightColorScheme(
@@ -256,13 +256,13 @@ private val highContrastDarkColorScheme = darkColorScheme(
 )
 
 val extendedLight = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1Light,
         onCustomColor1Light,
         customColor1ContainerLight,
         onCustomColor1ContainerLight,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2Light,
         onCustomColor2Light,
         customColor2ContainerLight,
@@ -271,13 +271,13 @@ val extendedLight = ExtendedColorScheme(
 )
 
 val extendedDark = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1Dark,
         onCustomColor1Dark,
         customColor1ContainerDark,
         onCustomColor1ContainerDark,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2Dark,
         onCustomColor2Dark,
         customColor2ContainerDark,
@@ -286,13 +286,13 @@ val extendedDark = ExtendedColorScheme(
 )
 
 val extendedLightMediumContrast = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1LightMediumContrast,
         onCustomColor1LightMediumContrast,
         customColor1ContainerLightMediumContrast,
         onCustomColor1ContainerLightMediumContrast,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2LightMediumContrast,
         onCustomColor2LightMediumContrast,
         customColor2ContainerLightMediumContrast,
@@ -301,13 +301,13 @@ val extendedLightMediumContrast = ExtendedColorScheme(
 )
 
 val extendedLightHighContrast = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1LightHighContrast,
         onCustomColor1LightHighContrast,
         customColor1ContainerLightHighContrast,
         onCustomColor1ContainerLightHighContrast,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2LightHighContrast,
         onCustomColor2LightHighContrast,
         customColor2ContainerLightHighContrast,
@@ -316,13 +316,13 @@ val extendedLightHighContrast = ExtendedColorScheme(
 )
 
 val extendedDarkMediumContrast = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1DarkMediumContrast,
         onCustomColor1DarkMediumContrast,
         customColor1ContainerDarkMediumContrast,
         onCustomColor1ContainerDarkMediumContrast,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2DarkMediumContrast,
         onCustomColor2DarkMediumContrast,
         customColor2ContainerDarkMediumContrast,
@@ -331,13 +331,13 @@ val extendedDarkMediumContrast = ExtendedColorScheme(
 )
 
 val extendedDarkHighContrast = ExtendedColorScheme(
-    customColor1 = ColorFamily(
+    gameSuccess = ColorFamily(
         customColor1DarkHighContrast,
         onCustomColor1DarkHighContrast,
         customColor1ContainerDarkHighContrast,
         onCustomColor1ContainerDarkHighContrast,
     ),
-    customColor2 = ColorFamily(
+    gameFailed = ColorFamily(
         customColor2DarkHighContrast,
         onCustomColor2DarkHighContrast,
         customColor2ContainerDarkHighContrast,
@@ -345,7 +345,7 @@ val extendedDarkHighContrast = ExtendedColorScheme(
     ),
 )
 
-val LocalCustomColorsPalette = staticCompositionLocalOf { ExtendedColorScheme() }
+val LocalGameColorsPalette = staticCompositionLocalOf { ExtendedColorScheme() }
 
 @Immutable
 data class ColorFamily(
@@ -391,7 +391,7 @@ fun AppTheme(
 
     // here is the important point, where you will expose custom objects
     CompositionLocalProvider(
-        LocalCustomColorsPalette provides customColorsPalette // our custom palette
+        LocalGameColorsPalette provides customColorsPalette // our custom palette
     ) {
         MaterialTheme(
             colorScheme = colorScheme, // the MaterialTheme still uses the "normal" palette

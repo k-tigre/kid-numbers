@@ -32,10 +32,11 @@ import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
+import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
-import by.tigre.tools.tools.platform.compose.LocalCustomColorsPalette
+import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -98,9 +99,9 @@ class ResultView(
     @Composable
     private fun DrawItem(result: GameResult.Result) {
         val colors = if (result.isCorrect) {
-            LocalCustomColorsPalette.current.customColor1
+            LocalGameColorsPalette.current.gameSuccess
         } else {
-            LocalCustomColorsPalette.current.customColor2
+            LocalGameColorsPalette.current.gameFailed
         }
         Card(
             modifier = Modifier,
@@ -159,7 +160,8 @@ private fun Preview() {
                     )
                 }.flatten(),
                 time = 23823,
-                difficult = Difficult.Easy
+                difficult = Difficult.Easy,
+                type = GameType.Multiplication
             )
         )
 

@@ -8,6 +8,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import by.tigre.numbers.core.data.storage.DatabaseNumbers
 import by.tigre.numbers.data.ResultStore
 import by.tigre.numbers.data.history.StoreDifficultAdapter
+import by.tigre.numbers.data.history.StoreGameTypeAdapter
 import by.tigre.numbers.db.History
 import by.tigre.tools.tools.coroutines.CoroutineModule
 
@@ -33,7 +34,8 @@ interface StoreModule {
                 HistoryAdapter = History.Adapter(
                     difficultAdapter = StoreDifficultAdapter,
                     correctCountAdapter = IntColumnAdapter,
-                    totalCountAdapter = IntColumnAdapter
+                    totalCountAdapter = IntColumnAdapter,
+                    gameTypeAdapter = StoreGameTypeAdapter
                 )
             )
         }

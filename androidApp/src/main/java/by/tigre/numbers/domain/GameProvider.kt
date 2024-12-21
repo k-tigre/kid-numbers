@@ -3,6 +3,7 @@ package by.tigre.numbers.domain
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameSettings
+import by.tigre.numbers.entity.GameType
 import kotlin.random.Random
 
 interface GameProvider {
@@ -46,7 +47,10 @@ interface GameProvider {
             val duration = settings.selectedNumbers.size * settings.difficult.time
 
             return GameOptions(
-                questions = allQuestions, duration = duration, difficult = settings.difficult
+                questions = allQuestions,
+                duration = duration,
+                difficult = settings.difficult,
+                type = if (settings.isPositive) GameType.Multiplication else GameType.Division
             )
         }
 
@@ -74,7 +78,10 @@ interface GameProvider {
             val duration = settings.type.size * settings.difficult.time * 2
 
             return GameOptions(
-                questions = allQuestions, duration = duration, difficult = settings.difficult
+                questions = allQuestions,
+                duration = duration,
+                difficult = settings.difficult,
+                type = if (settings.isPositive) GameType.Additional else GameType.Subtraction
             )
         }
 

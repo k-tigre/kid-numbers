@@ -1,4 +1,5 @@
 import by.tigre.numbers.entity.Difficult;
+import by.tigre.numbers.entity.GameType;
 import kotlin.Int;
 
 CREATE TABLE History(
@@ -7,12 +8,13 @@ date INTEGER NOT NULL,
 duration INTEGER NOT NULL,
 difficult INTEGER AS Difficult NOT NULL DEFAULT 0,
 correctCount INTEGER AS Int NOT NULL,
-totalCount INTEGER AS Int NOT NULL
+totalCount INTEGER AS Int NOT NULL,
+gameType INTEGER AS GameType
 );
 
 insertHistory:
-INSERT INTO History(date, duration, difficult, correctCount, totalCount)
-VALUES(?, ?, ?, ?, ?);
+INSERT INTO History(date, duration, difficult, correctCount, totalCount, gameType)
+VALUES(?, ?, ?, ?, ?, ?);
 
 selectAll:
-SELECT * FROM History LIMIT :limit;
+SELECT * FROM History ORDER BY id DESC LIMIT :limit;

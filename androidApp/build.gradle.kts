@@ -124,6 +124,7 @@ sqldelight {
         create("DatabaseNumbers") {
             packageName = "by.tigre.numbers.core.data.storage"
             generateAsync = true
+            schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
         }
     }
 }

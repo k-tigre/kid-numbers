@@ -2,6 +2,7 @@ package by.tigre.numbers.presentation.history
 
 import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,10 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.HistoryGameResult
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.AppTheme
+import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -79,37 +83,58 @@ class HistoryView(
                 ) {
                     state.items.forEach {
                         item(key = it.date) {
-                            Column {
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_history_item_date,
-                                        SimpleDateFormat.getDateTimeInstance().format(it.date)
+
+
+                            Card(
+                                border = if (it.totalCount == it.correctCount) {
+                                    BorderStroke(
+                                        width = 1.dp,
+                                        color = LocalGameColorsPalette.current.gameSuccess.color
                                     )
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_history_item_duration,
-                                        TIME_FORMAT.format(it.duration)
+                                } else {
+                                    null
+                                }
+                            ) {
+                                Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_history_item_date,
+                                            SimpleDateFormat.getDateTimeInstance().format(it.date)
+                                        )
                                     )
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_history_item_total_questions,
-                                        it.totalCount
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_history_item_duration,
+                                            TIME_FORMAT.format(it.duration)
+                                        )
                                     )
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_history_item_correct_answers,
-                                        it.correctCount
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_history_item_total_questions,
+                                            it.totalCount
+                                        )
                                     )
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_history_item_difficulty,
-                                        it.difficult.toLabel()
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_history_item_correct_answers,
+                                            it.correctCount
+                                        )
                                     )
-                                )
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_history_item_difficulty,
+                                            it.difficult.toLabel()
+                                        )
+                                    )
+                                    it.gameType?.let { gameType ->
+                                        Text(
+                                            text = stringResource(
+                                                R.string.screen_history_item_game_type,
+                                                gameType.toLabel()
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -132,7 +157,8 @@ private fun Preview() {
                         duration = 12128217,
                         difficult = Difficult.Hard,
                         correctCount = it * 10,
-                        totalCount = 12
+                        totalCount = 12,
+                        gameType = GameType.Division
                     )
                 }
             )

@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class GameOptions(
     val questions: List<Question>,
     val duration: Long,
-    val difficult: Difficult
+    val difficult: Difficult,
+    val type: GameType
 ) {
 
     sealed interface Question : Parcelable {

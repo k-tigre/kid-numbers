@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class GameResult(
     val results: List<Result>,
     val time: Long,
+    val type: GameType,
     val difficult: Difficult
 ) : Parcelable {
 

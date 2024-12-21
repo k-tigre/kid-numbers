@@ -131,7 +131,8 @@ interface GameComponent {
                     GameResult(
                         results = resultQuestions,
                         time = time.value,
-                        difficult = gameOption.difficult
+                        difficult = gameOption.difficult,
+                        type = gameOption.type
                     )
                 )
             } else {

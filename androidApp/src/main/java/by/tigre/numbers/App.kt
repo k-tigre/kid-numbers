@@ -21,7 +21,20 @@ class App : Application() {
 
         graph = ApplicationGraph.create(
             context = this,
-            tracker = Tracker.TrackerAggregator(LogTracker(), FirebaseTracker(this), MixpanelTracker(this))
+            tracker = { scope ->
+                if (BuildConfig.DEBUG) {
+                    Tracker.TrackerAggregator(
+                        LogTracker(),
+                        FirebaseTracker(this),
+                        MixpanelTracker(this, scope = scope)
+                    )
+                } else {
+                    Tracker.TrackerAggregator(
+                        FirebaseTracker(this),
+                        MixpanelTracker(this, scope = scope)
+                    )
+                }
+            }
         )
     }
 

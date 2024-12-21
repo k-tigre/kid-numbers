@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.selection.selectable
@@ -46,7 +46,7 @@ class MultiplicationSettingsView(
             Text(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(32.dp),
+                    .padding(start = 32.dp, end = 32.dp, top = 16.dp),
                 text = stringResource(
                     if (component.isPositive) {
                         R.string.screen_game_settings_select_numbers_for_multiplication
@@ -59,7 +59,8 @@ class MultiplicationSettingsView(
             val numbers = component.numbersForSelection.collectAsState()
             LazyVerticalGrid(
                 modifier = Modifier
-                    .size(300.dp)
+                    .padding(vertical = 8.dp)
+                    .width(300.dp)
                     .align(Alignment.CenterHorizontally),
                 columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(16.dp),
@@ -99,7 +100,7 @@ class MultiplicationSettingsView(
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(32.dp),
+                .padding(start = 32.dp, end = 32.dp, top = 16.dp),
             text = stringResource(R.string.screen_game_settings_select_difficult)
         )
 

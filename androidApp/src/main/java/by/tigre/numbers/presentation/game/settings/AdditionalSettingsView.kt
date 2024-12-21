@@ -24,7 +24,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
@@ -40,38 +39,32 @@ class AdditionalSettingsView(
     @Composable
     override fun DrawContent(innerPadding: PaddingValues) {
         Column(Modifier.padding(innerPadding)) {
-            DrawDifficult()
-
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(32.dp),
-                text = stringResource(
-                    if (component.isPositive) {
-                        R.string.screen_game_settings_select_numbers_for_addition
-                    } else {
-                        R.string.screen_game_settings_select_numbers_for_subtraction
-                    }
-                )
-            )
-
             val numbers = component.numbersForSelection.collectAsState()
             LazyColumn(
                 modifier = Modifier
+                    .weight(1f)
                     .align(Alignment.CenterHorizontally),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-
-                ) {
+            ) {
+                item { DrawDifficult() }
+                item {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(horizontal = 32.dp),
+                        text = stringResource(
+                            if (component.isPositive) {
+                                R.string.screen_game_settings_select_numbers_for_addition
+                            } else {
+                                R.string.screen_game_settings_select_numbers_for_subtraction
+                            }
+                        )
+                    )
+                }
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
-                        val range = when (number) {
-                            GameSettings.NumberType.Single -> "0-10"
-                            GameSettings.NumberType.Double -> "10-100"
-                            GameSettings.NumberType.Triples -> "100-1000"
-                            GameSettings.NumberType.SingleDoubleTriples -> "0-1000"
-                            GameSettings.NumberType.SingleDouble -> "0-100"
-                        }
+                        val range = "${number.min} - ${number.max}"
                         if (isSelected) {
                             Button(onClick = { component.onNumberTypeSelectionChanged(type = number, isSelected = false) }) {
                                 Text(text = stringResource(R.string.screen_game_settings_number_range, range))
@@ -103,7 +96,7 @@ class AdditionalSettingsView(
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(32.dp),
+                .padding(horizontal = 32.dp),
             text = stringResource(R.string.screen_game_settings_select_difficult)
         )
 

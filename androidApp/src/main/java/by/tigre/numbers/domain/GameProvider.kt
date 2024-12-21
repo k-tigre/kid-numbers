@@ -22,15 +22,23 @@ interface GameProvider {
                 .flatMap { first ->
                     val questions = (1..10).map { second ->
                         if (settings.isPositive) {
-                            GameOptions.Question.Multiplication(first = first, second = second)
+                            if (settings.difficult == Difficult.Hard) {
+                                if (Random.nextBoolean()) {
+                                    GameOptions.Question.Multiplication(first = second, second = first)
+                                } else {
+                                    GameOptions.Question.Multiplication(first = first, second = second)
+                                }
+                            } else {
+                                GameOptions.Question.Multiplication(first = first, second = second)
+                            }
                         } else {
                             GameOptions.Question.Division(result = second, second = first)
                         }
                     }
-                    if (settings.difficult == Difficult.Hard) {
-                        questions + questions
-                    } else {
-                        questions
+                    when (settings.difficult) {
+                        Difficult.Easy -> questions
+                        Difficult.Medium -> questions + questions
+                        Difficult.Hard -> questions + questions + questions
                     }
                 }
                 .shuffled()
@@ -45,22 +53,14 @@ interface GameProvider {
         private fun generateQuestions(settings: GameSettings.Additional): GameOptions {
             val count: Int = when (settings.difficult) {
                 Difficult.Easy -> 10
-                Difficult.Medium -> 14
-                Difficult.Hard -> 22
+                Difficult.Medium -> 20
+                Difficult.Hard -> 30
             }
 
             val allQuestions = settings.type.map { type ->
-                val (min, max) = when (type) {
-                    GameSettings.NumberType.Single -> 0 to 10
-                    GameSettings.NumberType.Double -> 10 to 100
-                    GameSettings.NumberType.Triples -> 100 to 1000
-                    GameSettings.NumberType.SingleDoubleTriples -> 0 to 1000
-                    GameSettings.NumberType.SingleDouble -> 0 to 100
-                }
-
                 (1..count).map {
-                    val result = Random.nextInt(min + min, max + 1)
-                    val first = Random.nextInt(min, result + 1 - min)
+                    val result = Random.nextInt(type.min + type.min, type.max + 1)
+                    val first = Random.nextInt(type.min, result + 1 - type.min)
                     val second = result - first
 
                     if (settings.isPositive) {

@@ -20,11 +20,11 @@ sealed interface GameSettings : Parcelable {
         val isPositive: Boolean
     ) : GameSettings
 
-    enum class NumberType {
-        Single,
-        Double,
-        SingleDouble,
-        Triples,
-        SingleDoubleTriples
+    enum class NumberType(val min: Int, val max: Int) {
+        Single(0, 10),
+        Double(10, 100),
+        SingleDouble(0, 100),
+        Triples(100, 1000),
+        SingleDoubleTriples(0, 1000)
     }
 }

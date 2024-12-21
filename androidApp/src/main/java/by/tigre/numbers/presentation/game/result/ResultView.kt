@@ -80,7 +80,6 @@ class ResultView(
 
             LazyVerticalGrid(
                 modifier = Modifier
-                    .padding(bottom = 60.dp)
                     .align(Alignment.CenterHorizontally),
                 columns = GridCells.Adaptive(160.dp),
                 contentPadding = PaddingValues(16.dp),

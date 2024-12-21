@@ -21,18 +21,7 @@ class FirebaseTracker(context: Context) : Tracker {
 
     override fun trackScreen(previous: Event.Screen?, current: Event.Screen) {
         firebaseAnalytics.logEvent("SCREEN_${current.name}") {
-            param(KEY, previous?.name.toString())
-            if (current is Event.WithPayload) {
-                current.payload.forEach { (key, value) ->
-                    param(key, value)
-                }
-            }
-        }
-
-        // TODO remove?
-        firebaseAnalytics.logEvent("screen_view") {
-            param(KEY, previous?.name.toString())
-            param("firebase_screen_class", current.name)
+            param(KEY_PREV_SCREEN, previous?.name.toString())
             if (current is Event.WithPayload) {
                 current.payload.forEach { (key, value) ->
                     param(key, value)
@@ -42,6 +31,6 @@ class FirebaseTracker(context: Context) : Tracker {
     }
 
     private companion object {
-        const val KEY = "prev_screen"
+        const val KEY_PREV_SCREEN = "prev_screen"
     }
 }

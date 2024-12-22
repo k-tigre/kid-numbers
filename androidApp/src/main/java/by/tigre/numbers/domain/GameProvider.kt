@@ -61,19 +61,22 @@ interface GameProvider {
                 Difficult.Hard -> 30
             }
 
-            val allQuestions = settings.type.map { type ->
-                (1..count).map {
-                    val result = Random.nextInt(type.min + type.min, type.max + 1)
-                    val first = Random.nextInt(type.min, result + 1 - type.min)
-                    val second = result - first
+            val allQuestions = settings.type
+                .map { type ->
+                    (1..count).map {
+                        val result = Random.nextInt(type.min + type.min, type.max + 1)
+                        val first = Random.nextInt(type.min, result + 1 - type.min)
+                        val second = result - first
 
-                    if (settings.isPositive) {
-                        GameOptions.Question.Additional(first = first, second = second)
-                    } else {
-                        GameOptions.Question.Subtraction(result = first, second = second)
+                        if (settings.isPositive) {
+                            GameOptions.Question.Additional(first = first, second = second)
+                        } else {
+                            GameOptions.Question.Subtraction(result = first, second = second)
+                        }
                     }
                 }
-            }.flatten()
+                .flatten()
+                .shuffled()
 
             val duration = settings.type.size * settings.difficult.time * 2
 

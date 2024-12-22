@@ -2,29 +2,22 @@ package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.presentation.utils.toLabel
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.DrawDifficult
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class AdditionalSettingsView(
@@ -39,39 +32,48 @@ class AdditionalSettingsView(
     @Composable
     override fun DrawContent(innerPadding: PaddingValues) {
         Column(Modifier.padding(innerPadding)) {
-            val numbers = component.numbersForSelection.collectAsState()
-            LazyColumn(
+            DrawDifficult(
+                onDifficultChanges = component::onDifficultChanged,
+                difficult = component.difficultSelection
+            )
+            Text(
                 modifier = Modifier
-                    .weight(1f)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 32.dp),
+                text = stringResource(
+                    if (component.isPositive) {
+                        R.string.screen_game_settings_select_numbers_for_addition
+                    } else {
+                        R.string.screen_game_settings_select_numbers_for_subtraction
+                    }
+                )
+            )
+
+            val numbers = component.numbersForSelection.collectAsState()
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .width(320.dp)
                     .align(Alignment.CenterHorizontally),
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item { DrawDifficult() }
-                item {
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(horizontal = 32.dp),
-                        text = stringResource(
-                            if (component.isPositive) {
-                                R.string.screen_game_settings_select_numbers_for_addition
-                            } else {
-                                R.string.screen_game_settings_select_numbers_for_subtraction
-                            }
-                        )
-                    )
-                }
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
                         val range = "${number.min} - ${number.max}"
                         if (isSelected) {
-                            Button(onClick = { component.onNumberTypeSelectionChanged(type = number, isSelected = false) }) {
-                                Text(text = stringResource(R.string.screen_game_settings_number_range, range))
+                            Button(
+                                onClick = { component.onNumberTypeSelectionChanged(range = number, isSelected = false) }
+                            ) {
+                                Text(text = range)
                             }
                         } else {
-                            ElevatedButton(onClick = { component.onNumberTypeSelectionChanged(type = number, isSelected = true) }) {
-                                Text(text = stringResource(R.string.screen_game_settings_number_range, range))
+                            ElevatedButton(
+                                onClick = { component.onNumberTypeSelectionChanged(range = number, isSelected = true) }
+                            ) {
+                                Text(text = range)
                             }
                         }
                     }
@@ -86,48 +88,6 @@ class AdditionalSettingsView(
                 enabled = component.isStartEnabled.collectAsState().value
             ) {
                 Text(text = stringResource(R.string.screen_game_settings_start))
-            }
-        }
-    }
-
-
-    @Composable
-    private fun ColumnScope.DrawDifficult() {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 32.dp),
-            text = stringResource(R.string.screen_game_settings_select_difficult)
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            val current = component.difficultSelection.collectAsState().value
-            Difficult.entries.forEach { difficult ->
-                Column(
-                    Modifier
-                        .heightIn(min = 56.dp)
-                        .selectable(
-                            selected = current == difficult,
-                            onClick = { component.onDifficultChanged(difficult) },
-                            role = Role.RadioButton
-                        )
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    RadioButton(
-                        selected = current == difficult,
-                        onClick = null // null recommended for accessibility with screenreaders
-                    )
-
-                    Text(
-                        text = difficult.toLabel(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding()
-                    )
-                }
             }
         }
     }

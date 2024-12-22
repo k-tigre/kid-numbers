@@ -3,7 +3,7 @@ package by.tigre.numbers.presentation.game.settings
 import androidx.compose.runtime.Immutable
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
-import by.tigre.numbers.entity.GameSettings.NumberType
+import by.tigre.numbers.entity.GameSettings.Additional
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.stateIn
 
 interface AdditionalSettingsComponent {
     val isPositive: Boolean
-    val numbersForSelection: StateFlow<List<Pair<NumberType, Boolean>>>
+    val numbersForSelection: StateFlow<List<Pair<Additional.Range, Boolean>>>
     val difficultSelection: StateFlow<Difficult>
     val isStartEnabled: StateFlow<Boolean>
-    fun onNumberTypeSelectionChanged(type: NumberType, isSelected: Boolean)
+    fun onNumberTypeSelectionChanged(range: Additional.Range, isSelected: Boolean)
     fun onDifficultChanged(difficult: Difficult)
     fun onStartGameClicked()
     fun onBackClicked()
@@ -28,12 +28,15 @@ interface AdditionalSettingsComponent {
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : AdditionalSettingsComponent, BaseComponentContext by context {
-        private val numbers: MutableMap<NumberType, Boolean> = mutableMapOf(
-            NumberType.Single to false,
-            NumberType.Double to false,
-            NumberType.Triples to false,
-            NumberType.SingleDouble to false,
-            NumberType.SingleDoubleTriples to false,
+        private val numbers: MutableMap<Additional.Range, Boolean> = mutableMapOf(
+            Additional.Range(0, 10) to false,
+            Additional.Range(0, 100) to false,
+            Additional.Range(0, 500) to false,
+            Additional.Range(0, 1000) to false,
+            Additional.Range(100, 200) to false,
+            Additional.Range(100, 500) to false,
+            Additional.Range(100, 1000) to false,
+            Additional.Range(100, 2000) to false,
         )
 
         override val numbersForSelection = MutableStateFlow(getState())
@@ -42,8 +45,8 @@ interface AdditionalSettingsComponent {
         override val isStartEnabled = numbersForSelection.map { it.any { (_, isSelected) -> isSelected } }
             .stateIn(this, SharingStarted.Lazily, false)
 
-        override fun onNumberTypeSelectionChanged(type: NumberType, isSelected: Boolean) {
-            numbers[type] = isSelected
+        override fun onNumberTypeSelectionChanged(range: Additional.Range, isSelected: Boolean) {
+            numbers[range] = isSelected
             numbersForSelection.tryEmit(getState())
         }
 
@@ -53,7 +56,7 @@ interface AdditionalSettingsComponent {
 
         override fun onStartGameClicked() {
             onStartGame(
-                GameSettings.Additional(
+                Additional(
                     type = numbers.mapNotNull { if (it.value) it.key else null },
                     difficult = difficultSelection.value,
                     isPositive = isPositive
@@ -67,5 +70,4 @@ interface AdditionalSettingsComponent {
 
         private fun getState() = numbers.map { it.key to it.value }
     }
-
 }

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_manu_learn_addition">Практиковать сложение</string>
-    <string name="main_manu_lean_multiplication">Практиковать умножение</string>
-    <string name="main_manu_learn_subtraction">Практиковать вычитание</string>
-    <string name="main_menu_learn_division">Практиковать деление</string>
+    <string name="main_manu_learn">Практиковать %s</string>
     <string name="main_menu_history">История</string>
 
     <string name="screen_history_title">История</string>

@@ -15,16 +15,11 @@ sealed interface GameSettings : Parcelable {
 
     @Parcelize
     data class Additional(
-        val type: List<NumberType>,
+        val type: List<Range>,
         override val difficult: Difficult,
         val isPositive: Boolean
-    ) : GameSettings
-
-    enum class NumberType(val min: Int, val max: Int) {
-        Single(0, 10),
-        Double(10, 100),
-        SingleDouble(0, 100),
-        Triples(100, 1000),
-        SingleDoubleTriples(0, 1000)
+    ) : GameSettings {
+        @Parcelize
+        data class Range(val min: Int, val max: Int) : Parcelable
     }
 }

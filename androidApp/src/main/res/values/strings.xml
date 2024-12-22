@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_manu_learn_addition">Practice addition</string>
-    <string name="main_manu_lean_multiplication">Practice multiplication</string>
-    <string name="main_manu_learn_subtraction">Practice subtraction</string>
-    <string name="main_menu_learn_division">Practice division</string>
+    <string name="main_manu_learn">Practice %s</string>
     <string name="main_menu_history">History</string>
 
     <string name="screen_history_title">History</string>

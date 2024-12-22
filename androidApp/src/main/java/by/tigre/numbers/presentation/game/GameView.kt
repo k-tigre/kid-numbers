@@ -1,6 +1,9 @@
 package by.tigre.numbers.presentation.game
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +32,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -95,14 +99,21 @@ class GameView(
 
     @Composable
     private fun ColumnScope.DrawQuestion() {
-        val question = component.question.collectAsState().value
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 32.dp),
-            text = "${question.title} = ?",
-            style = MaterialTheme.typography.titleLarge,
-        )
+        AnimatedContent(
+            modifier = Modifier,
+            targetState = component.question.collectAsState().value,
+            transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+        ) { question ->
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 32.dp),
+                text = "${question.title} = ?",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 
     @Composable

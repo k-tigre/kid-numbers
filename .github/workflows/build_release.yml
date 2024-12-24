@@ -19,6 +19,7 @@ jobs:
         env:
           NUMBERS_RELEASE_JKS: ${{ secrets.NUMBERS_RELEASE_JKS }}
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:

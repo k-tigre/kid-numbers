@@ -22,4 +22,5 @@ jobs:
           ./gradlew appDistributionUploadQa
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
           NOTES: ${{ github.event.commits[0].message }}

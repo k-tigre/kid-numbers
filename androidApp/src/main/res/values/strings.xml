@@ -18,7 +18,7 @@
     <string name="screen_game_field_answer_hint">Your answer</string>
     <string name="screen_game_button_submit_answer">Answer</string>
     <string name="screen_game_next_question">Next question</string>
-    <string name="screen_game_result_wrong">Wrong, try again</string>
+    <string name="screen_game_result_wrong">Wrong, try again next time</string>
     <string name="screen_game_result_correct">Well done, that\'s right!</string>
 
     <string name="screen_game_difficult_easy">Easy</string>

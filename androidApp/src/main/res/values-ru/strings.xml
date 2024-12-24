@@ -18,7 +18,7 @@
     <string name="screen_game_field_answer_hint">Ответ</string>
     <string name="screen_game_button_submit_answer">Ответить</string>
     <string name="screen_game_next_question">Следующий вопрос</string>
-    <string name="screen_game_result_wrong">Неправильно, попробуй еще</string>
+    <string name="screen_game_result_wrong">Неправильно, попробуй еще в следующий раз</string>
     <string name="screen_game_result_correct">Молодец, правильно!</string>
 
     <string name="screen_game_difficult_easy">Просто</string>

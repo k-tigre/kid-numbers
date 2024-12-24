@@ -8,6 +8,7 @@ object StoreGameTypeAdapter : ColumnAdapter<GameType, Long> {
         0L -> GameType.Additional
         1L -> GameType.Division
         2L -> GameType.Multiplication
+        4L -> GameType.Equations
         else -> GameType.Subtraction
     }
 
@@ -16,5 +17,6 @@ object StoreGameTypeAdapter : ColumnAdapter<GameType, Long> {
         GameType.Division -> 1L
         GameType.Multiplication -> 2L
         GameType.Subtraction -> 3L
+        GameType.Equations -> 4L
     }
 }

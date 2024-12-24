@@ -24,7 +24,8 @@ interface GameComponent {
     val isEnterEnabled: StateFlow<Boolean>
     val question: StateFlow<GameOptions.Question>
     val questionsState: StateFlow<QuestionsState>
-    val answer: StateFlow<String>
+    val answerX: StateFlow<String>
+    val answerY: StateFlow<String>
     val answerResult: StateFlow<Boolean?>
     val timeState: StateFlow<TimeState>
 
@@ -54,8 +55,9 @@ interface GameComponent {
             .stateIn(this, SharingStarted.WhileSubscribed(), 0)
 
         override val answerResult = MutableStateFlow<Boolean?>(null)
-        override val answer = MutableStateFlow("")
-        override val isEnterEnabled: StateFlow<Boolean> = answer
+        override val answerX = MutableStateFlow("")
+        override val answerY = MutableStateFlow("")
+        override val isEnterEnabled: StateFlow<Boolean> = answerX
             .map { it.isNotEmpty() }
             .combine(answerResult) { notEmpty, entered -> notEmpty && entered == null }
             .stateIn(this, SharingStarted.Eagerly, false)
@@ -76,7 +78,7 @@ interface GameComponent {
 
         init {
             launch {
-                answer
+                answerX
                     .collect {
                         answerResult.emit(null)
                     }
@@ -118,12 +120,12 @@ interface GameComponent {
             }
 
             questionsState.emit(state.copy(current = state.total))
-            answer.emit("")
+            answerX.emit("")
         }
 
         override fun onAnswerChanged(answer: String) {
             if (answerResult.value == null) {
-                this.answer.tryEmit(answer.filter { it.isDigit() }.take(4))
+                this.answerX.tryEmit(answer.filterIndexed { index, char -> char.isDigit() || (index == 0 && char == '-') }.take(6))
             }
         }
 
@@ -145,20 +147,31 @@ interface GameComponent {
                         correctCount = state.correctCount + if (answerResult.value == true) 1 else 0
                     )
                 )
-                answer.tryEmit("")
+                answerX.tryEmit("")
             }
         }
 
         override fun onEnterClicked() {
-            val answer = answer.value.toIntOrNull() ?: return
+            val answerX = answerX.value.toIntOrNull() ?: return
             val question = question.value
+            val answerY = if (question is GameOptions.Question.Equation.Double) {
+                answerY.value.toIntOrNull() ?: return
+            } else {
+                Int.MAX_VALUE
+            }
+
+            val isCorrect = when (question) {
+                is GameOptions.Question.Equation.Double -> answerX == question.x && answerY == question.y
+                is GameOptions.Question.Equation.Single -> answerX == question.x
+                is GameOptions.Question.Operation -> answerX == question.x
+            }
             val result = GameResult.Result(
-                isCorrect = answer == question.result,
+                isCorrect = isCorrect,
                 question = question,
-                answer = answer
+                answer = answerX
             )
             resultQuestions.add(result)
-            answerResult.tryEmit(result.isCorrect)
+            answerResult.tryEmit(isCorrect)
         }
 
         override fun onDoneClicked() {

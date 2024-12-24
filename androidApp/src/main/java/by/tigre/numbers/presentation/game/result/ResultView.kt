@@ -5,10 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
@@ -30,7 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.entity.GameOptions
+import by.tigre.numbers.entity.GameOptions.Question.Equation
+import by.tigre.numbers.entity.GameOptions.Question.Operation
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
@@ -82,7 +81,7 @@ class ResultView(
             LazyVerticalGrid(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally),
-                columns = GridCells.Adaptive(140.dp),
+                columns = GridCells.Adaptive(180.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -109,20 +108,22 @@ class ResultView(
                 containerColor = colors.colorContainer
             )
         ) {
-            Spacer(modifier = Modifier.size(8.dp))
             Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                text = "${result.question.title} = ${if (result.answer != null) result.question.result else "***"}",
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                text = when (result.question) {
+                    is Equation.Double -> TODO("Add Double")
+                    is Equation.Single -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "X")
+                    is Operation -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
+                },
                 color = colors.onColorContainer
             )
 
             Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.titleSmall,
-                text = stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: ""),
+                text = stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: "-"),
                 color = colors.onColorContainer
             )
-            Spacer(modifier = Modifier.size(8.dp))
         }
     }
 }
@@ -139,23 +140,23 @@ private fun Preview() {
                     listOf(
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
-                            question = GameOptions.Question.Multiplication(it, 2),
+                            question = Operation.Multiplication(it, 2),
                             answer = 19434
                         ),
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
-                            question = GameOptions.Question.Multiplication(it, 2),
-                            answer = null
-                        ),
-                        GameResult.Result(
-                            isCorrect = it % 2 == 0,
-                            question = GameOptions.Question.Additional(it, 2),
+                            question = Operation.Additional(it, 2),
                             answer = 109
                         ),
                         GameResult.Result(
                             isCorrect = it % 2 == 0,
-                            question = GameOptions.Question.Additional(it, 2),
+                            question = Equation.Single(4, "1 + 2 * %s = 3"),
                             answer = null
+                        ),
+                        GameResult.Result(
+                            isCorrect = it % 2 == 0,
+                            question = Equation.Single(4, "1 + 2 * %s = 3"),
+                            answer = 2
                         )
                     )
                 }.flatten(),

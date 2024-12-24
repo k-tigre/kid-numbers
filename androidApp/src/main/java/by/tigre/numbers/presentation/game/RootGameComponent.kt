@@ -10,6 +10,7 @@ import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.numbers.presentation.game.settings.AdditionalSettingsComponent
+import by.tigre.numbers.presentation.game.settings.EquationsSettingsComponent
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildStack
@@ -27,6 +28,7 @@ interface RootGameComponent {
     sealed interface PageChild {
         class SettingsMultiplication(val component: MultiplicationSettingsComponent) : PageChild
         class SettingsAdditional(val component: AdditionalSettingsComponent) : PageChild
+        class SettingsEquations(val component: EquationsSettingsComponent) : PageChild
         class Game(val component: GameComponent) : PageChild
         class Result(val component: ResultComponent) : PageChild
     }
@@ -44,6 +46,7 @@ interface RootGameComponent {
             GameType.Multiplication -> PagesConfig.SettingsMultiplication(isPositive = true)
             GameType.Division -> PagesConfig.SettingsMultiplication(isPositive = false)
             GameType.Subtraction -> PagesConfig.SettingsAdditional(isPositive = false)
+            GameType.Equations -> PagesConfig.SettingsEquations
         }
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
@@ -74,6 +77,13 @@ interface RootGameComponent {
                         )
                     )
 
+                    is PagesConfig.SettingsEquations -> PageChild.SettingsEquations(
+                        EquationsSettingsComponent.Impl(
+                            context = componentContext,
+                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onClose = onClose
+                        )
+                    )
 
                     is PagesConfig.Game -> PageChild.Game(
                         GameComponent.Impl(
@@ -107,12 +117,16 @@ interface RootGameComponent {
                             if (it.isPositive) GameType.Multiplication else GameType.Division
                         )
 
+                        is PagesConfig.SettingsEquations -> Event.Screen.GameSettings(GameType.Equations)
+
                         is PagesConfig.Game -> Event.Screen.Game(it.settings.difficult)
+
                         is PagesConfig.Result -> Event.Screen.GameResult(
                             correctCount = it.result.correctCount,
                             inCorrectCount = it.result.inCorrectCount,
                             totalCount = it.result.totalCount,
-                            difficult = it.result.difficult
+                            difficult = it.result.difficult,
+                            type = it.result.type
                         )
                     }
                 }
@@ -122,6 +136,9 @@ interface RootGameComponent {
         private sealed interface PagesConfig : Parcelable {
             @Parcelize
             data class SettingsAdditional(val isPositive: Boolean) : PagesConfig
+
+            @Parcelize
+            data object SettingsEquations : PagesConfig
 
             @Parcelize
             data class SettingsMultiplication(val isPositive: Boolean) : PagesConfig

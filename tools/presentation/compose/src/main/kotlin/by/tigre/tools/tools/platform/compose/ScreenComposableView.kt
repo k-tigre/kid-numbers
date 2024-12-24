@@ -1,12 +1,11 @@
 package by.tigre.tools.tools.platform.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 
 abstract class ScreenComposableView(private val config: ToolbarConfig) : ComposableView {
 
@@ -40,13 +38,7 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
                         }
                     )
 
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(MaterialTheme.colorScheme.outline)
-                            .align(Alignment.BottomCenter)
-                    )
+                    HorizontalDivider(Modifier.align(Alignment.BottomCenter))
                 }
             },
         ) { innerPadding ->

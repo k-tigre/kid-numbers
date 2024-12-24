@@ -15,11 +15,31 @@ sealed interface GameSettings : Parcelable {
 
     @Parcelize
     data class Additional(
-        val type: List<Range>,
+        val ranges: List<Range>,
         override val difficult: Difficult,
         val isPositive: Boolean
     ) : GameSettings {
         @Parcelize
         data class Range(val min: Int, val max: Int) : Parcelable
+    }
+
+    @Parcelize
+    data class Equations(
+        val ranges: Range,
+        override val difficult: Difficult,
+        val type: Type,
+        val dimension: Dimension
+    ) : GameSettings {
+        enum class Type {
+            Additional, Multiplication, Both
+        }
+
+        enum class Dimension {
+            Single, Double
+        }
+
+        @Parcelize
+        data class Range(val min: Int, val max: Int) : Parcelable
+
     }
 }

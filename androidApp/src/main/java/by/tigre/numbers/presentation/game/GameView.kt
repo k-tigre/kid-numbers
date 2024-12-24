@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.GameOptions
+import by.tigre.numbers.entity.GameOptions.Question.Operation
 import by.tigre.numbers.presentation.game.GameComponent.TimeState
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
@@ -110,7 +111,7 @@ class GameView(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 32.dp),
-                text = "${question.title} = ?",
+                text = question.title.format("?"),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
@@ -122,7 +123,7 @@ class GameView(
         val focusRequester = remember { FocusRequester() }
         val keyboard = LocalSoftwareKeyboardController.current
 
-        val answer = component.answer.collectAsState()
+        val answer = component.answerX.collectAsState()
         TextField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -204,10 +205,11 @@ class GameView(
 private fun Preview() {
     val component = object : GameComponent {
         override val isEnterEnabled: StateFlow<Boolean> = MutableStateFlow(true)
-        override val question: StateFlow<GameOptions.Question> = MutableStateFlow(GameOptions.Question.Multiplication(1, 3))
+        override val question: StateFlow<GameOptions.Question> = MutableStateFlow(Operation.Multiplication(1, 3))
         override val questionsState: StateFlow<GameComponent.QuestionsState> =
             MutableStateFlow(GameComponent.QuestionsState(3, 1, 12))
-        override val answer: StateFlow<String> = MutableStateFlow("12")
+        override val answerX: StateFlow<String> = MutableStateFlow("12")
+        override val answerY: StateFlow<String> = MutableStateFlow("12")
         override val answerResult: StateFlow<Boolean?> = MutableStateFlow(false)
         override val timeState: StateFlow<TimeState> = MutableStateFlow(TimeState("19:19", true))
 

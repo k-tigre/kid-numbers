@@ -12,55 +12,97 @@ data class GameOptions(
 ) {
 
     sealed interface Question : Parcelable {
+
         val title: String
-        val result: Int
+        val result: String
 
-        @Parcelize
-        data class Multiplication(
-            val first: Int,
-            val second: Int,
-        ) : Question {
-            @IgnoredOnParcel
-            override val title: String = "$first * $second"
+        sealed interface Operation : Question {
+            val x: Int
 
-            @IgnoredOnParcel
-            override val result: Int = first * second
+            @Parcelize
+            data class Multiplication(
+                val first: Int,
+                val second: Int,
+            ) : Operation {
+                @IgnoredOnParcel
+                override val title: String = "$first * $second = %s"
+
+                @IgnoredOnParcel
+                override val x: Int = first * second
+
+                @IgnoredOnParcel
+                override val result: String = x.toString()
+            }
+
+            @Parcelize
+            data class Additional(
+                val first: Int,
+                val second: Int,
+            ) : Operation {
+                @IgnoredOnParcel
+                override val title: String = "$first + $second = %s"
+
+                @IgnoredOnParcel
+                override val x: Int = first + second
+
+                @IgnoredOnParcel
+                override val result: String = x.toString()
+            }
+
+            @Parcelize
+            data class Division(
+                val second: Int,
+                override val x: Int,
+            ) : Operation {
+                @IgnoredOnParcel
+                val first: Int = x * second // (first / second = result)
+
+                @IgnoredOnParcel
+                override val title: String = "$first ÷ $second = %s"
+
+                @IgnoredOnParcel
+                override val result: String = x.toString()
+            }
+
+            @Parcelize
+            data class Subtraction(
+                val second: Int,
+                override val x: Int,
+            ) : Operation {
+                @IgnoredOnParcel
+                val first: Int = x + second // (first - second = result)
+
+                @IgnoredOnParcel
+                override val title: String = "$first - $second = ?"
+
+                @IgnoredOnParcel
+                override val result: String = x.toString()
+            }
         }
 
-        @Parcelize
-        data class Additional(
-            val first: Int,
-            val second: Int,
-        ) : Question {
-            @IgnoredOnParcel
-            override val title: String = "$first + $second"
 
-            @IgnoredOnParcel
-            override val result: Int = first + second
-        }
+        sealed interface Equation : Question {
+            // A + B * X = C, B * X = C, A + X = C
 
-        @Parcelize
-        data class Division(
-            val second: Int,
-            override val result: Int,
-        ) : Question {
-            @IgnoredOnParcel
-            val first: Int = result * second // (first / second = result)
+            @Parcelize
+            data class Single(
+                val x: Int,
+                override val title: String
+            ) : Equation {
+                @IgnoredOnParcel
+                override val result: String = "X = $x"
+            }
 
-            @IgnoredOnParcel
-            override val title: String = "$first ÷ $second"
-        }
+            @Parcelize
+            data class Double(
+                val x: Int,
+                val y: Int,
+                override val title: String
+            ) : Equation {
+                @IgnoredOnParcel
+                override val result: String = "X = $x, Y = $y"
+            }
 
-        @Parcelize
-        data class Subtraction(
-            val second: Int,
-            override val result: Int,
-        ) : Question {
-            @IgnoredOnParcel
-            val first: Int = result + second // (first - second = result)
-
-            @IgnoredOnParcel
-            override val title: String = "$first - $second"
         }
     }
 }

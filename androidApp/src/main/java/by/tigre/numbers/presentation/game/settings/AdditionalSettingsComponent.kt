@@ -31,12 +31,10 @@ interface AdditionalSettingsComponent {
         private val numbers: MutableMap<Additional.Range, Boolean> = mutableMapOf(
             Additional.Range(0, 10) to false,
             Additional.Range(0, 100) to false,
-            Additional.Range(0, 500) to false,
             Additional.Range(0, 1000) to false,
-            Additional.Range(100, 200) to false,
-            Additional.Range(100, 500) to false,
-            Additional.Range(100, 1000) to false,
-            Additional.Range(100, 2000) to false,
+            Additional.Range(-10, 10) to false,
+            Additional.Range(-100, 100) to false,
+            Additional.Range(-1000, 1000) to false,
         )
 
         override val numbersForSelection = MutableStateFlow(getState())
@@ -57,7 +55,7 @@ interface AdditionalSettingsComponent {
         override fun onStartGameClicked() {
             onStartGame(
                 Additional(
-                    type = numbers.mapNotNull { if (it.value) it.key else null },
+                    ranges = numbers.mapNotNull { if (it.value) it.key else null },
                     difficult = difficultSelection.value,
                     isPositive = isPositive
                 )

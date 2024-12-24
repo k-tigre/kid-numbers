@@ -29,6 +29,8 @@
     <string name="screen_game_type_multiplication">умножение</string>
     <string name="screen_game_type_subtraction">вычитание</string>
     <string name="screen_game_type_division">деление</string>
+    <string name="screen_game_type_equations">уравнения</string>
+    <string name="screen_game_type_addition_and_multiplication">сложение и умножение</string>
 
     <string name="screen_game_settings_title">Настройки сложности</string>
     <string name="screen_game_settings_select_difficult">Выбери сложность</string>
@@ -37,6 +39,8 @@
     <string name="screen_game_settings_select_numbers_for_subtraction">Выбери диапазон чисел, с которыми хочешь проверить вычитание</string>
     <string name="screen_game_settings_select_numbers_for_multiplication">Выбери цифры, с которыми хочешь проверить умножение</string>
     <string name="screen_game_settings_select_numbers_for_division">Выбери цифры, с которыми хочешь проверить деление</string>
+    <string name="screen_game_settings_select_numbers_for_equations">Выбери диапазон чисел, с которыми хочешь потренировать решение уравнений</string>
+    <string name="screen_game_settings_select_operation_type">Тип математических операций</string>
     <string name="screen_game_settings_number_range">Числа в диапазоне %s</string>
 
     <string name="screen_game_result_duration">Время выполнения: %s</string>

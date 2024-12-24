@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.DrawDifficult
+import by.tigre.numbers.presentation.utils.SelectableButton
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class AdditionalSettingsView(
@@ -62,19 +62,13 @@ class AdditionalSettingsView(
             ) {
                 numbers.value.forEach { (number, isSelected) ->
                     item(key = number) {
-                        val range = "${number.min} - ${number.max}"
-                        if (isSelected) {
-                            Button(
-                                onClick = { component.onNumberTypeSelectionChanged(range = number, isSelected = false) }
-                            ) {
-                                Text(text = range)
+                        SelectableButton(
+                            isSelected = isSelected,
+                            onClick = {
+                                component.onNumberTypeSelectionChanged(range = number, isSelected = isSelected.not())
                             }
-                        } else {
-                            ElevatedButton(
-                                onClick = { component.onNumberTypeSelectionChanged(range = number, isSelected = true) }
-                            ) {
-                                Text(text = range)
-                            }
+                        ) {
+                            Text(text = "${number.min} - ${number.max}")
                         }
                     }
                 }

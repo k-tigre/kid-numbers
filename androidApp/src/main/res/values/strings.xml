@@ -29,6 +29,8 @@
     <string name="screen_game_type_multiplication">multiplication</string>
     <string name="screen_game_type_subtraction">subtraction</string>
     <string name="screen_game_type_division">division</string>
+    <string name="screen_game_type_equations">equations</string>
+    <string name="screen_game_type_addition_and_multiplication">addition and multiplication</string>
 
     <string name="screen_game_settings_title">Difficulty settings</string>
     <string name="screen_game_settings_select_difficult">Select difficulty</string>
@@ -37,6 +39,8 @@
     <string name="screen_game_settings_select_numbers_for_subtraction">Select the range of numbers you want to test subtraction with</string>
     <string name="screen_game_settings_select_numbers_for_multiplication">Select the numbers you want to test multiplication with</string>
     <string name="screen_game_settings_select_numbers_for_division">Select the numbers you want to test division with</string>
+    <string name="screen_game_settings_select_numbers_for_equations">Select the range of numbers you want to practice solving equations with</string>
+    <string name="screen_game_settings_select_operation_type">Type of mathematical operations</string>
     <string name="screen_game_settings_number_range">Numbers in range %s</string>
 
     <string name="screen_game_result_duration">Execution time: %s</string>

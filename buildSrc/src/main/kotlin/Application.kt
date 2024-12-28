@@ -1,6 +1,6 @@
 object Application {
     const val id: String = "by.tigre.numbers"
-    val version: Version = Version(0, 6, 0)
+    val version: Version = Version(0, 7, 0)
     const val name: String = "Numbers" // TODO move to xml
 
     const val SDK_COMPILE = 34

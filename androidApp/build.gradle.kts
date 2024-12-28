@@ -23,7 +23,7 @@ android {
         versionCode = Application.version.code
         resourceConfigurations.addAll(listOf("en", "ru"))
 
-        buildConfigField("String", "MiXPANEL_TOKEN", "\"${System.getenv("MiXPANEL_TOKEN") ?: ""}\"")
+        buildConfigField("String", "MIXPANEL_TOKEN", "\"${System.getenv("MIXPANEL_TOKEN") ?: ""}\"")
     }
 
     signingConfigs {

@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'master'
+      - 'test-ci'
 
 jobs:
   build_apk_aab:
@@ -17,10 +18,11 @@ jobs:
       - name: Build and verify
         run: |
           ./gradlew testQaUnitTest assembleQa
+        env:
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
       - name: Upload to Firebase
         run: |
           ./gradlew appDistributionUploadQa
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
           NOTES: ${{ github.event.commits[0].message }}

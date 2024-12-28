@@ -41,6 +41,7 @@ import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.presentation.game.GameComponent.TimeState
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
+import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -149,7 +150,7 @@ class GameView(
         AnimatedContent(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(140.dp)
                 .padding(horizontal = 32.dp, vertical = 8.dp),
             targetState = resultState.value,
         ) { result ->
@@ -174,7 +175,11 @@ class GameView(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally),
                         text = stringResource(if (result) R.string.screen_game_result_correct else R.string.screen_game_result_wrong),
-                        color = if (result) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        color = if (result) {
+                            LocalGameColorsPalette.current.gameSuccess.color
+                        } else {
+                            LocalGameColorsPalette.current.gameFailed.color
+                        },
                         style = MaterialTheme.typography.titleLarge,
                     )
 
@@ -203,7 +208,7 @@ private fun Preview() {
         override val questionsState: StateFlow<GameComponent.QuestionsState> =
             MutableStateFlow(GameComponent.QuestionsState(3, 1, 12))
         override val answer: StateFlow<String> = MutableStateFlow("12")
-        override val answerResult: StateFlow<Boolean?> = MutableStateFlow(true)
+        override val answerResult: StateFlow<Boolean?> = MutableStateFlow(false)
         override val timeState: StateFlow<TimeState> = MutableStateFlow(TimeState("19:19", true))
 
         override fun onAnswerChanged(answer: String) = Unit

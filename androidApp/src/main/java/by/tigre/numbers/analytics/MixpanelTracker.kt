@@ -8,7 +8,7 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.coroutines.launch
 
 class MixpanelTracker(context: Context, scope: CoreScope) : Tracker {
-    private val mixpanel = MixpanelAPI.getInstance(context, BuildConfig.MiXPANEL_TOKEN, true)
+    private val mixpanel = MixpanelAPI.getInstance(context, BuildConfig.MIXPANEL_TOKEN, true)
 
     init {
         scope.launch {

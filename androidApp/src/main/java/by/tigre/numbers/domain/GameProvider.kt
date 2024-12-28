@@ -37,12 +37,12 @@ interface GameProvider {
                         }
                     }
                     when (settings.difficult) {
-                        Difficult.Easy -> questions
-                        Difficult.Medium -> questions + questions
-                        Difficult.Hard -> questions + questions + questions
+                        Difficult.Easy -> questions.shuffled(Random)
+                        Difficult.Medium -> (questions + questions).shuffled(Random).take(15)
+                        Difficult.Hard -> (questions + questions).shuffled(Random)
                     }
                 }
-                .shuffled()
+                .shuffled(Random)
 
             val duration = settings.selectedNumbers.size * settings.difficult.time
 
@@ -57,8 +57,8 @@ interface GameProvider {
         private fun generateQuestions(settings: GameSettings.Additional): GameOptions {
             val count: Int = when (settings.difficult) {
                 Difficult.Easy -> 10
-                Difficult.Medium -> 20
-                Difficult.Hard -> 30
+                Difficult.Medium -> 15
+                Difficult.Hard -> 20
             }
 
             val allQuestions = settings.type
@@ -76,7 +76,7 @@ interface GameProvider {
                     }
                 }
                 .flatten()
-                .shuffled()
+                .shuffled(Random)
 
             val duration = settings.type.size * settings.difficult.time * 2
 

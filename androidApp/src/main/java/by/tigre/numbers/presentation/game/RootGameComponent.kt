@@ -14,6 +14,7 @@ import by.tigre.numbers.presentation.game.settings.EquationsSettingsComponent
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildStack
+import by.tigre.tools.tools.coroutines.CoreDispatchers
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.replaceCurrent
@@ -36,10 +37,12 @@ interface RootGameComponent {
     class Impl(
         context: BaseComponentContext,
         gameType: GameType,
-        gameDependencies: GameDependencies,
+        dependencies: GameDependencies,
         analytics: ScreenAnalytics,
         private val onClose: () -> Unit
     ) : RootGameComponent, BaseComponentContext by context {
+
+        private val dispatchers: CoreDispatchers = dependencies.dispatchers
 
         private val initialSettings = when (gameType) {
             GameType.Additional -> PagesConfig.SettingsAdditional(isPositive = true)
@@ -51,11 +54,15 @@ interface RootGameComponent {
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
 
+        private fun startGame(settings: GameSettings) {
+            launch(dispatchers.main) { pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) }
+        }
+
         override val pages: Value<ChildStack<*, PageChild>> =
             appChildStack(
                 source = pagesNavigation,
                 initialStack = { listOf(initialSettings) },
-                key = "pages",
+                key = "game_pages",
                 handleBackButton = true
             ) { config, componentContext ->
                 when (config) {
@@ -63,7 +70,7 @@ interface RootGameComponent {
                         MultiplicationSettingsComponent.Impl(
                             context = componentContext,
                             isPositive = config.isPositive,
-                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onStartGame = ::startGame,
                             onClose = onClose
                         )
                     )
@@ -72,7 +79,7 @@ interface RootGameComponent {
                         AdditionalSettingsComponent.Impl(
                             context = componentContext,
                             isPositive = config.isPositive,
-                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onStartGame = ::startGame,
                             onClose = onClose
                         )
                     )
@@ -80,7 +87,7 @@ interface RootGameComponent {
                     is PagesConfig.SettingsEquations -> PageChild.SettingsEquations(
                         EquationsSettingsComponent.Impl(
                             context = componentContext,
-                            onStartGame = { settings -> pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) },
+                            onStartGame = ::startGame,
                             onClose = onClose
                         )
                     )
@@ -89,8 +96,8 @@ interface RootGameComponent {
                         GameComponent.Impl(
                             context = componentContext,
                             settings = config.settings,
-                            provider = gameDependencies.getGameProvider(),
-                            onFinish = { result -> pagesNavigation.replaceCurrent(PagesConfig.Result(result)) }
+                            provider = dependencies.getGameProvider(),
+                            onFinish = { result -> launch(dispatchers.main) { pagesNavigation.replaceCurrent(PagesConfig.Result(result)) } }
                         )
                     )
 
@@ -98,7 +105,7 @@ interface RootGameComponent {
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
-                            resultStore = gameDependencies.resultStore,
+                            resultStore = dependencies.resultStore,
                             onFinish = onClose
                         )
                     )

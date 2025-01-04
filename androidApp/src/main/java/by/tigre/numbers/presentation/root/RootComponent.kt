@@ -61,7 +61,7 @@ interface RootComponent {
                         RootGameComponent.Impl(
                             context = componentContext,
                             gameType = config.type,
-                            gameDependencies = gameDependencies,
+                            dependencies = gameDependencies,
                             analytics = analytics,
                             onClose = { pagesNavigation.pop() })
                     )

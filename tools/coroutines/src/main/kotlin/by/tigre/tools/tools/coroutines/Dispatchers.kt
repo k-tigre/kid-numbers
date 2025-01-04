@@ -8,7 +8,7 @@ interface CoreDispatchers {
     val io: CoroutineDispatcher
 
     class Impl : CoreDispatchers {
-        override val main: CoroutineDispatcher = Dispatchers.Main
+        override val main: CoroutineDispatcher = Dispatchers.Main.immediate
         override val io: CoroutineDispatcher = Dispatchers.IO
     }
 }

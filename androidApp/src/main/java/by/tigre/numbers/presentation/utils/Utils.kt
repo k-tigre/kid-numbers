@@ -35,22 +35,14 @@ fun GameType.toLabel(): String = stringResource(
     }
 )
 
-//@Composable
-//fun Equations.Type.toLabel(): String = stringResource(
-//    when (this) {
-//        Equations.Type.Additional -> R.string.screen_game_type_addition
-//        Equations.Type.Multiplication -> R.string.screen_game_type_multiplication
-//        Equations.Type.Both -> R.string.screen_game_type_addition_and_multiplication
-//    }
-//)
-
 @Composable
-fun Equations.Type.toLabel(): String =
+fun Equations.Type.toLabel(): String = stringResource(
     when (this) {
-        Equations.Type.Additional -> "A + X = B"
-        Equations.Type.Multiplication -> "A * X = B"
-        Equations.Type.Both -> "A + B * X = C"
+        Equations.Type.Additional -> R.string.screen_game_type_addition
+        Equations.Type.Multiplication -> R.string.screen_game_type_multiplication
+        Equations.Type.Both -> R.string.screen_game_type_addition_and_multiplication
     }
+)
 
 @Composable
 fun SelectableButton(

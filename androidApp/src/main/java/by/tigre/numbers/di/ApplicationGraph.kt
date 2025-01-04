@@ -7,10 +7,12 @@ import by.tigre.tools.tools.coroutines.CoroutineModule
 
 class ApplicationGraph(
     storeModule: StoreModule,
-    analyticsModule: AnalyticsModule
+    analyticsModule: AnalyticsModule,
+    gameModule: GameModule
 ) : GameDependencies,
     StoreModule by storeModule,
-    AnalyticsModule by analyticsModule {
+    AnalyticsModule by analyticsModule,
+    GameModule by gameModule {
 
     companion object {
         fun create(
@@ -20,7 +22,8 @@ class ApplicationGraph(
             val coroutineModule = CoroutineModule.Impl()
             val analyticsModule = AnalyticsModule.Impl(tracker(coroutineModule.scope), coroutineModule)
             val storeModule = StoreModule.Impl(context, coroutineModule = coroutineModule)
-            return ApplicationGraph(storeModule, analyticsModule)
+            val gameModule = GameModule.Impl(analyticsModule)
+            return ApplicationGraph(storeModule, analyticsModule, gameModule)
         }
     }
 }

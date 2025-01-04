@@ -5,6 +5,6 @@ import by.tigre.numbers.domain.GameProvider
 
 
 interface GameDependencies {
-    fun getGameProvider(): GameProvider = GameProvider.Impl()
+    fun getGameProvider(): GameProvider
     val resultStore: ResultStore
 }

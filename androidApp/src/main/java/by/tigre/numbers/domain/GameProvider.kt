@@ -15,7 +15,10 @@ import kotlin.random.Random
 interface GameProvider {
     fun provide(settings: GameSettings): GameOptions
 
-    class Impl(private val analytics: EventAnalytics) : GameProvider {
+    class Impl(
+        private val analytics: EventAnalytics,
+        private val durationProvider: GameDurationProvider
+    ) : GameProvider {
         override fun provide(settings: GameSettings): GameOptions {
 
             return when (settings) {
@@ -44,18 +47,17 @@ interface GameProvider {
                         }
                     }
                     when (settings.difficult) {
-                        Difficult.Easy -> questions.shuffled(Random)
-                        Difficult.Medium -> (questions + questions).shuffled(Random).take(15)
-                        Difficult.Hard -> (questions + questions).shuffled(Random)
+                        Difficult.Easy -> questions.shuffled()
+                        Difficult.Medium -> (questions + questions).shuffled().take(15)
+                        Difficult.Hard -> (questions + questions).shuffled()
                     }
                 }
-                .shuffled(Random)
+                .shuffled()
 
-            val duration = settings.selectedNumbers.size * settings.difficult.time
 
             return GameOptions(
                 questions = allQuestions,
-                duration = duration,
+                duration = durationProvider.provide(settings),
                 difficult = settings.difficult,
                 type = if (settings.isPositive) GameType.Multiplication else GameType.Division
             )
@@ -85,11 +87,9 @@ interface GameProvider {
                 .flatten()
                 .shuffled(Random)
 
-            val duration = settings.ranges.size * settings.difficult.time * 2
-
             return GameOptions(
                 questions = allQuestions,
-                duration = duration,
+                duration = durationProvider.provide(settings),
                 difficult = settings.difficult,
                 type = if (settings.isPositive) GameType.Additional else GameType.Subtraction
             )
@@ -116,11 +116,9 @@ interface GameProvider {
                 )
             }
 
-            val duration = settings.difficult.time * 2
-
             return GameOptions(
                 questions = questions,
-                duration = duration,
+                duration = durationProvider.provide(settings),
                 difficult = settings.difficult,
                 type = GameType.Equations
             )

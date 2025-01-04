@@ -6,11 +6,15 @@
     <string name="screen_history_title">History</string>
     <string name="screen_history_empty">There is nothing here yet, go through the training and the result will be displayed</string>
     <string name="screen_history_item_date">Date: %s</string>
+    <string name="screen_history_item_time">Time of day: %s</string>
     <string name="screen_history_item_duration">Duration: %s</string>
     <string name="screen_history_item_total_questions">Total questions: %d</string>
     <string name="screen_history_item_correct_answers">Correct answers: %d</string>
     <string name="screen_history_item_difficulty">Difficulty: %s</string>
     <string name="screen_history_item_game_type">Practice: %s</string>
+    <string name="screen_history_filter_difficult">Difficult</string>
+    <string name="screen_history_filter_game_type">Type of Practice</string>
+    <string name="screen_history_filter_game_only_success">Show only completely correct ones</string>
 
     <string name="screen_game_time_left">Time left %s</string>
     <string name="screen_game_current_question">Question %1$d from %2$d</string>

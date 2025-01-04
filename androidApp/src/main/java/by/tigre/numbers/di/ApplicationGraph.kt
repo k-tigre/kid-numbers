@@ -2,6 +2,7 @@ package by.tigre.numbers.di
 
 import android.content.Context
 import by.tigre.numbers.analytics.Tracker
+import by.tigre.numbers.data.platform.DateFormatter
 import by.tigre.tools.tools.coroutines.CoreScope
 import by.tigre.tools.tools.coroutines.CoroutineModule
 
@@ -15,6 +16,8 @@ class ApplicationGraph(
     AnalyticsModule by analyticsModule,
     GameModule by gameModule,
     CoroutineModule by coroutineModule {
+
+    override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl() }
 
     companion object {
         fun create(

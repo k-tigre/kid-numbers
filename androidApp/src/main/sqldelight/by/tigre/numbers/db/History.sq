@@ -18,3 +18,9 @@ VALUES(?, ?, ?, ?, ?, ?);
 
 selectAll:
 SELECT * FROM History ORDER BY id DESC LIMIT :limit;
+
+selectByTypeAndDifficult:
+SELECT * FROM History WHERE difficult IN :difficult AND gameType IN :gameTypes ORDER BY id DESC LIMIT :limit;
+
+selectByTypeAndDifficultOnlyCorrect:
+SELECT * FROM History WHERE difficult IN :difficult AND gameType IN :gameTypes AND correctCount = totalCount ORDER BY id DESC LIMIT :limit;

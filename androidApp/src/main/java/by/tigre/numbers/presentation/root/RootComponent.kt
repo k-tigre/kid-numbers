@@ -74,6 +74,7 @@ interface RootComponent {
                         HistoryComponent.Impl(
                             context = componentContext,
                             resultStore = gameDependencies.resultStore,
+                            dateFormatter = gameDependencies.dateFormatter,
                             onClose = { pagesNavigation.pop() })
                     )
                 }

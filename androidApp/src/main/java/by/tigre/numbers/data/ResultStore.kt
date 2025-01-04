@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 interface ResultStore {
     suspend fun save(result: GameResult)
 
-    suspend fun load(): List<HistoryGameResult>
+    suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult>
 
     class Impl(
         private val database: DatabaseNumbers,
@@ -30,13 +30,11 @@ interface ResultStore {
             }
         }
 
-        override suspend fun load(): List<HistoryGameResult> {
-
-            return database.historyQueries.selectAll(
-                limit = 1000000,
-                mapper = { _, date: Long, duration: Long, difficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType? ->
+        override suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult> {
+            val mapper =
+                { _: Long, date: Long, duration: Long, itemDifficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType? ->
                     HistoryGameResult(
-                        difficult = difficult,
+                        difficult = itemDifficult,
                         correctCount = correctCount,
                         date = date,
                         totalCount = totalCount,
@@ -44,7 +42,11 @@ interface ResultStore {
                         gameType = gameType
                     )
                 }
-            ).executeAsList()
+            return if (onlySuccess) {
+                database.historyQueries.selectByTypeAndDifficultOnlyCorrect(difficult, types, limit = 10_000, mapper)
+            } else {
+                database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, mapper)
+            }.executeAsList()
         }
     }
 }

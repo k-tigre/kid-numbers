@@ -23,9 +23,9 @@ import by.tigre.tools.tools.platform.compose.ScreenComposableView
 class MultiplicationSettingsView(
     private val component: MultiplicationSettingsComponent,
 ) : ScreenComposableView(
-    ToolbarConfig.Default(
+    ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
-        onBackClicked = component::onBackClicked
+        navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onBackClicked)
     )
 ) {
 

@@ -46,9 +46,9 @@ import kotlinx.coroutines.flow.emptyFlow
 class EquationsSettingsView(
     private val component: EquationsSettingsComponent,
 ) : ScreenComposableView(
-    ToolbarConfig.Default(
+    ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
-        onBackClicked = component::onBackClicked
+        navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onBackClicked)
     )
 ) {
 

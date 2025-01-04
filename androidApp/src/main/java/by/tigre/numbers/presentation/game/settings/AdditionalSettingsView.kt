@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.debounce
 class AdditionalSettingsView(
     private val component: AdditionalSettingsComponent,
 ) : ScreenComposableView(
-    ToolbarConfig.Default(
+    ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
-        onBackClicked = component::onBackClicked
+        navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onBackClicked)
     )
 ) {
 

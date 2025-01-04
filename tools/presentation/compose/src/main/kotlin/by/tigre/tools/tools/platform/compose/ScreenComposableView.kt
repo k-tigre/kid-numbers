@@ -2,21 +2,22 @@ package by.tigre.tools.tools.platform.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 
 abstract class ScreenComposableView(private val config: ToolbarConfig) : ComposableView {
@@ -29,12 +30,23 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
             topBar = {
                 Box(Modifier.fillMaxWidth()) {
                     TopAppBar(
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        ),
                         title = {
                             DrawToolbar()
+                        },
+                        navigationIcon = {
+                            config.navigationIcon?.let { icon ->
+                                IconButton(
+                                    onClick = icon.action
+                                ) {
+                                    Icon(
+                                        imageVector = icon.vector,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        },
+                        actions = {
+                            DrawActions()
                         }
                     )
 
@@ -48,23 +60,34 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
 
     @Composable
     open fun DrawToolbar() {
-        when (config) {
-            is ToolbarConfig.Default -> {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier,
+            text = config.title(),
+            textAlign = TextAlign.Center
+        )
+    }
+
+    @Composable
+    open fun RowScope.DrawActions() {
+        config.actions().forEach { action ->
+            when (action) {
+                is ToolbarConfig.Action.Icon -> {
                     IconButton(
-                        onClick = config.onBackClicked
+                        onClick = action.action
                     ) {
                         Icon(
-                            painter = painterResource(by.tigre.numberscompose.R.drawable.baseline_arrow_back_24),
+                            imageVector = action.vector,
                             contentDescription = null
                         )
                     }
+                }
 
-                    Text(
-                        modifier = Modifier,
-                        text = config.title(),
-                        textAlign = TextAlign.Center
-                    )
+                is ToolbarConfig.Action.Text -> {
+                    TextButton(
+                        onClick = action.action
+                    ) {
+                        Text(action.title)
+                    }
                 }
             }
         }
@@ -73,7 +96,16 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
     @Composable
     abstract fun DrawContent(innerPadding: PaddingValues)
 
-    sealed interface ToolbarConfig {
-        class Default(val title: @Composable () -> String, val onBackClicked: () -> Unit) : ToolbarConfig
+    class ToolbarConfig(
+        val title: @Composable () -> String,
+        val navigationIcon: NavigationIconAction? = null,
+        val actions: @Composable () -> List<Action> = { emptyList() }
+    ) {
+        class NavigationIconAction(val vector: ImageVector = Icons.AutoMirrored.Filled.ArrowBack, val action: () -> Unit)
+        sealed interface Action {
+            class Text(val title: String, val action: () -> Unit) : Action
+            class Icon(val vector: ImageVector, val action: () -> Unit) : Action
+        }
+
     }
 }

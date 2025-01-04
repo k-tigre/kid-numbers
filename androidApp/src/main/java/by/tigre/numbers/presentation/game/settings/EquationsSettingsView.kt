@@ -23,8 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +45,8 @@ import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emptyFlow
 
 class EquationsSettingsView(
     private val component: EquationsSettingsComponent,
@@ -55,11 +62,23 @@ class EquationsSettingsView(
         Column(Modifier.padding(innerPadding)) {
             val gridState: LazyGridState = rememberLazyGridState()
             val settings = component.settings.collectAsState().value
+            var selectedIndex by remember {
+                mutableIntStateOf(-1)
+            }
 
             LaunchedEffect("scroll") {
                 component.onScrollPosition.collect { position ->
                     gridState.animateScrollToItem(position)
+                    selectedIndex = position
                 }
+            }
+
+            LaunchedEffect("unselect") {
+                component.onScrollPosition
+                    .debounce(1000)
+                    .collect {
+                        selectedIndex = -1
+                    }
             }
 
             LazyVerticalGrid(
@@ -78,7 +97,8 @@ class EquationsSettingsView(
                 item(key = "difficult_title", span = { GridItemSpan(6) }) {
                     Text(
                         modifier = Modifier,
-                        text = stringResource(R.string.screen_game_settings_select_difficult)
+                        text = stringResource(R.string.screen_game_settings_select_difficult),
+                        color = getTitleColor(selectedIndex, settings.difficult.index)
                     )
                 }
 
@@ -113,7 +133,8 @@ class EquationsSettingsView(
                     Text(
                         modifier = Modifier
                             .padding(top = 16.dp),
-                        text = stringResource(R.string.screen_game_settings_select_numbers_for_equations)
+                        text = stringResource(R.string.screen_game_settings_select_numbers_for_equations),
+                        color = getTitleColor(selectedIndex, settings.range.index)
                     )
                 }
 
@@ -133,7 +154,8 @@ class EquationsSettingsView(
                     Text(
                         modifier = Modifier
                             .padding(top = 16.dp),
-                        text = stringResource(R.string.screen_game_settings_select_operation_type)
+                        text = stringResource(R.string.screen_game_settings_select_operation_type),
+                        color = getTitleColor(selectedIndex, settings.type.index)
                     )
                 }
 
@@ -181,41 +203,26 @@ class EquationsSettingsView(
             }
         }
     }
+
+    @Composable
+    private fun getTitleColor(selectedIndex: Int, target: Int): Color {
+        return if (selectedIndex == target) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+    }
 }
 
 @Composable
 @Preview
 private fun Preview() {
     val component = object : EquationsSettingsComponent {
-        override val onScrollPosition: Flow<Int>
-            get() = TODO("Not yet implemented")
+        override val onScrollPosition: Flow<Int> = emptyFlow()
         override val settings: StateFlow<Settings> = MutableStateFlow(Settings.DEFAULTS)
 
-        override fun onDifficultSelected(value: Difficult) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onTypeSelected(value: Equations.Type) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onRangeSelected(value: Equations.Range) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onDimensionSelected(value: Equations.Dimension) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onStartGameClicked() {
-            TODO("Not yet implemented")
-        }
-
-        override fun onBackClicked() {
-            TODO("Not yet implemented")
-        }
-
-
+        override fun onDifficultSelected(value: Difficult) = Unit
+        override fun onTypeSelected(value: Equations.Type) = Unit
+        override fun onRangeSelected(value: Equations.Range) = Unit
+        override fun onDimensionSelected(value: Equations.Dimension) = Unit
+        override fun onStartGameClicked() = Unit
+        override fun onBackClicked() = Unit
     }
     AppTheme {
         Surface(

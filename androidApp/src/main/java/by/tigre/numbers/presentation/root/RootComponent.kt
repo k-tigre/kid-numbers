@@ -2,6 +2,7 @@ package by.tigre.numbers.presentation.root
 
 import android.os.Parcelable
 import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.di.GameDependencies
 import by.tigre.numbers.entity.GameType
@@ -32,7 +33,8 @@ interface RootComponent {
     class Impl(
         context: BaseComponentContext,
         gameDependencies: GameDependencies,
-        analytics: ScreenAnalytics,
+        screenAnalytics: ScreenAnalytics,
+        analytics: EventAnalytics
     ) : RootComponent, BaseComponentContext by context {
 
         private val pagesNavigation = StackNavigation<PagesConfig>()
@@ -63,7 +65,9 @@ interface RootComponent {
                             gameType = config.type,
                             dependencies = gameDependencies,
                             analytics = analytics,
-                            onClose = { pagesNavigation.pop() })
+                            onClose = { pagesNavigation.pop() },
+                            screenAnalytics = screenAnalytics
+                        )
                     )
 
                     PagesConfig.History -> PageChild.History(
@@ -77,11 +81,11 @@ interface RootComponent {
 
         init {
             launch {
-                pages.trackScreens<PagesConfig>(analytics) {
+                pages.trackScreens<PagesConfig>(screenAnalytics) {
                     when (it) {
                         PagesConfig.Menu -> Event.Screen.MainMenu
                         PagesConfig.History -> Event.Screen.History
-                        is PagesConfig.Game -> Event.Screen.RootGame(it.type)
+                        is PagesConfig.Game -> Event.Screen.RootGame
                     }
                 }
             }

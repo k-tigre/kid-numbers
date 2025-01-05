@@ -130,7 +130,7 @@ interface RootGameComponent {
 
                         is PagesConfig.Result -> Event.Screen.GameResult(
                             correctCount = it.result.correctCount,
-                            inCorrectCount = it.result.inCorrectCount,
+                            incorrectCount = it.result.inCorrectCount,
                             totalCount = it.result.totalCount,
                             difficult = it.result.difficult,
                             type = it.result.type

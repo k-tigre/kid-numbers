@@ -70,21 +70,18 @@ interface GameProvider {
                 Difficult.Hard -> 20
             }
 
-            val allQuestions = settings.ranges
-                .map { range ->
-                    (1..count).map {
-                        val result = Random.nextInt(range.min + range.min, range.max + 1)
-                        val first = Random.nextInt(range.min, result + 1 - range.min)
-                        val second = result - first
+            val range = settings.range
+            val allQuestions = (1..count).map {
+                val result = Random.nextInt(range.min + range.min, range.max + 1)
+                val first = Random.nextInt(range.min, result + 1 - range.min)
+                val second = result - first
 
-                        if (settings.isPositive) {
-                            Operation.Additional(first = first, second = second)
-                        } else {
-                            Operation.Subtraction(x = first, second = second)
-                        }
-                    }
+                if (settings.isPositive) {
+                    Operation.Additional(first = first, second = second)
+                } else {
+                    Operation.Subtraction(x = first, second = second)
                 }
-                .flatten()
+            }
                 .shuffled(Random)
 
             return GameOptions(
@@ -106,14 +103,14 @@ interface GameProvider {
                 Equations.Dimension.Single -> {
 
                     when (settings.type) {
-                        Equations.Type.Additional -> generateSingleEquationsQuestionsForAdditional(settings.ranges, count)
-                        Equations.Type.Multiplication -> generateSingleEquationsQuestionsForMultiplication(settings.ranges, count)
-                        Equations.Type.Both -> generateSingleEquationsQuestionsBoth(settings.ranges, count)
+                        Equations.Type.Additional -> generateSingleEquationsQuestionsForAdditional(settings.range, count)
+                        Equations.Type.Multiplication -> generateSingleEquationsQuestionsForMultiplication(settings.range, count)
+                        Equations.Type.Both -> generateSingleEquationsQuestionsBoth(settings.range, count)
                     }
                 }
 
                 Equations.Dimension.Double -> generateDoubleEquationsQuestions(
-                    ranges = settings.ranges,
+                    ranges = settings.range,
                     count = count,
                     type = settings.type
                 )

@@ -11,10 +11,19 @@ interface GameDurationProvider {
         override fun provide(settings: GameSettings): Long {
 
             return when (settings) {
-                is GameSettings.Additional -> settings.ranges.size * settings.difficult.time
+                is GameSettings.Additional -> {
+                    val rangeSize = abs(settings.range.max - settings.range.min)
+                    val rangeMultiplication = when {
+                        rangeSize < 11 -> 0.5f
+                        rangeSize < 101 -> 1f
+                        rangeSize < 1001 -> 2f
+                        else -> 3f
+                    }
+                    settings.difficult.time * rangeMultiplication
+                }
                 is GameSettings.Multiplication -> settings.selectedNumbers.size * settings.difficult.time
                 is Equations -> {
-                    val rangeSize = abs(settings.ranges.max - settings.ranges.min)
+                    val rangeSize = abs(settings.range.max - settings.range.min)
 
                     val rangeMultiplication = when {
                         rangeSize < 101 -> 1f

@@ -16,14 +16,14 @@ sealed interface GameSettings : Parcelable {
 
     @Parcelize
     data class Additional(
-        val ranges: List<Range>,
+        val range: Range,
         override val difficult: Difficult,
         val isPositive: Boolean
     ) : GameSettings
 
     @Parcelize
     data class Equations(
-        val ranges: Range,
+        val range: Range,
         override val difficult: Difficult,
         val type: Type,
         val dimension: Dimension

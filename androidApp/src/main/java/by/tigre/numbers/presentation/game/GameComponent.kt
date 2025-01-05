@@ -109,7 +109,7 @@ interface GameComponent {
         private suspend fun completeQuestions() {
             val state = questionsState.value
             allQuestions.forEachIndexed { index, question ->
-                if (index >= state.current + 1) {
+                if (index >= state.current - 1) {
                     val result = GameResult.Result(
                         isCorrect = false,
                         question = question,

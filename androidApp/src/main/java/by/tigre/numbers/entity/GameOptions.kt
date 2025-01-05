@@ -36,14 +36,14 @@ data class GameOptions(
 
             @Parcelize
             data class Additional(
-                val first: Int,
-                val second: Int,
+                val a: Int,
+                val b: Int,
             ) : Operation {
                 @IgnoredOnParcel
-                override val title: String = "$first + $second = %s"
+                override val title: String = "$a + $b = %s"
 
                 @IgnoredOnParcel
-                override val x: Int = first + second
+                override val x: Int = a + b
 
                 @IgnoredOnParcel
                 override val result: String = x.toString()
@@ -66,14 +66,14 @@ data class GameOptions(
 
             @Parcelize
             data class Subtraction(
-                val second: Int,
+                val b: Int,
                 override val x: Int,
             ) : Operation {
                 @IgnoredOnParcel
-                val first: Int = x + second // (first - second = result)
+                val a: Int = x + b // (first - second = result)
 
                 @IgnoredOnParcel
-                override val title: String = "$first - $second = ?"
+                override val title: String = "$a - $b = ?"
 
                 @IgnoredOnParcel
                 override val result: String = x.toString()

@@ -19,7 +19,7 @@ interface GameDurationProvider {
                         rangeSize < 1001 -> 2f
                         else -> 3f
                     }
-                    settings.difficult.time * rangeMultiplication
+                    (settings.difficult.time * rangeMultiplication).toLong()
                 }
                 is GameSettings.Multiplication -> settings.selectedNumbers.size * settings.difficult.time
                 is Equations -> {

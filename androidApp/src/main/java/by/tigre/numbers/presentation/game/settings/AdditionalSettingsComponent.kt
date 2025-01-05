@@ -33,10 +33,8 @@ interface AdditionalSettingsComponent {
             private val RANGES = listOf(
                 GameSettings.Range(10, false),
                 GameSettings.Range(100, false),
+                GameSettings.Range(500, false),
                 GameSettings.Range(1000, false),
-                GameSettings.Range(10, true),
-                GameSettings.Range(100, true),
-                GameSettings.Range(1000, true),
             )
 
             val DEFAULTS: Settings

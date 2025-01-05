@@ -72,14 +72,14 @@ interface GameProvider {
 
             val range = settings.range
             val allQuestions = (1..count).map {
-                val result = Random.nextInt(range.min + range.min, range.max + 1)
-                val first = Random.nextInt(range.min, result + 1 - range.min)
-                val second = result - first
+                val x = randomNonSame(range.min + range.min, range.max, 0, 1)
+                val a = randomNonSame(range.min, x - range.min, 0, 2)
+                val b = x - a
 
                 if (settings.isPositive) {
-                    Operation.Additional(first = first, second = second)
+                    Operation.Additional(a = a, b = b)
                 } else {
-                    Operation.Subtraction(x = first, second = second)
+                    Operation.Subtraction(x = a, b = b)
                 }
             }
                 .shuffled(Random)

@@ -71,10 +71,10 @@ interface GameProvider {
             }
 
             val allQuestions = settings.ranges
-                .map { type ->
+                .map { range ->
                     (1..count).map {
-                        val result = Random.nextInt(type.min + type.min, type.max + 1)
-                        val first = Random.nextInt(type.min, result + 1 - type.min)
+                        val result = Random.nextInt(range.min + range.min, range.max + 1)
+                        val first = Random.nextInt(range.min, result + 1 - range.min)
                         val second = result - first
 
                         if (settings.isPositive) {
@@ -103,11 +103,14 @@ interface GameProvider {
             }
 
             val questions = when (settings.dimension) {
-                Equations.Dimension.Single -> generateSingleEquationsQuestions(
-                    ranges = settings.ranges,
-                    count = count,
-                    type = settings.type
-                )
+                Equations.Dimension.Single -> {
+
+                    when (settings.type) {
+                        Equations.Type.Additional -> generateSingleEquationsQuestionsForAdditional(settings.ranges, count)
+                        Equations.Type.Multiplication -> generateSingleEquationsQuestionsForMultiplication(settings.ranges, count)
+                        Equations.Type.Both -> generateSingleEquationsQuestionsBoth(settings.ranges, count)
+                    }
+                }
 
                 Equations.Dimension.Double -> generateDoubleEquationsQuestions(
                     ranges = settings.ranges,
@@ -124,40 +127,88 @@ interface GameProvider {
             )
         }
 
-        private fun generateSingleEquationsQuestions(
-            ranges: Equations.Range,
+        private fun generateSingleEquationsQuestionsBoth(
+            range: GameSettings.Range,
             count: Int,
-            type: Equations.Type
         ): List<GameOptions.Question.Equation.Single> {
             // a + b * X = c
+            val min: Int
+            val max: Int
+
+            if (range.withNegative) {
+                min = -range.max
+                max = range.max
+            } else {
+                min = 0
+                max = range.max
+            }
             val questions = (1..count).map {
                 val x: Int
                 val c: Int
-                val b: Int = if (type != Equations.Type.Additional) {
-                    randomNonSame(min = ranges.min, max = ranges.max, target = 0, fraction = 20)
-                } else {
-                    1
+                val b: Int = randomNonSame(min = min / 2, max = max / 2, target = 0, fraction = 10)
+                val a: Int = randomNonSame(min = min, max = max, target = 0, fraction = if (range.withNegative) 2 else 10)
+
+
+                fun x(deep: Int = 0): Int {
+                    val cTmp = randomNonSame(min = min, max = max, target = a, fraction = 1)
+                    val xTmp = ((cTmp - a).toFloat() / b).coerceIn(range.min.toFloat(), range.max.toFloat()).roundToInt()
+                    return if ((xTmp == 1 || xTmp == 0) && deep < 5) x(deep + 1) else xTmp
                 }
 
-                val a: Int = if (type != Equations.Type.Multiplication) {
-                    randomNonSame(min = ranges.min, max = ranges.max, target = 0, fraction = 10)
-                } else {
-                    0
-                }
-
-                val cTmp = randomNonSame(min = ranges.min, max = ranges.max, target = a, fraction = 4)
-                x = ((cTmp - a).toFloat() / b).coerceIn(ranges.min.toFloat(), ranges.max.toFloat()).roundToInt()
+                x = x()
                 c = a + b * x
 
                 GameOptions.Question.Equation.Single(
                     x = x,
-                    title = when (type) {
-                        Equations.Type.Additional -> "$a + X = $c\nX = %s"
-                        Equations.Type.Multiplication -> "$b * X = $c\nX = %s"
-                        Equations.Type.Both -> {
-                            "$a ${if (b > 0) "+" else "-"} ${abs(b)} * X = $c\nX = %s"
-                        }
-                    }
+                    title = "$a ${if (b > 0) "+" else "-"} ${abs(b)} * X = $c\nX = %s"
+                )
+            }
+
+            return questions.shuffled()
+        }
+
+        private fun generateSingleEquationsQuestionsForAdditional(
+            range: GameSettings.Range,
+            count: Int,
+        ): List<GameOptions.Question.Equation.Single> {
+            // a + X = c
+            val min: Int = range.min
+            val max: Int = range.max
+
+            val questions = (1..count).map {
+                val x: Int
+                val a: Int = randomNonSame(min = min, max = if (range.withNegative) max else max / 2, target = 0, fraction = 3)
+
+                val c = randomNonSame(min = if (range.withNegative) min else a, max = (max - a).coerceAtMost(max), target = a, fraction = 1)
+                x = c - a
+
+                GameOptions.Question.Equation.Single(
+                    x = x,
+                    title = "$a + X = $c\nX = %s"
+                )
+            }
+
+            return questions.shuffled()
+        }
+
+        private fun generateSingleEquationsQuestionsForMultiplication(
+            range: GameSettings.Range,
+            count: Int,
+        ): List<GameOptions.Question.Equation.Single> {
+            // b * X = c
+            val min: Int = range.min
+            val max: Int = range.max
+
+            val questions = (1..count).map {
+                val b = randomNonSame(min = min / 2, max = max / 2, target = 0, fraction = 3)
+
+                val cTmp = randomNonSame(min = min, max = max, target = min, fraction = 1)
+                val x = (cTmp.toFloat() / b).coerceIn(min.toFloat(), range.max.toFloat()).roundToInt()
+                val c = b * x
+
+                GameOptions.Question.Equation.Single(
+                    x = x,
+                    title = "$b * X = $c\nX = %s"
                 )
             }
 
@@ -165,7 +216,7 @@ interface GameProvider {
         }
 
         private fun generateDoubleEquationsQuestions(
-            ranges: Equations.Range,
+            ranges: GameSettings.Range,
             count: Int,
             type: Equations.Type
         ): List<GameOptions.Question.Equation.Single> {
@@ -177,11 +228,21 @@ interface GameProvider {
         }
 
         private fun randomNonSame(min: Int, max: Int, target: Int, fraction: Int): Int {
-            fun random(min: Int, max: Int, target: Int, fraction: Int, deep: Int = 0): Int {
-                val value = ((Random.nextInt(min, max)).toFloat() / fraction).roundToInt()
+
+            fun random(min: Int, max: Int, coerceMin: Int, coerceMax: Int, target: Int, fraction: Int, deep: Int = 0): Int {
+                val value = ((Random.nextInt(min, max)).toFloat() / fraction).roundToInt().coerceIn(coerceMin, coerceMax)
                 return when {
-                    value != target -> value
-                    deep < 10 -> random(min = min, max = max, target = target, fraction = fraction, deep = deep + 1)
+                    abs(value - target) > 3 -> value
+                    deep < 10 -> random(
+                        min = min,
+                        max = max,
+                        target = target,
+                        fraction = fraction,
+                        deep = deep + 1,
+                        coerceMax = coerceMax,
+                        coerceMin = coerceMin
+                    )
+
                     else -> (target + 1).also {
                         analytics.trackEvent(Event.Action.Logic.RandomBigDeep)
                     }
@@ -192,7 +253,7 @@ interface GameProvider {
             val tMin = min - d * fraction / 4
             val tMax = max + d * fraction / 4
 
-            return random(min = tMin, max = tMax, target = target, fraction = fraction).coerceIn(min, max)
+            return random(min = tMin, max = tMax, target = target, fraction = fraction, coerceMax = max, coerceMin = min)
         }
     }
 }

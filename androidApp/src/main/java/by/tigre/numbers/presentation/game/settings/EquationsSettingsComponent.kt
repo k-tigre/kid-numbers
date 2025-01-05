@@ -4,6 +4,10 @@ import androidx.compose.runtime.Immutable
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.DifficultSection
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.DimensionSection
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.RangeSection
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.TypeSection
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,30 +32,6 @@ interface EquationsSettingsComponent {
         val type: TypeSection,
         val dimension: DimensionSection,
     ) {
-        data class DifficultSection(
-            val current: Difficult?,
-            val values: List<Difficult>,
-            val index: Int,
-        )
-
-        data class RangeSection(
-            val current: GameSettings.Range?,
-            val values: List<GameSettings.Range>,
-            val index: Int,
-        )
-
-        data class TypeSection(
-            val current: Equations.Type?,
-            val values: List<Equations.Type>,
-            val index: Int,
-        )
-
-        data class DimensionSection(
-            val current: Equations.Dimension?,
-            val values: List<Equations.Dimension>,
-            val index: Int,
-        )
-
         companion object {
             private val DIFFICULT = Difficult.entries
             private val RANGES = listOf(
@@ -152,7 +132,7 @@ interface EquationsSettingsComponent {
                     else -> {
                         onStartGame(
                             Equations(
-                                ranges = settings.range.current,
+                                range = settings.range.current,
                                 difficult = settings.difficult.current,
                                 type = settings.type.current,
                                 dimension = settings.dimension.current

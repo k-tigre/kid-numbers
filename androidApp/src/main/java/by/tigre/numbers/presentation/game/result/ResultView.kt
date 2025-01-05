@@ -112,7 +112,7 @@ class ResultView(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
                 text = when (result.question) {
                     is Equation.Double -> TODO("Add Double")
-                    is Equation.Single -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "X")
+                    is Equation.Single -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
                     is Operation -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
                 },
                 color = colors.onColorContainer

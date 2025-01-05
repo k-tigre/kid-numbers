@@ -17,7 +17,7 @@ interface EquationsSettingsComponent {
 
     fun onDifficultSelected(value: Difficult)
     fun onTypeSelected(value: Equations.Type)
-    fun onRangeSelected(value: Equations.Range)
+    fun onRangeSelected(value: GameSettings.Range)
     fun onDimensionSelected(value: Equations.Dimension)
     fun onStartGameClicked()
     fun onBackClicked()
@@ -35,8 +35,8 @@ interface EquationsSettingsComponent {
         )
 
         data class RangeSection(
-            val current: Equations.Range?,
-            val values: List<Equations.Range>,
+            val current: GameSettings.Range?,
+            val values: List<GameSettings.Range>,
             val index: Int,
         )
 
@@ -54,8 +54,14 @@ interface EquationsSettingsComponent {
 
         companion object {
             private val DIFFICULT = Difficult.entries
-            private val RANGES =
-                listOf(Equations.Range(-20, 20), Equations.Range(-50, 50), Equations.Range(-100, 100), Equations.Range(-1000, 1000))
+            private val RANGES = listOf(
+                GameSettings.Range(50, false),
+                GameSettings.Range(100, false),
+                GameSettings.Range(20, true),
+                GameSettings.Range(50, true),
+                GameSettings.Range(100, true),
+                GameSettings.Range(1000, true)
+            )
             private val TYPES = Equations.Type.entries
             private val DIMENSIONS = Equations.Dimension.entries
 
@@ -120,7 +126,7 @@ interface EquationsSettingsComponent {
             }
         }
 
-        override fun onRangeSelected(value: Equations.Range) {
+        override fun onRangeSelected(value: GameSettings.Range) {
             launch {
                 val current = settings.value
                 settings.emit(current.copy(range = current.range.copy(current = value)))

@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
 import by.tigre.numbers.presentation.game.settings.EquationsSettingsComponent.Settings
 import by.tigre.numbers.presentation.utils.SelectableButton
@@ -219,7 +220,7 @@ private fun Preview() {
 
         override fun onDifficultSelected(value: Difficult) = Unit
         override fun onTypeSelected(value: Equations.Type) = Unit
-        override fun onRangeSelected(value: Equations.Range) = Unit
+        override fun onRangeSelected(value: GameSettings.Range) = Unit
         override fun onDimensionSelected(value: Equations.Dimension) = Unit
         override fun onStartGameClicked() = Unit
         override fun onBackClicked() = Unit

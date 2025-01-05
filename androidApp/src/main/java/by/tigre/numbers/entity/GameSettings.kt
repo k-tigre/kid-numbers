@@ -1,6 +1,7 @@
 package by.tigre.numbers.entity
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 sealed interface GameSettings : Parcelable {
@@ -18,10 +19,7 @@ sealed interface GameSettings : Parcelable {
         val ranges: List<Range>,
         override val difficult: Difficult,
         val isPositive: Boolean
-    ) : GameSettings {
-        @Parcelize
-        data class Range(val min: Int, val max: Int) : Parcelable
-    }
+    ) : GameSettings
 
     @Parcelize
     data class Equations(
@@ -37,9 +35,11 @@ sealed interface GameSettings : Parcelable {
         enum class Dimension {
             Single, Double
         }
+    }
 
-        @Parcelize
-        data class Range(val min: Int, val max: Int) : Parcelable
-
+    @Parcelize
+    data class Range(val max: Int, val withNegative: Boolean) : Parcelable {
+        @IgnoredOnParcel
+        val min: Int = if (withNegative) -max else 0
     }
 }

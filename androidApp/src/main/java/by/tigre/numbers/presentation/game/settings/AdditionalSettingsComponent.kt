@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.stateIn
 
 interface AdditionalSettingsComponent {
     val isPositive: Boolean
-    val numbersForSelection: StateFlow<List<Pair<Additional.Range, Boolean>>>
+    val numbersForSelection: StateFlow<List<Pair<GameSettings.Range, Boolean>>>
     val difficultSelection: StateFlow<Difficult>
     val isStartEnabled: StateFlow<Boolean>
-    fun onNumberTypeSelectionChanged(range: Additional.Range, isSelected: Boolean)
+    fun onNumberTypeSelectionChanged(range: GameSettings.Range, isSelected: Boolean)
     fun onDifficultChanged(difficult: Difficult)
     fun onStartGameClicked()
     fun onBackClicked()
@@ -28,13 +28,13 @@ interface AdditionalSettingsComponent {
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : AdditionalSettingsComponent, BaseComponentContext by context {
-        private val numbers: MutableMap<Additional.Range, Boolean> = mutableMapOf(
-            Additional.Range(0, 10) to false,
-            Additional.Range(0, 100) to false,
-            Additional.Range(0, 1000) to false,
-            Additional.Range(-10, 10) to false,
-            Additional.Range(-100, 100) to false,
-            Additional.Range(-1000, 1000) to false,
+        private val numbers: MutableMap<GameSettings.Range, Boolean> = mutableMapOf(
+            GameSettings.Range(10, false) to false,
+            GameSettings.Range(100, false) to false,
+            GameSettings.Range(1000, false) to false,
+            GameSettings.Range(10, true) to false,
+            GameSettings.Range(100, true) to false,
+            GameSettings.Range(1000, true) to false,
         )
 
         override val numbersForSelection = MutableStateFlow(getState())
@@ -43,7 +43,7 @@ interface AdditionalSettingsComponent {
         override val isStartEnabled = numbersForSelection.map { it.any { (_, isSelected) -> isSelected } }
             .stateIn(this, SharingStarted.Lazily, false)
 
-        override fun onNumberTypeSelectionChanged(range: Additional.Range, isSelected: Boolean) {
+        override fun onNumberTypeSelectionChanged(range: GameSettings.Range, isSelected: Boolean) {
             numbers[range] = isSelected
             numbersForSelection.tryEmit(getState())
         }

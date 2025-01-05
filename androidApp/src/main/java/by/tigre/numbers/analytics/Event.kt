@@ -12,6 +12,19 @@ sealed class Event(val name: String) {
 
         sealed class Logic(name: String) : Action("Logic_$name") {
             data object RandomBigDeep : Logic("RandomBigDeep")
+            data class GenerateQuestions(
+                private val duration: Long,
+                private val difficult: Difficult,
+                private val type: GameType,
+            ) : Logic("GenerateQuestions"), WithPayload {
+                override val payload: Map<String, String> by lazy {
+                    mapOf(
+                        "difficult" to difficult.name,
+                        "duration" to duration.toString(),
+                        "gameType" to type.toString()
+                    )
+                }
+            }
         }
     }
 
@@ -38,7 +51,7 @@ sealed class Event(val name: String) {
 
         data class GameResult(
             private val correctCount: Int,
-            private val inCorrectCount: Int,
+            private val incorrectCount: Int,
             private val totalCount: Int,
             private val difficult: Difficult,
             private val type: GameType,
@@ -47,8 +60,9 @@ sealed class Event(val name: String) {
                 mapOf(
                     "difficult" to difficult.name,
                     "totalCount" to totalCount.toString(),
-                    "inCorrectCount" to inCorrectCount.toString(),
+                    "incorrectCount" to incorrectCount.toString(),
                     "correctCount" to correctCount.toString(),
+                    "success" to (incorrectCount == 0).toString(),
                     "gameType" to type.toString()
                 )
             }

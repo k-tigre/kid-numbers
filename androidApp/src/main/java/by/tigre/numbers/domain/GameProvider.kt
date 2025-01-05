@@ -20,11 +20,19 @@ interface GameProvider {
         private val durationProvider: GameDurationProvider
     ) : GameProvider {
         override fun provide(settings: GameSettings): GameOptions {
-
+            val startTime = System.currentTimeMillis()
             return when (settings) {
                 is GameSettings.Additional -> generateQuestions(settings)
                 is GameSettings.Multiplication -> generateQuestions(settings)
                 is Equations -> generateQuestions(settings)
+            }.also {
+                analytics.trackEvent(
+                    Event.Action.Logic.GenerateQuestions(
+                        duration = System.currentTimeMillis() - startTime,
+                        difficult = settings.difficult,
+                        type = it.type
+                    )
+                )
             }
         }
 

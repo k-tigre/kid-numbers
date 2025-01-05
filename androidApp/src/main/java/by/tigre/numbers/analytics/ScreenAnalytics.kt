@@ -24,8 +24,15 @@ interface ScreenAnalytics {
             scope.launch {
                 screens
                     .distinctUntilChanged()
-                    .scan((null to null) as Pair<Event.Screen?, Event.Screen?>) { prev, value -> prev.second to value }
+                    .scan((null to null) as Pair<Event.Screen?, Event.Screen?>) { previous, current ->
+                        if (current.skip) {
+                            previous
+                        } else {
+                            previous.second to current
+                        }
+                    }
                     .drop(1)
+                    .distinctUntilChanged()
                     .flowOn(dispatchers.io)
                     .collect { (prev, current) ->
                         if (current != null)

@@ -8,6 +8,9 @@ sealed class Event(val name: String) {
     sealed class Action(name: String) : Event(name) {
         sealed class UI(name: String) : Action("UI_$name") {
             sealed class Button(name: String) : UI("${name}_clicked")
+            data class SettingScroll(val type: GameType) : UI("SettingScroll"), WithPayload {
+                override val payload: Map<String, String> by lazy { mapOf("type" to type.name) }
+            }
         }
 
         sealed class Logic(name: String) : Action("Logic_$name") {
@@ -32,12 +35,10 @@ sealed class Event(val name: String) {
         val payload: Map<String, String>
     }
 
-    sealed class Screen(name: String) : Event(name) {
+    sealed class Screen(name: String, val skip: Boolean = false) : Event(name) {
         data object MainMenu : Screen("MainMenu")
         data object History : Screen("History")
-        data class RootGame(private val type: GameType) : Screen("RootGame"), WithPayload {
-            override val payload: Map<String, String> by lazy { mapOf("type" to type.name) }
-        }
+        data object RootGame : Screen("RootGame", skip = true)
 
         data class GameSettings(private val type: GameType) : Screen("GameSettings"), WithPayload {
             override val payload: Map<String, String> by lazy { mapOf("type" to type.name) }

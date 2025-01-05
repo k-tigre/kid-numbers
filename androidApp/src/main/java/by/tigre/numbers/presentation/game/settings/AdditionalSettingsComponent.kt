@@ -1,9 +1,12 @@
 package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.runtime.Immutable
+import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Additional
+import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.DifficultSection
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.RangeSection
 import by.tigre.tools.presentation.base.BaseComponentContext
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 interface AdditionalSettingsComponent {
@@ -63,12 +67,15 @@ interface AdditionalSettingsComponent {
     class Impl(
         context: BaseComponentContext,
         override val isPositive: Boolean,
+        analytics: EventAnalytics,
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : AdditionalSettingsComponent, BaseComponentContext by context {
         override val settings = MutableStateFlow(Settings.DEFAULTS)
 
-        override val onScrollPosition = MutableSharedFlow<Int>()
+        private val onScrollPositionInternal = MutableSharedFlow<Int>()
+        override val onScrollPosition = onScrollPositionInternal
+            .onEach { analytics.trackEvent(Event.Action.UI.SettingScroll(GameType.Equations)) }
 
         override fun onDifficultSelected(value: Difficult) {
             launch {
@@ -89,8 +96,8 @@ interface AdditionalSettingsComponent {
                 val settings = settings.value
 
                 when {
-                    settings.difficult.current == null -> onScrollPosition.emit(settings.difficult.index)
-                    settings.range.current == null -> onScrollPosition.emit(settings.range.index)
+                    settings.difficult.current == null -> onScrollPositionInternal.emit(settings.difficult.index)
+                    settings.range.current == null -> onScrollPositionInternal.emit(settings.range.index)
                     else -> {
                         onStartGame(
                             Additional(

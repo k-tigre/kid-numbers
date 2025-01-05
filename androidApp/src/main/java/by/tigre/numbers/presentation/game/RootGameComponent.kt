@@ -2,6 +2,7 @@ package by.tigre.numbers.presentation.game
 
 import android.os.Parcelable
 import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.di.GameDependencies
 import by.tigre.numbers.entity.GameResult
@@ -38,7 +39,8 @@ interface RootGameComponent {
         context: BaseComponentContext,
         gameType: GameType,
         dependencies: GameDependencies,
-        analytics: ScreenAnalytics,
+        screenAnalytics: ScreenAnalytics,
+        analytics: EventAnalytics,
         private val onClose: () -> Unit
     ) : RootGameComponent, BaseComponentContext by context {
 
@@ -80,7 +82,8 @@ interface RootGameComponent {
                             context = componentContext,
                             isPositive = config.isPositive,
                             onStartGame = ::startGame,
-                            onClose = onClose
+                            onClose = onClose,
+                            analytics = analytics
                         )
                     )
 
@@ -88,7 +91,8 @@ interface RootGameComponent {
                         EquationsSettingsComponent.Impl(
                             context = componentContext,
                             onStartGame = ::startGame,
-                            onClose = onClose
+                            onClose = onClose,
+                            analytics = analytics
                         )
                     )
 
@@ -114,7 +118,7 @@ interface RootGameComponent {
 
         init {
             launch {
-                pages.trackScreens<PagesConfig>(analytics) {
+                pages.trackScreens<PagesConfig>(screenAnalytics) {
                     when (it) {
                         is PagesConfig.SettingsAdditional -> Event.Screen.GameSettings(
                             if (it.isPositive) GameType.Additional else GameType.Subtraction

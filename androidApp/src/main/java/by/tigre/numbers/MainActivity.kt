@@ -24,7 +24,8 @@ class MainActivity : AppCompatActivity() {
         val root = RootComponent.Impl(
             context = BaseComponentContextImpl(defaultComponentContext()),
             gameDependencies = graph,
-            analytics = graph.screenAnalytics
+            analytics = graph.eventAnalytics,
+            screenAnalytics = graph.screenAnalytics
         )
         enableEdgeToEdge()
 

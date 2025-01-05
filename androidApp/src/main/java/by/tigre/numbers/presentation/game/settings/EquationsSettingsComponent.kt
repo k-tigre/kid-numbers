@@ -1,9 +1,12 @@
 package by.tigre.numbers.presentation.game.settings
 
 import androidx.compose.runtime.Immutable
+import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
+import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.DifficultSection
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.DimensionSection
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.RangeSection
@@ -13,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 interface EquationsSettingsComponent {
@@ -84,13 +88,15 @@ interface EquationsSettingsComponent {
     @Immutable
     class Impl(
         context: BaseComponentContext,
+        analytics: EventAnalytics,
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : EquationsSettingsComponent, BaseComponentContext by context {
-
+        private val onScrollPositionInternal = MutableSharedFlow<Int>()
         override val settings = MutableStateFlow(Settings.DEFAULTS)
 
-        override val onScrollPosition = MutableSharedFlow<Int>()
+        override val onScrollPosition = onScrollPositionInternal
+            .onEach { analytics.trackEvent(Event.Action.UI.SettingScroll(GameType.Equations)) }
 
         override fun onDifficultSelected(value: Difficult) {
             launch {
@@ -125,10 +131,10 @@ interface EquationsSettingsComponent {
                 val settings = settings.value
 
                 when {
-                    settings.difficult.current == null -> onScrollPosition.emit(settings.difficult.index)
-                    settings.range.current == null -> onScrollPosition.emit(settings.range.index)
-                    settings.type.current == null -> onScrollPosition.emit(settings.type.index)
-                    settings.dimension.current == null -> onScrollPosition.emit(settings.dimension.index)
+                    settings.difficult.current == null -> onScrollPositionInternal.emit(settings.difficult.index)
+                    settings.range.current == null -> onScrollPositionInternal.emit(settings.range.index)
+                    settings.type.current == null -> onScrollPositionInternal.emit(settings.type.index)
+                    settings.dimension.current == null -> onScrollPositionInternal.emit(settings.dimension.index)
                     else -> {
                         onStartGame(
                             Equations(

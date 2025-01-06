@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -82,6 +83,54 @@ class HistoryView(
         }
     )
 ) {
+    @Composable
+    override fun DrawContent(innerPadding: PaddingValues) {
+        val results = component.results.collectAsState()
+        val isFilterVisible = component.filterVisibility.collectAsState()
+        Column(
+            Modifier
+                .padding(innerPadding)
+        ) {
+            AnimatedVisibility(visible = isFilterVisible.value) {
+                DrawFilter()
+            }
+
+            when (val state = results.value) {
+                is HistoryComponent.ScreenState.Loading -> DrawLoadingState()
+                is HistoryComponent.ScreenState.Empty -> DrawEmptyState(state)
+                is HistoryComponent.ScreenState.History -> DrawHistoryItems(state)
+            }
+        }
+    }
+
+    @Composable
+    private fun DrawEmptyState(state: HistoryComponent.ScreenState.Empty) {
+        Box(
+            Modifier
+                .fillMaxSize()
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 24.dp),
+                text = stringResource(
+                    if (state.withFilter) R.string.screen_history_empty_filter else R.string.screen_history_empty
+                ),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+
+    @Composable
+    private fun DrawLoadingState() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ProgressIndicator(size = ProgressIndicatorSize.LARGE)
+        }
+    }
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
@@ -89,7 +138,7 @@ class HistoryView(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+
         ) {
             state.groups.forEach { group ->
                 stickyHeader(key = group.date) {
@@ -97,9 +146,9 @@ class HistoryView(
                 }
 
                 if (group.isExpanded) {
-                    group.items.forEach { item ->
+                    group.items.forEachIndexed { index, item ->
                         item(key = item.id) {
-                            DrawExpandedItem(item)
+                            DrawExpandedItem(item, index == 0)
                         }
                     }
                 }
@@ -107,18 +156,19 @@ class HistoryView(
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DrawHistoryDayHeader(
+    private fun LazyItemScope.DrawHistoryDayHeader(
         group: HistoryComponent.HistoryGroup
     ) {
         Column(
             modifier = Modifier
+                .animateItemPlacement()
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                 .clickable { component.onGroupExpandChanges(group.isExpanded.not(), group) }
         ) {
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-
+            HorizontalDivider()
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -138,17 +188,17 @@ class HistoryView(
                     )
                 }
             }
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+            HorizontalDivider()
         }
     }
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun LazyItemScope.DrawExpandedItem(item: HistoryComponent.HistoryItem) {
+    private fun LazyItemScope.DrawExpandedItem(item: HistoryComponent.HistoryItem, isFirst: Boolean) {
         Card(
             modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, top = if (isFirst) 16.dp else 0.dp, bottom = 16.dp)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
                 .animateItemPlacement(),
             border = if (item.totalCount == item.correctCount) {
                 BorderStroke(
@@ -185,39 +235,12 @@ class HistoryView(
     }
 
     @Composable
-    private fun DrawEmptyState() {
-        Box(
-            Modifier
-                .fillMaxSize()
-        ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 24.dp),
-                text = stringResource(R.string.screen_history_empty),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-
-    @Composable
-    private fun DrawLoadingState() {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            ProgressIndicator(size = ProgressIndicatorSize.LARGE)
-        }
-    }
-
-    @Composable
     private fun DrawFilter() {
         val filter = component.filter.collectAsState().value
 
         LazyVerticalGrid(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
                 .padding(vertical = 8.dp)
                 .fillMaxWidth(),
             columns = GridCells.Fixed(3),
@@ -314,27 +337,6 @@ class HistoryView(
                 }
             }
         }
-    }
-
-    @Composable
-    override fun DrawContent(innerPadding: PaddingValues) {
-        val results = component.results.collectAsState()
-        val isFilterVisible = component.filterVisibility.collectAsState()
-        Column(
-            Modifier
-                .padding(innerPadding)
-        ) {
-            AnimatedVisibility(visible = isFilterVisible.value) {
-                DrawFilter()
-            }
-
-            when (val state = results.value) {
-                is HistoryComponent.ScreenState.Loading -> DrawLoadingState()
-                is HistoryComponent.ScreenState.Empty -> DrawEmptyState()
-                is HistoryComponent.ScreenState.History -> DrawHistoryItems(state)
-            }
-        }
-
     }
 }
 

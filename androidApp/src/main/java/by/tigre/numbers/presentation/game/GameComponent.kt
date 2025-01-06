@@ -92,7 +92,7 @@ interface GameComponent {
                     .take(1)
                     .collect {
                         completeQuestions()
-                        onNextClicked()
+                        finishGame()
                     }
             }
 
@@ -106,7 +106,7 @@ interface GameComponent {
             }
         }
 
-        private suspend fun completeQuestions() {
+        private fun completeQuestions() {
             val state = questionsState.value
             allQuestions.forEachIndexed { index, question ->
                 if (index >= state.current - 1) {
@@ -118,9 +118,6 @@ interface GameComponent {
                     resultQuestions.add(result)
                 }
             }
-
-            questionsState.emit(state.copy(current = state.total))
-            answerX.emit("")
         }
 
         override fun onAnswerChanged(answer: String) {
@@ -132,14 +129,7 @@ interface GameComponent {
         override fun onNextClicked() {
             val state = questionsState.value
             if (state.current >= state.total) {
-                onFinish(
-                    GameResult(
-                        results = resultQuestions,
-                        time = time.value,
-                        difficult = gameOption.difficult,
-                        type = gameOption.type
-                    )
-                )
+                finishGame()
             } else {
                 questionsState.tryEmit(
                     state.copy(
@@ -149,6 +139,17 @@ interface GameComponent {
                 )
                 answerX.tryEmit("")
             }
+        }
+
+        private fun finishGame() {
+            onFinish(
+                GameResult(
+                    results = resultQuestions,
+                    time = time.value.coerceAtMost(gameOption.duration),
+                    difficult = gameOption.difficult,
+                    type = gameOption.type
+                )
+            )
         }
 
         override fun onEnterClicked() {

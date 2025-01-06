@@ -22,7 +22,7 @@ class App : Application() {
         graph = ApplicationGraph.create(
             context = this,
             tracker = { scope ->
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.REMOTE_ANALYTICS_ENABLED) {
                     Tracker.TrackerAggregator(
                         LogTracker(),
                         FirebaseTracker(this),
@@ -30,8 +30,7 @@ class App : Application() {
                     )
                 } else {
                     Tracker.TrackerAggregator(
-                        FirebaseTracker(this),
-                        MixpanelTracker(this, scope = scope)
+                        LogTracker(),
                     )
                 }
             }

@@ -66,6 +66,7 @@ android {
 
                 applicationIdSuffix = env.suffix
                 manifestPlaceholders["appName"] = "${Application.name}${env.appNameSuffix}"
+                buildConfigField("Boolean", "REMOTE_ANALYTICS_ENABLED", env.remoteAnalytics.toString())
                 if (env.useProguard) {
                     proguardFiles(
                         "rules.proguard",

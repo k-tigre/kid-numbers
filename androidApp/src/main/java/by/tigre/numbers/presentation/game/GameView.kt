@@ -1,6 +1,8 @@
 package by.tigre.numbers.presentation.game
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -23,11 +25,14 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -71,13 +76,30 @@ class GameView(
     @Composable
     private fun ColumnScope.DrawTime() {
         val state = component.timeState.collectAsState().value
+
+        val color by animateColorAsState(
+            if (state.isEnding) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            label = "color"
+        )
+
+        val scale by animateFloatAsState(
+            if (state.isEnding) 1.1f else 1f,
+            label = "title_scale"
+        )
+
         Text(
             modifier = Modifier
                 .align(Alignment.End)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    transformOrigin = TransformOrigin.Center
+                }
                 .padding(horizontal = 32.dp, vertical = 8.dp),
             text = stringResource(R.string.screen_game_time_left, state.value),
-            color = if (state.isEnding) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-            style = if (state.isEnding) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleSmall,
+            color = color,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.End
         )
     }
 

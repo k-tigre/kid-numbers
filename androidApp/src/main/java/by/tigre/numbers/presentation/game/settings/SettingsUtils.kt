@@ -1,5 +1,7 @@
 package by.tigre.numbers.presentation.game.settings
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,9 +18,12 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -116,8 +121,14 @@ object SettingsUtils {
     fun LazyGridScope.drawRangeSectionItems(section: RangeSection, selectedIndex: Int, onRangeSelected: (GameSettings.Range) -> Unit) {
         item(key = "range_title", span = { GridItemSpan(6) }) {
             HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+            val scale = getTitleScale(selectedIndex, section.index)
             Text(
                 modifier = Modifier
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        transformOrigin = TransformOrigin.Center
+                    }
                     .padding(top = 16.dp),
                 text = stringResource(R.string.screen_game_settings_select_numbers_for_equations),
                 color = getTitleColor(selectedIndex, section.index)
@@ -139,8 +150,14 @@ object SettingsUtils {
     fun LazyGridScope.drawTypeSectionItems(section: TypeSection, selectedIndex: Int, onTypeSelected: (Equations.Type) -> Unit) {
         item(key = "type", span = { GridItemSpan(6) }) {
             HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+            val scale = getTitleScale(selectedIndex, section.index)
             Text(
                 modifier = Modifier
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        transformOrigin = TransformOrigin.Center
+                    }
                     .padding(top = 16.dp),
                 text = stringResource(R.string.screen_game_settings_select_operation_type),
                 color = getTitleColor(selectedIndex, section.index)
@@ -161,7 +178,20 @@ object SettingsUtils {
 
     @Composable
     private fun getTitleColor(selectedIndex: Int, target: Int): Color {
-        return if (selectedIndex == target) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+        val color by animateColorAsState(
+            if (selectedIndex == target) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            label = "title_color"
+        )
+        return color
+    }
+
+    @Composable
+    private fun getTitleScale(selectedIndex: Int, target: Int): Float {
+        val scale by animateFloatAsState(
+            if (selectedIndex == target) 1.05f else 1f,
+            label = "title_scale"
+        )
+        return scale
     }
 
     data class DifficultSection(

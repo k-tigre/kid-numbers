@@ -26,6 +26,29 @@ interface HistoryComponent {
     fun onGroupExpandChanges(isExpanded: Boolean, group: HistoryGroup)
     fun onCloseClicked()
 
+    sealed interface ScreenState {
+        data object Loading : ScreenState
+        data class Empty(val withFilter: Boolean) : ScreenState
+        data class History(val groups: List<HistoryGroup>) : ScreenState
+    }
+
+    data class HistoryGroup(
+        val date: String,
+        val items: List<HistoryItem>,
+        val isExpanded: Boolean
+    )
+
+    data class Filter(val difficult: Map<Difficult, Boolean>, val gameType: Map<GameType, Boolean>, val onlySuccess: Boolean)
+    data class HistoryItem(
+        val id: Long,
+        val time: String,
+        val duration: Long,
+        val difficult: Difficult,
+        val gameType: GameType?,
+        val correctCount: Int,
+        val totalCount: Int
+    )
+
     class Impl(
         context: BaseComponentContext,
         resultStore: ResultStore,
@@ -44,9 +67,9 @@ interface HistoryComponent {
                     types = filter.gameType.mapNotNull { (gameType, isEnabled) -> gameType.takeIf { isEnabled } },
                     onlySuccess = filter.onlySuccess
                 )
-                history.groupBy { dateFormatter.formatDate(it.date) }
+                history.groupBy { dateFormatter.formatDate(it.date) } to filter
             }
-            .combine(expendedGroup) { history, expended ->
+            .combine(expendedGroup) { (history, filter), expended ->
                 val groups = history.map { (date, items) ->
                     HistoryGroup(
                         date = date,
@@ -67,7 +90,7 @@ interface HistoryComponent {
                 if (groups.isNotEmpty()) {
                     ScreenState.History(groups)
                 } else {
-                    ScreenState.Empty
+                    ScreenState.Empty(withFilter = filter != DEFAULT_FILTER)
                 }
             }
             .stateIn(this, SharingStarted.WhileSubscribed(), ScreenState.Loading)
@@ -124,7 +147,7 @@ interface HistoryComponent {
             }
         }
 
-        companion object {
+        private companion object {
             val DEFAULT_FILTER = Filter(
                 difficult = Difficult.entries.associateWith { true },
                 gameType = GameType.entries.associateWith { true },
@@ -132,27 +155,4 @@ interface HistoryComponent {
             )
         }
     }
-
-    sealed interface ScreenState {
-        data object Loading : ScreenState
-        data object Empty : ScreenState
-        data class History(val groups: List<HistoryGroup>) : ScreenState
-    }
-
-    data class HistoryGroup(
-        val date: String,
-        val items: List<HistoryItem>,
-        val isExpanded: Boolean
-    )
-
-    data class Filter(val difficult: Map<Difficult, Boolean>, val gameType: Map<GameType, Boolean>, val onlySuccess: Boolean)
-    data class HistoryItem(
-        val id: Long,
-        val time: String,
-        val duration: Long,
-        val difficult: Difficult,
-        val gameType: GameType?,
-        val correctCount: Int,
-        val totalCount: Int
-    )
 }

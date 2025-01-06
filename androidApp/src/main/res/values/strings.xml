@@ -5,6 +5,7 @@
 
     <string name="screen_history_title">History</string>
     <string name="screen_history_empty">There is nothing here yet, go through the training and the result will be displayed</string>
+    <string name="screen_history_empty_filter">There is nothing here yet, complete the training and the result will be displayed or change the filter conditions</string>
     <string name="screen_history_item_date">Date: %s</string>
     <string name="screen_history_item_time">Time of day: %s</string>
     <string name="screen_history_item_duration">Duration: %s</string>

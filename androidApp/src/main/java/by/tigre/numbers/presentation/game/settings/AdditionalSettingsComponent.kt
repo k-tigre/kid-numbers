@@ -13,8 +13,10 @@ import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
 interface AdditionalSettingsComponent {
@@ -75,7 +77,8 @@ interface AdditionalSettingsComponent {
 
         private val onScrollPositionInternal = MutableSharedFlow<Int>()
         override val onScrollPosition = onScrollPositionInternal
-            .onEach { analytics.trackEvent(Event.Action.UI.SettingScroll(GameType.Equations)) }
+            .onEach { analytics.trackEvent(Event.Action.UI.SettingScroll(GameType.Additional)) }
+            .shareIn(this, started = SharingStarted.WhileSubscribed())
 
         override fun onDifficultSelected(value: Difficult) {
             launch {

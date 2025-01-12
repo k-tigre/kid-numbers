@@ -6,12 +6,14 @@ import com.github.triplet.gradle.androidpublisher.ReleaseStatus
 plugins {
     id(Plugin.Id.AndroidApplication.value)
     id(Plugin.Id.KotlinAndroid.value)
+    id(Plugin.Id.ComposeCompiler.value) version Plugin.Version.Kotlin.value
     id(Plugin.Id.GoogleServices.value)
     id(Plugin.Id.Crashlytics.value)
     id(Plugin.Id.KotlinParcelize.value)
     id(Plugin.Id.GooglePlayPublisher.value)
     id(Plugin.Id.FirebasePublisher.value)
     id(Plugin.Id.SQLDelight.value)
+    id(Plugin.Id.KotlinSerialization.value)
 }
 
 android {
@@ -98,6 +100,7 @@ dependencies {
     implementation(Library.AndroidXCore)
     implementation(Library.AndroidXAppcompat)
     implementation(Library.CoroutinesAndroid)
+    implementation(Library.KotlinSerializationJson)
 
     implementation(Library.SQLDelightAndroid)
     implementation(Library.SQLDelightCoroutines)

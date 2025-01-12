@@ -1,6 +1,7 @@
 plugins {
     id(Plugin.Id.AndroidLibrary.value)
     id(Plugin.Id.KotlinAndroid.value)
+    id(Plugin.Id.ComposeCompiler.value) version Plugin.Version.Kotlin.value
 }
 
 android {

@@ -17,7 +17,8 @@ interface StoreModule {
 
     class Impl(
         context: Context,
-        coroutineModule: CoroutineModule
+        coroutineModule: CoroutineModule,
+        analyticsModule: AnalyticsModule
     ) : StoreModule {
         private val database: DatabaseNumbers by lazy {
             DatabaseNumbers(
@@ -27,7 +28,7 @@ interface StoreModule {
                     name = "numbers.db",
                     callback = object : AndroidSqliteDriver.Callback(DatabaseNumbers.Schema.synchronous()) {
                         override fun onOpen(db: SupportSQLiteDatabase) {
-                            db.execSQL("PRAGMA foreign_keys=ON;")
+                            db.setForeignKeyConstraintsEnabled(true)
                         }
                     }
                 ),
@@ -41,8 +42,7 @@ interface StoreModule {
         }
 
         override val resultStore: ResultStore by lazy {
-            ResultStore.Impl(database, coroutineModule.scope)
+            ResultStore.Impl(database = database, scope = coroutineModule.scope, analytics = analyticsModule.eventAnalytics)
         }
-
     }
 }

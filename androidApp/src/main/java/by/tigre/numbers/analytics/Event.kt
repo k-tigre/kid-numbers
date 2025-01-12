@@ -15,6 +15,7 @@ sealed class Event(val name: String) {
 
         sealed class Logic(name: String) : Action("Logic_$name") {
             data object RandomBigDeep : Logic("RandomBigDeep")
+            data object WrongCountInDB : Logic("WrongCountInDB")
             data class GenerateQuestions(
                 private val duration: Long,
                 private val difficult: Difficult,

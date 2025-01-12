@@ -1,0 +1,16 @@
+CREATE TABLE HistoryItem(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+historyId INTEGER NOT NULL,
+data TEXT NOT NULL,
+FOREIGN KEY (historyId) REFERENCES History (id)
+);
+
+insertHistory:
+INSERT INTO HistoryItem(historyId, data)
+VALUES(?, ?);
+
+getItems:
+SELECT * FROM HistoryItem WHERE historyId = :historyId;
+
+getCounts:
+SELECT historyId, count(historyId) FROM HistoryItem GROUP BY historyId ORDER BY count(historyId) DESC LIMIT 1;

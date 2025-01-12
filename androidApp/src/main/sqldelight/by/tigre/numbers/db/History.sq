@@ -24,3 +24,13 @@ SELECT * FROM History WHERE difficult IN :difficult AND gameType IN :gameTypes O
 
 selectByTypeAndDifficultOnlyCorrect:
 SELECT * FROM History WHERE difficult IN :difficult AND gameType IN :gameTypes AND correctCount = totalCount ORDER BY id DESC LIMIT :limit;
+
+insertHistoryWithId {
+INSERT INTO History(date, duration, difficult, correctCount, totalCount, gameType) VALUES(?, ?, ?, ?, ?, ?);
+SELECT last_insert_rowid();
+}
+
+insertHistoryWithData {
+INSERT INTO History(date, duration, difficult, correctCount, totalCount, gameType) VALUES(?, ?, ?, ?, ?, ?);
+INSERT INTO HistoryItem(historyId, data) VALUES(last_insert_rowid(), :historyData);
+}

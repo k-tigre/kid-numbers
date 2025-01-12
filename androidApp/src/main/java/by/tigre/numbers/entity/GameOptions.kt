@@ -3,6 +3,7 @@ package by.tigre.numbers.entity
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 data class GameOptions(
     val questions: List<Question>,
@@ -11,15 +12,18 @@ data class GameOptions(
     val type: GameType
 ) {
 
+    @Serializable
     sealed interface Question : Parcelable {
 
         val title: String
         val result: String
 
+        @Serializable
         sealed interface Operation : Question {
             val x: Int
 
             @Parcelize
+            @Serializable
             data class Multiplication(
                 val first: Int,
                 val second: Int,
@@ -35,6 +39,7 @@ data class GameOptions(
             }
 
             @Parcelize
+            @Serializable
             data class Additional(
                 val a: Int,
                 val b: Int,
@@ -50,6 +55,7 @@ data class GameOptions(
             }
 
             @Parcelize
+            @Serializable
             data class Division(
                 val second: Int,
                 override val x: Int,
@@ -65,6 +71,7 @@ data class GameOptions(
             }
 
             @Parcelize
+            @Serializable
             data class Subtraction(
                 val b: Int,
                 override val x: Int,
@@ -80,11 +87,12 @@ data class GameOptions(
             }
         }
 
-
+        @Serializable
         sealed interface Equation : Question {
             // A + B * X = C, B * X = C, A + X = C
 
             @Parcelize
+            @Serializable
             data class Single(
                 val x: Int,
                 override val title: String
@@ -94,6 +102,7 @@ data class GameOptions(
             }
 
             @Parcelize
+            @Serializable
             data class Double(
                 val x: Int,
                 val y: Int,

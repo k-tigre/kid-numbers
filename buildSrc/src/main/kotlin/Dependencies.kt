@@ -15,6 +15,8 @@ enum class Library(group: String, artifact: String, version: Version) {
     CoroutinesCore("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Version.Coroutines),
     CoroutinesAndroid("org.jetbrains.kotlinx", "kotlinx-coroutines-android", Version.Coroutines),
 
+    KotlinSerializationJson("org.jetbrains.kotlinx", "kotlinx-serialization-json", Version.KotlinSerializationJson),
+
     SQLDelightAndroid("app.cash.sqldelight", "android-driver", Version.SQLDelight),
     SQLDelightCoroutines("app.cash.sqldelight", "coroutines-extensions", Version.SQLDelight),
     SQLDelightApapter("app.cash.sqldelight", "primitive-adapters", Version.SQLDelight),
@@ -51,20 +53,21 @@ enum class Library(group: String, artifact: String, version: Version) {
     val notation = "$group:$artifact:${version.value}"
 
     internal enum class Version(val value: String) {
-        ActivityCompose("1.8.2"),
-        AndroidXAppcompat("1.6.1"),
+        ActivityCompose("1.9.3"),
+        AndroidXAppcompat("1.7.0"),
         AndroidXCore("1.12.0"),
         AndroidXAnnotation("1.7.1"),
         AndroidXSplash("1.0.0"),
-        Kotlin("1.9.22"),
-        Coroutines("1.8.0"),
-        SQLDelight("2.0.1"),
+        Kotlin("2.1.0"),
+        Coroutines("1.10.1"),
+        KotlinSerializationJson("1.8.0"),
+        SQLDelight("2.0.2"),
         Leakcanary("2.13"),
-        Compose("1.6.1"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
-        ComposeFoundation("1.6.1"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
-        ComposeMaterial3("1.2.0"),
+        Compose("1.7.6"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
+        ComposeFoundation("1.7.6"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
+        ComposeMaterial3("1.3.1"),
         Accompanist("0.34.0") /*MUST BE CHANGED WITH COMPOSE VERSION*/,
-        CoilCompose("2.5.0"),
+        CoilCompose("2.7.0"),
         Decompose("2.2.2"),
         Mixpanel("8.0.1"),
 
@@ -128,12 +131,14 @@ enum class FirebaseLibrary(group: String, artifact: String) {
 enum class Plugin(group: String, artifact: String, version: Version) {
     Android("com.android.tools.build", "gradle", Version.Android),
     Kotlin("org.jetbrains.kotlin", "kotlin-gradle-plugin", Version.Kotlin),
+    Compose("org.jetbrains.kotlin", "kotlin-compose-compiler-plugin", Version.Kotlin),
     Google("com.google.gms", "google-services", Version.Google),
     Crashlytics("com.google.firebase", "firebase-crashlytics-gradle", Version.Crashlytics),
     Versions("com.github.ben-manes", "gradle-versions-plugin", Version.Versions),
     SQLDelight("app.cash.sqldelight", "gradle-plugin", Version.SQLDelight),
     GooglePlayPublisher("com.github.triplet.gradle", "play-publisher", Version.GooglePlayPublisher),
-    FirebasePublisher("com.google.firebase", "firebase-appdistribution-gradle", Version.FirebasePublisher)
+    FirebasePublisher("com.google.firebase", "firebase-appdistribution-gradle", Version.FirebasePublisher),
+    KotlinSerialization("org.jetbrains.kotlin", "kotlin-serialization", Version.Kotlin)
     ;
 
     internal val notation = "$group:$artifact:${version.value}"
@@ -142,6 +147,7 @@ enum class Plugin(group: String, artifact: String, version: Version) {
         AndroidApplication("com.android.application"),
         AndroidLibrary("com.android.library"),
         KotlinAndroid("org.jetbrains.kotlin.android"),
+        ComposeCompiler("org.jetbrains.kotlin.plugin.compose"),
         KotlinParcelize("kotlin-parcelize"),
         KotlinJvm("org.jetbrains.kotlin.jvm"),
         JavaLibrary("java-library"),
@@ -150,10 +156,11 @@ enum class Plugin(group: String, artifact: String, version: Version) {
         Versions("com.github.ben-manes.versions"),
         SQLDelight("app.cash.sqldelight"),
         GooglePlayPublisher("com.github.triplet.play"),
-        FirebasePublisher("com.google.firebase.appdistribution")
+        FirebasePublisher("com.google.firebase.appdistribution"),
+        KotlinSerialization("org.jetbrains.kotlin.plugin.serialization"),
     }
 
-    private enum class Version(val value: String) {
+    enum class Version(val value: String) {
         Android("8.2.2"),
         Kotlin(Library.Version.Kotlin.value),
         Google("4.3.13"),
@@ -165,7 +172,7 @@ enum class Plugin(group: String, artifact: String, version: Version) {
     }
 }
 
-const val KotlinCompilerExtensionVersion = "1.5.9" /*must be synchronized with kotlin and agp version*/
+//const val KotlinCompilerExtensionVersion = "1.5.15" /*must be synchronized with kotlin and agp version*/
 
 enum class Tools(val version: String) {
     Build("34.0.0"),

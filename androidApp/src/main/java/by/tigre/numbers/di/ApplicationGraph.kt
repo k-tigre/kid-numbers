@@ -25,10 +25,24 @@ class ApplicationGraph(
             tracker: (CoreScope) -> Tracker
         ): ApplicationGraph {
             val coroutineModule = CoroutineModule.Impl()
-            val analyticsModule = AnalyticsModule.Impl(tracker(coroutineModule.scope), coroutineModule)
-            val storeModule = StoreModule.Impl(context, coroutineModule = coroutineModule)
-            val gameModule = GameModule.Impl(analyticsModule)
-            return ApplicationGraph(storeModule, analyticsModule, gameModule, coroutineModule)
+            val analyticsModule = AnalyticsModule.Impl(
+                tracker = tracker(coroutineModule.scope),
+                coroutineModule = coroutineModule
+            )
+            val storeModule = StoreModule.Impl(
+                context = context,
+                coroutineModule = coroutineModule,
+                analyticsModule = analyticsModule
+            )
+            val gameModule = GameModule.Impl(
+                analyticsModule = analyticsModule
+            )
+            return ApplicationGraph(
+                storeModule = storeModule,
+                analyticsModule = analyticsModule,
+                gameModule = gameModule,
+                coroutineModule = coroutineModule
+            )
         }
     }
 }

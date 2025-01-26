@@ -12,6 +12,7 @@ import by.tigre.numbers.presentation.game.settings.SettingsUtils.DimensionSectio
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.RangeSection
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.TypeSection
 import by.tigre.tools.presentation.base.BaseComponentContext
+import by.tigre.tools.tools.coroutines.CoreDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 interface EquationsSettingsComponent {
     val onScrollPosition: Flow<Int>
@@ -29,7 +31,7 @@ interface EquationsSettingsComponent {
     fun onTypeSelected(value: Equations.Type)
     fun onRangeSelected(value: GameSettings.Range)
     fun onDimensionSelected(value: Equations.Dimension)
-    fun onStartGameClicked()
+    fun onConfirmClicked()
     fun onBackClicked()
 
     data class Settings(
@@ -91,6 +93,7 @@ interface EquationsSettingsComponent {
     class Impl(
         context: BaseComponentContext,
         analytics: EventAnalytics,
+        private val dispatchers: CoreDispatchers,
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : EquationsSettingsComponent, BaseComponentContext by context {
@@ -129,7 +132,7 @@ interface EquationsSettingsComponent {
             }
         }
 
-        override fun onStartGameClicked() {
+        override fun onConfirmClicked() {
             launch {
                 val settings = settings.value
 
@@ -139,14 +142,16 @@ interface EquationsSettingsComponent {
                     settings.type.current == null -> onScrollPositionInternal.emit(settings.type.index)
                     settings.dimension.current == null -> onScrollPositionInternal.emit(settings.dimension.index)
                     else -> {
-                        onStartGame(
-                            Equations(
-                                range = settings.range.current,
-                                difficult = settings.difficult.current,
-                                type = settings.type.current,
-                                dimension = settings.dimension.current
+                        withContext(dispatchers.main) {
+                            onStartGame(
+                                Equations(
+                                    range = settings.range.current,
+                                    difficult = settings.difficult.current,
+                                    type = settings.type.current,
+                                    dimension = settings.dimension.current
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

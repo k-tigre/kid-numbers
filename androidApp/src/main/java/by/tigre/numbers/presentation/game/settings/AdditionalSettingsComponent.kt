@@ -26,7 +26,7 @@ interface AdditionalSettingsComponent {
 
     fun onRangeSelected(value: GameSettings.Range)
     fun onDifficultSelected(value: Difficult)
-    fun onStartGameClicked()
+    fun onConfirmClicked()
     fun onBackClicked()
 
     data class Settings(
@@ -94,7 +94,7 @@ interface AdditionalSettingsComponent {
             }
         }
 
-        override fun onStartGameClicked() {
+        override fun onConfirmClicked() {
             launch {
                 val settings = settings.value
 

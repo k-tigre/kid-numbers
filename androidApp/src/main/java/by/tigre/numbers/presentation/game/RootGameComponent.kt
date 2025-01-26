@@ -11,6 +11,7 @@ import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.numbers.presentation.game.settings.AdditionalSettingsComponent
 import by.tigre.numbers.presentation.game.settings.EquationsSettingsComponent
+import by.tigre.numbers.presentation.game.settings.GameSettingsComponentProvider
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildStack
@@ -47,6 +48,13 @@ interface RootGameComponent {
         private val dispatchers: CoreDispatchers = dependencies.dispatchers
         private val resultStore = dependencies.resultStore
 
+        private val settingsComponentProvider = GameSettingsComponentProvider.Impl(
+            analytics = analytics,
+            onClose = onClose,
+            onConfirmSettings = ::startGame,
+            dispatchers = dispatchers
+        )
+
         private val initialSettings = when (gameType) {
             GameType.Additional -> GamePagesConfig.SettingsAdditional(isPositive = true)
             GameType.Multiplication -> GamePagesConfig.SettingsMultiplication(isPositive = true)
@@ -71,30 +79,22 @@ interface RootGameComponent {
             ) { config, componentContext ->
                 when (config) {
                     is GamePagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
-                        MultiplicationSettingsComponent.Impl(
+                        settingsComponentProvider.createMultiplicationSettingsComponent(
                             context = componentContext,
                             isPositive = config.isPositive,
-                            onStartGame = ::startGame,
-                            onClose = onClose
                         )
                     )
 
                     is GamePagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
-                        AdditionalSettingsComponent.Impl(
+                        settingsComponentProvider.createAdditionalSettingsComponent(
                             context = componentContext,
                             isPositive = config.isPositive,
-                            onStartGame = ::startGame,
-                            onClose = onClose,
-                            analytics = analytics
                         )
                     )
 
                     is GamePagesConfig.SettingsEquations -> PageChild.SettingsEquations(
-                        EquationsSettingsComponent.Impl(
+                        settingsComponentProvider.createEquationsSettingsComponent(
                             context = componentContext,
-                            onStartGame = ::startGame,
-                            onClose = onClose,
-                            analytics = analytics
                         )
                     )
 

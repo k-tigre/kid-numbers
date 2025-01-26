@@ -22,6 +22,7 @@ import by.tigre.tools.tools.platform.compose.ScreenComposableView
 
 class MultiplicationSettingsView(
     private val component: MultiplicationSettingsComponent,
+    private val confirmTitle: String
 ) : ScreenComposableView(
     ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
@@ -78,10 +79,10 @@ class MultiplicationSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
-                onClick = component::onStartGameClicked,
+                onClick = component::onConfirmClicked,
                 enabled = component.isStartEnabled.collectAsState().value
             ) {
-                Text(text = stringResource(R.string.screen_game_settings_start))
+                Text(text = confirmTitle)
             }
         }
     }

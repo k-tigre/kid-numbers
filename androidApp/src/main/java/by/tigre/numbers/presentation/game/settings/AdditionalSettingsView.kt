@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.debounce
 
 class AdditionalSettingsView(
     private val component: AdditionalSettingsComponent,
+    private val confirmTitle: String
 ) : ScreenComposableView(
     ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
@@ -74,7 +75,6 @@ class AdditionalSettingsView(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-
                 drawDifficultSectionItems(
                     section = settings.difficult,
                     selectedIndex = selectedIndex,
@@ -92,10 +92,10 @@ class AdditionalSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
-                onClick = component::onStartGameClicked,
+                onClick = component::onConfirmClicked,
                 enabled = true
             ) {
-                Text(text = stringResource(R.string.screen_game_settings_start))
+                Text(text = confirmTitle)
             }
         }
     }

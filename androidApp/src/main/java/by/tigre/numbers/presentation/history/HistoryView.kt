@@ -65,14 +65,14 @@ class HistoryView(
 
             listOf(
                 ToolbarConfig.Action.Icon(
-                    ImageVector.vectorResource(
+                    vector = ImageVector.vectorResource(
                         if (isVisible.value) {
                             by.tigre.numberscompose.R.drawable.outline_filter_alt_24
                         } else {
                             by.tigre.numberscompose.R.drawable.baseline_filter_list_alt_24
                         }
                     ),
-                    { component.onFilterVisibleChanges(isVisible.value.not()) }
+                    action = { component.onFilterVisibleChanges(isVisible.value.not()) }
                 )
             )
         }
@@ -148,8 +148,10 @@ class HistoryView(
     @Composable
     private fun DrawHistoryItems(state: HistoryComponent.ScreenState.History, onItemClicked: (HistoryComponent.HistoryItem) -> Unit) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-        ) {
+            modifier = Modifier
+                .fillMaxSize(),
+
+            ) {
             state.groups.forEach { group ->
                 stickyHeader(key = group.date) {
                     DrawHistoryDayHeader(group = group)
@@ -347,65 +349,3 @@ class HistoryView(
         }
     }
 }
-
-/*@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(showSystemUi = true, device = Devices.NEXUS_10)
-@Composable
-private fun Preview() {
-    val component = object : HistoryComponent {
-        override val results: StateFlow<HistoryComponent.ScreenState> = MutableStateFlow(
-            HistoryComponent.ScreenState.History(
-                groups = listOf(
-                    HistoryComponent.HistoryGroup(
-                        date = "2000-12-12",
-                        isExpanded = true,
-                        items = (1..20).map {
-                            HistoryComponent.HistoryItem(
-                                id = it.toLong(),
-                                time = "12: 12",
-                                duration = Random.nextLong(3_600_000),
-                                difficult = Difficult.Hard,
-                                correctCount = it * 10,
-                                totalCount = 12,
-                                gameType = GameType.Division
-                            )
-                        }
-                    )
-                )
-            )
-        )
-
-        override val filter: StateFlow<HistoryComponent.Filter> = MutableStateFlow(
-            HistoryComponent.Filter(
-                difficult = Difficult.entries.associateWith { true },
-                gameType = GameType.entries.associateWith { true },
-                onlySuccess = false
-            )
-        )
-        override val filterVisibility = MutableStateFlow(true)
-//        override val details: Value<ChildSlot<*, ResultComponent>> = mock
-
-        override fun onFilterVisibleChanges(visible: Boolean) {
-            filterVisibility.tryEmit(visible)
-        }
-
-        override fun onItemClicked(item: HistoryComponent.HistoryItem) = Unit
-        override fun onDifficultFilterChanges(difficult: Difficult, isEnabled: Boolean) = Unit
-        override fun onGameTypeFilterChanges(type: GameType, isEnabled: Boolean) = Unit
-        override fun onOnlySuccessChanges(isEnabled: Boolean) = Unit
-        override fun onCloseClicked() = Unit
-        override fun onGroupExpandChanges(isExpanded: Boolean, group: HistoryComponent.HistoryGroup) = Unit
-    }
-
-    AppTheme {
-        Surface(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize()
-        ) {
-            HistoryView(
-                component = component,
-            ).Draw(Modifier)
-        }
-    }
-}*/

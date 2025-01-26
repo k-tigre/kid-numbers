@@ -1,6 +1,6 @@
 package by.tigre.numbers.presentation.history
 
-import by.tigre.numbers.data.ResultStore
+import by.tigre.numbers.data.history.ResultStore
 import by.tigre.numbers.data.platform.DateFormatter
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameResult
@@ -71,7 +71,6 @@ interface HistoryComponent {
 
         override val filterVisibility = MutableStateFlow(false)
         override val filter = MutableStateFlow(DEFAULT_FILTER)
-
 
         override val details: Value<ChildSlot<*, ResultComponent>> =
             appChildSlot(

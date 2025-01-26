@@ -2,6 +2,12 @@
 <resources>
     <string name="main_manu_learn">Практиковать %s</string>
     <string name="main_menu_history">История</string>
+    <string name="main_menu_active_challenges">Испытания: есть активные</string>
+    <string name="main_menu_no_active_challenges">Испытания: нет активных</string>
+
+    <string name="button_start">Начать</string>
+    <string name="button_close">Закрыть</string>
+    <string name="button_continue">Продолжить</string>
 
     <string name="screen_history_title">История</string>
     <string name="screen_history_empty">Тут пока ничего нет, пройди тренировку и результат отобразится</string>
@@ -48,9 +54,55 @@
     <string name="screen_game_settings_select_operation_type">Тип математических операций</string>
     <string name="screen_game_settings_number_range">Числа в диапазоне %s</string>
 
+    <string name="screen_challenge_settings_add">Добавить</string>
+    <string name="screen_challenge_settings_duration_10_minutes">10 минут</string>
+    <string name="screen_challenge_settings_duration_30_minutes">30 минут</string>
+    <string name="screen_challenge_settings_duration_1_hour">1 час</string>
+    <string name="screen_challenge_settings_duration_1_day">1 день</string>
+    <string name="screen_challenge_settings_duration_1_week">1 неделя</string>
+    <string name="screen_challenge_settings_number_range">Числа в диапазоне от %d до %d</string>
+    <string name="screen_challenge_settings_number_counts">Выбрано чисел: %d</string>
+    <string name="screen_challenge_result_duration">Время выполнения: %s</string>
+    <string name="screen_challenge_result_total_task">Успешно решенных заданий: %d</string>
+    <string name="screen_challenge_result_correct_task">Всего заданий: %d</string>
+
     <string name="screen_game_result_duration">Время выполнения: %s</string>
     <string name="screen_game_result_total_questions">Результат ответов на %d вопросов</string>
     <string name="screen_game_result_total_correct_answers">Всего правильных ответов: %d</string>
     <string name="screen_game_result_total_wrong_answers">Всего НЕ правильных ответов: %d</string>
     <string name="screen_game_result_item_user_answer">Твой ответ: %s</string>
+
+    <string name="screen_challenge_creator_menu_details">Детали</string>
+    <string name="screen_challenge_creator_menu_edit">Редактирование</string>
+    <string name="screen_challenge_creator_menu_create">Создание</string>
+    <string name="screen_challenge_creator_select_type_title">Выберите тип задания</string>
+    <string name="screen_challenge_creator_confirm">Подтвердить</string>
+    <string name="screen_challenge_creator_remove_challenge_title">Удалить текущее испытание?</string>
+    <string name="screen_challenge_creator_remove">Удалить</string>
+    <string name="screen_challenge_creator_cancel">Отмена</string>
+    <string name="screen_challenge_creator_select_duration_title">Выберете продолжительность</string>
+    <string name="screen_challenge_creator_add_task_button">Добавить задание</string>
+    <string name="screen_challenge_creator_add_more_button">Добавить еще</string>
+    <string name="screen_challenge_creator_selected_duration">Выбранная продолжительность: %1$s</string>
+    <string name="screen_challenge_creator_tasks_duration">Заданий на: %1$s</string>
+    <string name="screen_challenge_list_title">Ваши испытания</string>
+    <string name="screen_challenge_list_add_more">Добавить еще</string>
+    <string name="screen_challenge_list_empty_title">Активные испытания не заданы</string>
+    <string name="screen_challenge_list_empty_add_button">Создать</string>
+    <string name="screen_challenge_list_item_title">Испытание</string>
+    <string name="screen_challenge_list_item_timeout">Время на выполнение истекло</string>
+    <string name="screen_challenge_list_item_not_finished_tasks">Не пройдено заданий: %1$s</string>
+    <string name="screen_challenge_list_item_active_left_task">Осталось заданий: %1$s</string>
+    <string name="screen_challenge_list_item_active_duration">Нужно успеть за %1$s</string>
+    <string name="screen_challenge_list_item_new_duration">Нужно успеть за %1$s</string>
+    <string name="screen_challenge_list_item_new_tasks_count">Всего заданий: %1$s</string>
+    <string name="screen_game_challenge_task_count">Задание %1$s из %2$s</string>
+    <string name="screen_game_challenge_duration">Осталось времени: %1$s</string>
+    <string name="screen_challenge_result_title">Результат испытания</string>
+
+    <plurals name="day_count">
+        <item quantity="one">%d день</item>
+        <item quantity="many">%d дней</item>
+        <item quantity="few">%d дня</item>
+    </plurals>
 </resources>

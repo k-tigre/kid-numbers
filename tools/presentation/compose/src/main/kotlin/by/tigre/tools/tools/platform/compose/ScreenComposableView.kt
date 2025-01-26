@@ -73,7 +73,8 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
             when (action) {
                 is ToolbarConfig.Action.Icon -> {
                     IconButton(
-                        onClick = action.action
+                        onClick = action.action,
+                        enabled = action.enabled
                     ) {
                         Icon(
                             imageVector = action.vector,
@@ -84,7 +85,8 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
 
                 is ToolbarConfig.Action.Text -> {
                     TextButton(
-                        onClick = action.action
+                        onClick = action.action,
+                        enabled = action.enabled
                     ) {
                         Text(action.title)
                     }
@@ -101,10 +103,12 @@ abstract class ScreenComposableView(private val config: ToolbarConfig) : Composa
         val navigationIcon: NavigationIconAction? = null,
         val actions: @Composable () -> List<Action> = { emptyList() }
     ) {
-        class NavigationIconAction(val vector: ImageVector = Icons.AutoMirrored.Filled.ArrowBack, val action: () -> Unit)
+
+        data class NavigationIconAction(val vector: ImageVector = Icons.AutoMirrored.Filled.ArrowBack, val action: () -> Unit)
         sealed interface Action {
-            class Text(val title: String, val action: () -> Unit) : Action
-            class Icon(val vector: ImageVector, val action: () -> Unit) : Action
+
+            data class Text(val title: String, val enabled: Boolean = true, val action: () -> Unit) : Action
+            data class Icon(val vector: ImageVector, val enabled: Boolean = true, val action: () -> Unit) : Action
         }
 
     }

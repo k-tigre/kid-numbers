@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import by.tigre.numbers.R
+import by.tigre.numbers.entity.Challenge
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings.Equations
 import by.tigre.numbers.entity.GameType
@@ -32,6 +33,17 @@ fun GameType.toLabel(): String = stringResource(
         GameType.Subtraction -> R.string.screen_game_type_subtraction
         GameType.Division -> R.string.screen_game_type_division
         GameType.Equations -> R.string.screen_game_type_equations
+    }
+)
+
+@Composable
+fun Challenge.Duration.toLabel(): String = stringResource(
+    when (this) {
+        Challenge.Duration.TenMinutes -> R.string.screen_challenge_settings_duration_10_minutes
+        Challenge.Duration.HalfHour -> R.string.screen_challenge_settings_duration_30_minutes
+        Challenge.Duration.OneHour -> R.string.screen_challenge_settings_duration_1_hour
+        Challenge.Duration.OneDay -> R.string.screen_challenge_settings_duration_1_day
+        Challenge.Duration.OneWeek -> R.string.screen_challenge_settings_duration_1_week
     }
 )
 

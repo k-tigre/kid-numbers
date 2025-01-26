@@ -1,11 +1,10 @@
-package by.tigre.numbers.presentation.game
+package by.tigre.numbers.presentation.challenge.creator
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import by.tigre.numbers.R
-import by.tigre.numbers.presentation.game.result.ResultView
 import by.tigre.numbers.presentation.game.settings.AdditionalSettingsView
 import by.tigre.numbers.presentation.game.settings.EquationsSettingsView
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsView
@@ -14,8 +13,8 @@ import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
 
-class RootGameView(
-    private val component: RootGameComponent,
+class RootDetailsView(
+    private val component: DetailsComponent,
 ) : ComposableView {
 
     @Composable
@@ -26,24 +25,24 @@ class RootGameView(
             animation = stackAnimation(animator = fade())
         ) {
             when (val child = it.instance) {
-                is RootGameComponent.PageChild.SettingsAdditional -> AdditionalSettingsView(
+                is DetailsComponent.PageChild.TaskList -> ChallengeTaskView(component)
+                is DetailsComponent.PageChild.SettingsAdditional -> AdditionalSettingsView(
                     component = child.component,
-                    confirmTitle = stringResource(R.string.screen_game_settings_start)
+                    confirmTitle = stringResource(R.string.screen_challenge_settings_add)
                 )
 
-                is RootGameComponent.PageChild.SettingsMultiplication -> MultiplicationSettingsView(
+                is DetailsComponent.PageChild.SettingsMultiplication -> MultiplicationSettingsView(
                     component = child.component,
-                    confirmTitle = stringResource(R.string.screen_game_settings_start)
+                    confirmTitle = stringResource(R.string.screen_challenge_settings_add)
                 )
 
-                is RootGameComponent.PageChild.SettingsEquations -> EquationsSettingsView(
+                is DetailsComponent.PageChild.SettingsEquations -> EquationsSettingsView(
                     component = child.component,
-                    confirmTitle = stringResource(R.string.screen_game_settings_start)
+                    confirmTitle = stringResource(R.string.screen_challenge_settings_add)
                 )
-
-                is RootGameComponent.PageChild.Game -> GameView(child.component)
-                is RootGameComponent.PageChild.Result -> ResultView(child.component)
             }.Draw(modifier = Modifier.fillMaxSize())
         }
     }
+
+
 }

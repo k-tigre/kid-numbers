@@ -10,15 +10,17 @@ class ApplicationGraph(
     storeModule: StoreModule,
     analyticsModule: AnalyticsModule,
     gameModule: GameModule,
-    coroutineModule: CoroutineModule
+    coroutineModule: CoroutineModule,
+    context: Context
 ) : GameDependencies,
+    ChallengesDependencies,
     StoreModule by storeModule,
     AnalyticsModule by analyticsModule,
     GameModule by gameModule,
     CoroutineModule by coroutineModule {
 
-    override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl() }
-
+    override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl(context.resources) }
+    
     companion object {
         fun create(
             context: Context,
@@ -41,7 +43,8 @@ class ApplicationGraph(
                 storeModule = storeModule,
                 analyticsModule = analyticsModule,
                 gameModule = gameModule,
-                coroutineModule = coroutineModule
+                coroutineModule = coroutineModule,
+                context = context
             )
         }
     }

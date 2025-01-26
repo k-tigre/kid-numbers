@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         val root = RootComponent.Impl(
             context = BaseComponentContextImpl(defaultComponentContext()),
             gameDependencies = graph,
+            challengesDependencies = graph,
             analytics = graph.eventAnalytics,
             screenAnalytics = graph.screenAnalytics
         )

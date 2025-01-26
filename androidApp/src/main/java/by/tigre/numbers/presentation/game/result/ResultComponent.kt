@@ -14,6 +14,7 @@ interface ResultComponent {
     class Impl(
         context: BaseComponentContext,
         result: GameResult,
+
         private val onFinish: () -> Unit
     ) : ResultComponent, BaseComponentContext by context {
 

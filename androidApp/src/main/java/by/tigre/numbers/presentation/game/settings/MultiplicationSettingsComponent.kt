@@ -18,7 +18,7 @@ interface MultiplicationSettingsComponent {
     val isStartEnabled: StateFlow<Boolean>
     fun onNumberSelectionChanged(number: Int, isSelected: Boolean)
     fun onDifficultChanged(difficult: Difficult)
-    fun onStartGameClicked()
+    fun onConfirmClicked()
     fun onBackClicked()
 
     @Immutable
@@ -45,7 +45,7 @@ interface MultiplicationSettingsComponent {
             difficultSelection.tryEmit(difficult)
         }
 
-        override fun onStartGameClicked() {
+        override fun onConfirmClicked() {
             onStartGame(
                 GameSettings.Multiplication(
                     selectedNumbers = numbers.mapNotNull { if (it.value) it.key else null },

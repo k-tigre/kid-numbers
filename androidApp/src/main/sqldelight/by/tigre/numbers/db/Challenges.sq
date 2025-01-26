@@ -1,0 +1,68 @@
+import by.tigre.numbers.entity.Challenge;
+import kotlin.Boolean;
+
+CREATE TABLE Challenges(
+id TEXT NOT NULL PRIMARY KEY,
+date INTEGER NOT NULL,
+startDate INTEGER,
+endDate INTEGER,
+duration INTEGER AS Challenge.Duration NOT NULL,
+status INTEGER AS Challenge.Status NOT NULL
+);
+
+CREATE TABLE ChallengeTask(
+id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+settings TEXT NOT NULL,
+isCompleted INTEGER AS Boolean NOT NULL,
+challengesId TEXT NOT NULL
+);
+
+CREATE TRIGGER ChallengeTaskCleaner
+AFTER DELETE ON Challenges
+FOR EACH ROW
+BEGIN
+    DELETE FROM ChallengeTask WHERE challengesId = old.id;
+END;
+
+addChallenge:
+INSERT OR REPLACE INTO Challenges(id, date, duration, status) VALUES(?, ?, ?, ?);
+
+addChallengeTask:
+INSERT INTO ChallengeTask(settings, isCompleted, challengesId) VALUES(?, ?, ?);
+
+startChallenge:
+UPDATE Challenges SET status=1, startDate=? WHERE id=?;
+
+finishChallenge:
+UPDATE Challenges SET status=2, endDate=? WHERE id=?;
+
+removeChallenge:
+DELETE FROM Challenges WHERE id=?;
+
+getChallenge:
+SELECT * FROM Challenges WHERE id=? LIMIT 1;
+
+getChallengesWithCountFinished:
+SELECT Challenges.*,
+       COUNT(ChallengeTask.id) tasksCount
+FROM Challenges
+LEFT JOIN ChallengeTask ON ChallengeTask.challengesId = Challenges.id
+WHERE status =2
+GROUP BY Challenges.id ORDER BY Challenges.date;
+
+getChallengesWithCountNotFinished:
+SELECT Challenges.*,
+       COUNT(ChallengeTask.id) tasksCount
+FROM Challenges
+LEFT JOIN ChallengeTask ON ChallengeTask.challengesId = Challenges.id AND ChallengeTask.isCompleted = 0
+WHERE status <2
+GROUP BY Challenges.id ORDER BY Challenges.status DESC, Challenges.date;
+
+updateChallengeTask:
+UPDATE ChallengeTask SET isCompleted=? WHERE id=?;
+
+getChallengeTasks:
+SELECT * FROM ChallengeTask WHERE challengesId=?;
+
+getNonCompletedChallengeTask:
+SELECT * FROM ChallengeTask WHERE challengesId=? AND isCompleted=0 LIMIT 1;

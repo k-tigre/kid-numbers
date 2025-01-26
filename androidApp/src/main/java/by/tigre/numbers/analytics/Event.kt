@@ -16,6 +16,8 @@ sealed class Event(val name: String) {
         sealed class Logic(name: String) : Action("Logic_$name") {
             data object RandomBigDeep : Logic("RandomBigDeep")
             data object WrongCountInDB : Logic("WrongCountInDB")
+            data object WrongChallengeInDB : Logic("WrongChallengeInDB")
+            data object CanNotFindChallengeInDB : Logic("CanNotFindChallengeInDB")
             data class Error(val type: String) : Logic("Error"), WithPayload {
                 override val payload: Map<String, String> by lazy { mapOf("type" to type) }
             }
@@ -44,6 +46,8 @@ sealed class Event(val name: String) {
         data object MainMenu : Screen("MainMenu")
         data object History : Screen("History")
         data object RootGame : Screen("RootGame", skip = true)
+        data object RootChallenge : Screen("RootChallenge", skip = true)
+        data object RootGameChallenge : Screen("RootGameChallenge", skip = true)
 
         data class GameSettings(private val type: GameType) : Screen("GameSettings"), WithPayload {
             override val payload: Map<String, String> by lazy { mapOf("type" to type.name) }
@@ -70,6 +74,13 @@ sealed class Event(val name: String) {
                     "correctCount" to correctCount.toString(),
                     "success" to (incorrectCount == 0).toString(),
                     "gameType" to type.toString()
+                )
+            }
+        }
+
+        data object ChallengeResult : Screen("ChallengeResult"), WithPayload {
+            override val payload: Map<String, String> by lazy {
+                mapOf(
                 )
             }
         }

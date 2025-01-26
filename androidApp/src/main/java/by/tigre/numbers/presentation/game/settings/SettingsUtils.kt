@@ -136,7 +136,7 @@ object SettingsUtils {
         }
 
         section.values.forEach { range ->
-            item(key = range, span = { GridItemSpan(3) }) {
+            item(key = range.toString(), span = { GridItemSpan(3) }) {
                 SelectableButton(
                     isSelected = range == section.current,
                     onClick = { onRangeSelected(range) }

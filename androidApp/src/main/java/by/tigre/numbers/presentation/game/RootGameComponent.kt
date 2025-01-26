@@ -1,6 +1,5 @@
 package by.tigre.numbers.presentation.game
 
-import android.os.Parcelable
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
@@ -21,7 +20,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 interface RootGameComponent {
 
@@ -65,7 +64,8 @@ interface RootGameComponent {
                 source = pagesNavigation,
                 initialStack = { listOf(initialSettings) },
                 key = "game_pages",
-                handleBackButton = true
+                handleBackButton = true,
+                serializer = PagesConfig.serializer()
             ) { config, componentContext ->
                 when (config) {
                     is PagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
@@ -144,20 +144,12 @@ interface RootGameComponent {
             }
         }
 
-        private sealed interface PagesConfig : Parcelable {
-            @Parcelize
+        @Serializable
+        private sealed interface PagesConfig {
             data class SettingsAdditional(val isPositive: Boolean) : PagesConfig
-
-            @Parcelize
             data object SettingsEquations : PagesConfig
-
-            @Parcelize
             data class SettingsMultiplication(val isPositive: Boolean) : PagesConfig
-
-            @Parcelize
             data class Game(val settings: GameSettings) : PagesConfig
-
-            @Parcelize
             data class Result(val result: GameResult) : PagesConfig
         }
     }

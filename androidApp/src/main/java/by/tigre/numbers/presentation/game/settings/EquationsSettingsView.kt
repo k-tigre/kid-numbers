@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 class EquationsSettingsView(
     private val component: EquationsSettingsComponent,
+    private val confirmTitle: String
 ) : ScreenComposableView(
     ToolbarConfig(
         title = { stringResource(R.string.screen_game_settings_title) },
@@ -132,10 +133,10 @@ class EquationsSettingsView(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
-                onClick = component::onStartGameClicked,
+                onClick = component::onConfirmClicked,
                 enabled = true
             ) {
-                Text(text = stringResource(R.string.screen_game_settings_start))
+                Text(text = confirmTitle)
             }
         }
     }
@@ -152,7 +153,7 @@ private fun Preview() {
         override fun onTypeSelected(value: Equations.Type) = Unit
         override fun onRangeSelected(value: GameSettings.Range) = Unit
         override fun onDimensionSelected(value: Equations.Dimension) = Unit
-        override fun onStartGameClicked() = Unit
+        override fun onConfirmClicked() = Unit
         override fun onBackClicked() = Unit
     }
     AppTheme {
@@ -163,6 +164,7 @@ private fun Preview() {
         ) {
             EquationsSettingsView(
                 component = component,
+                confirmTitle = "Next"
             ).Draw(Modifier)
         }
     }

@@ -1,0 +1,27 @@
+import by.tigre.numbers.entity.Challenge;
+import kotlin.Boolean;
+
+CREATE TABLE Challenges(
+id TEXT NOT NULL PRIMARY KEY,
+date INTEGER NOT NULL,
+startDate INTEGER,
+endDate INTEGER,
+duration INTEGER NOT NULL,
+status INTEGER AS Challenge.Status NOT NULL
+);
+
+CREATE TABLE ChallengeTask(
+id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+settings TEXT NOT NULL,
+isCompleted INTEGER AS Boolean NOT NULL,
+challengesId TEXT NOT NULL
+);
+
+CREATE TRIGGER ChallengeTaskCleaner
+AFTER DELETE ON Challenges
+FOR EACH ROW
+BEGIN
+    DELETE FROM ChallengeTask WHERE challengesId = old.id;
+END;
+
+ALTER TABLE History ADD COLUMN challengeId TEXT;

@@ -1,4 +1,4 @@
-package by.tigre.numbers.data
+package by.tigre.numbers.data.history
 
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
@@ -14,8 +14,10 @@ import kotlinx.serialization.json.Json
 
 interface ResultStore {
     suspend fun save(result: GameResult)
+    suspend fun save(result: GameResult, challengeId: String)
 
     suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult>
+    suspend fun loadForChallenge(id: String): List<HistoryGameResult>
     suspend fun getDetails(id: Long): GameResult?
 
     class Impl(
@@ -36,36 +38,51 @@ interface ResultStore {
         }
 
         override suspend fun save(result: GameResult) {
+            saveInternal(result, null)
+        }
+
+        override suspend fun save(result: GameResult, challengeId: String) {
+            saveInternal(result, challengeId)
+        }
+
+        private suspend fun saveInternal(result: GameResult, challengeId: String?) {
             val data = json.encodeToString(GameResult.serializer(), result)
             database.historyQueries.insertHistoryWithData(
-                date = System.currentTimeMillis(), // TODO make it more testable
+                date = System.currentTimeMillis(),
                 correctCount = result.correctCount,
                 difficult = result.difficult,
                 totalCount = result.totalCount,
                 duration = result.time,
                 gameType = result.type,
-                historyData = data
+                historyData = data,
+                challengeId = challengeId
             )
         }
 
+        private val historyResultMapper =
+            { id: Long, date: Long, duration: Long, itemDifficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType?, _: String? ->
+                HistoryGameResult(
+                    difficult = itemDifficult,
+                    correctCount = correctCount,
+                    date = date,
+                    totalCount = totalCount,
+                    duration = duration,
+                    gameType = gameType,
+                    id = id
+                )
+            }
+
         override suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult> {
-            val mapper =
-                { id: Long, date: Long, duration: Long, itemDifficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType? ->
-                    HistoryGameResult(
-                        difficult = itemDifficult,
-                        correctCount = correctCount,
-                        date = date,
-                        totalCount = totalCount,
-                        duration = duration,
-                        gameType = gameType,
-                        id = id
-                    )
-                }
             return if (onlySuccess) {
-                database.historyQueries.selectByTypeAndDifficultOnlyCorrect(difficult, types, limit = 10_000, mapper)
+                database.historyQueries.selectByTypeAndDifficultOnlyCorrect(difficult, types, limit = 10_000, historyResultMapper)
             } else {
-                database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, mapper)
+                database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, historyResultMapper)
             }.executeAsList()
+        }
+
+        override suspend fun loadForChallenge(id: String): List<HistoryGameResult> {
+            return database.historyQueries.selectByChallenge(challengeId = id, limit = 10_000, historyResultMapper)
+                .executeAsList()
         }
 
         override suspend fun getDetails(id: Long): GameResult? {

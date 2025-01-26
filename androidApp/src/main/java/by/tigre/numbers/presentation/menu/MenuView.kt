@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,10 @@ class MenuView(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            item {
+                DrawChallengeItem()
+            }
+
             component.gameTypes.forEach { type ->
                 item {
                     DrawItem(
@@ -54,6 +59,21 @@ class MenuView(
         ) {
             Text(
                 text = title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+    }
+
+    @Composable
+    private fun DrawChallengeItem(modifier: Modifier = Modifier) {
+        val hasActiveChallenge = component.hasActiveChallenge.collectAsState().value
+        Button(
+            modifier = modifier
+                .padding(16.dp),
+            onClick = component::onChallengeClicked
+        ) {
+            Text(
+                text = if (hasActiveChallenge) stringResource(R.string.main_menu_active_challenges) else stringResource(R.string.main_menu_no_active_challenges),
                 style = MaterialTheme.typography.titleLarge,
             )
         }

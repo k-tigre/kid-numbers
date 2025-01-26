@@ -11,7 +11,6 @@ buildscript {
     dependencies {
         plugin(Plugin.Android)
         plugin(Plugin.Kotlin)
-//        plugin(Plugin.Compose)
         plugin(Plugin.Google)
         plugin(Plugin.Crashlytics)
         plugin(Plugin.Versions)
@@ -46,8 +45,6 @@ subprojects {
             buildFeatures.buildConfig = false
             buildFeatures.viewBinding = false
             buildFeatures.compose = false
-
-//            composeOptions.kotlinCompilerExtensionVersion = KotlinCompilerExtensionVersion
 
             namespace = "${Application.id}${name.replace(":", ".").replace("-", "_")}"
         }

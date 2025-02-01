@@ -19,6 +19,7 @@ sqldelight {
         create("DatabaseLog") {
             packageName.set("by.tigre.tools.logger.db")
             generateAsync.set(true)
+            schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
         }
     }
 }

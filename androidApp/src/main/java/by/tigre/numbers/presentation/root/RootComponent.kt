@@ -17,6 +17,7 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface RootComponent {
@@ -36,30 +37,30 @@ interface RootComponent {
         analytics: EventAnalytics
     ) : RootComponent, BaseComponentContext by context {
 
-        private val pagesNavigation = StackNavigation<PagesConfig>()
+        private val pagesNavigation = StackNavigation<MenuPagesConfig>()
 
         override val pages: Value<ChildStack<*, PageChild>> =
             appChildStack(
                 source = pagesNavigation,
-                initialStack = { listOf(PagesConfig.Menu) },
+                initialStack = { listOf(MenuPagesConfig.Menu) },
                 key = "pages",
                 handleBackButton = true,
-                serializer = PagesConfig.serializer()
+                serializer = MenuPagesConfig.serializer()
             ) { config, componentContext ->
                 when (config) {
-                    PagesConfig.Menu -> PageChild.Menu(
+                    MenuPagesConfig.Menu -> PageChild.Menu(
                         MenuComponent.Impl(
                             context = componentContext,
                             onShowHistory = {
-                                pagesNavigation.push(PagesConfig.History)
+                                pagesNavigation.push(MenuPagesConfig.History)
                             },
                             onGameTypeSelected = { type ->
-                                pagesNavigation.push(PagesConfig.Game(type))
+                                pagesNavigation.push(MenuPagesConfig.Game(type))
                             }
                         )
                     )
 
-                    is PagesConfig.Game -> PageChild.Game(
+                    is MenuPagesConfig.Game -> PageChild.Game(
                         RootGameComponent.Impl(
                             context = componentContext,
                             gameType = config.type,
@@ -70,7 +71,7 @@ interface RootComponent {
                         )
                     )
 
-                    PagesConfig.History -> PageChild.History(
+                    MenuPagesConfig.History -> PageChild.History(
                         HistoryComponent.Impl(
                             context = componentContext,
                             resultStore = gameDependencies.resultStore,
@@ -82,21 +83,32 @@ interface RootComponent {
 
         init {
             launch {
-                pages.trackScreens<PagesConfig>(screenAnalytics) {
+                pages.trackScreens<MenuPagesConfig>(screenAnalytics) {
                     when (it) {
-                        PagesConfig.Menu -> Event.Screen.MainMenu
-                        PagesConfig.History -> Event.Screen.History
-                        is PagesConfig.Game -> Event.Screen.RootGame
+                        MenuPagesConfig.Menu -> Event.Screen.MainMenu
+                        MenuPagesConfig.History -> Event.Screen.History
+                        is MenuPagesConfig.Game -> Event.Screen.RootGame
                     }
                 }
             }
         }
 
         @Serializable
-        private sealed interface PagesConfig {
-            data object Menu : PagesConfig
-            data object History : PagesConfig
-            data class Game(val type: GameType) : PagesConfig
+        private sealed interface MenuPagesConfig {
+            @Serializable
+            @SerialName("Menu")
+            data object Menu : MenuPagesConfig
+
+            @Serializable
+            @SerialName("History")
+            data object History : MenuPagesConfig
+
+            @Serializable
+            @SerialName("Game")
+            data class Game(
+                @SerialName("GameType")
+                val type: GameType
+            ) : MenuPagesConfig
         }
     }
 }

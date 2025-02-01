@@ -1,5 +1,6 @@
 package by.tigre.numbers.entity
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 data class GameOptions(
@@ -20,8 +21,11 @@ data class GameOptions(
             val x: Int
 
             @Serializable
+            @SerialName("Multiplication")
             data class Multiplication(
+                @SerialName("first")
                 val first: Int,
+                @SerialName("second")
                 val second: Int,
             ) : Operation {
                 override val title: String = "$first * $second = %s"
@@ -30,8 +34,11 @@ data class GameOptions(
             }
 
             @Serializable
+            @SerialName("Additional")
             data class Additional(
+                @SerialName("a")
                 val a: Int,
+                @SerialName("b")
                 val b: Int,
             ) : Operation {
                 override val title: String = "$a + $b = %s"
@@ -40,8 +47,11 @@ data class GameOptions(
             }
 
             @Serializable
+            @SerialName("Division")
             data class Division(
+                @SerialName("second")
                 val second: Int,
+                @SerialName("x")
                 override val x: Int,
             ) : Operation {
                 val first: Int = x * second // (first / second = result)
@@ -50,11 +60,14 @@ data class GameOptions(
             }
 
             @Serializable
+            @SerialName("Subtraction")
             data class Subtraction(
+                @SerialName("b")
                 val b: Int,
+                @SerialName("x")
                 override val x: Int,
             ) : Operation {
-                val a: Int = x + b // (first - second = result)
+                private val a: Int = x + b // (first - second = result)
                 override val title: String = "$a - $b = ?"
                 override val result: String = x.toString()
             }
@@ -65,17 +78,24 @@ data class GameOptions(
             // A + B * X = C, B * X = C, A + X = C
 
             @Serializable
+            @SerialName("Single")
             data class Single(
+                @SerialName("x")
                 val x: Int,
+                @SerialName("title")
                 override val title: String
             ) : Equation {
                 override val result: String = "X = $x"
             }
 
             @Serializable
+            @SerialName("Double")
             data class Double(
+                @SerialName("x")
                 val x: Int,
+                @SerialName("y")
                 val y: Int,
+                @SerialName("title")
                 override val title: String
             ) : Equation {
                 override val result: String = "X = $x, Y = $y"

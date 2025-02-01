@@ -20,6 +20,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface RootGameComponent {
@@ -46,17 +47,17 @@ interface RootGameComponent {
         private val dispatchers: CoreDispatchers = dependencies.dispatchers
 
         private val initialSettings = when (gameType) {
-            GameType.Additional -> PagesConfig.SettingsAdditional(isPositive = true)
-            GameType.Multiplication -> PagesConfig.SettingsMultiplication(isPositive = true)
-            GameType.Division -> PagesConfig.SettingsMultiplication(isPositive = false)
-            GameType.Subtraction -> PagesConfig.SettingsAdditional(isPositive = false)
-            GameType.Equations -> PagesConfig.SettingsEquations
+            GameType.Additional -> GamePagesConfig.SettingsAdditional(isPositive = true)
+            GameType.Multiplication -> GamePagesConfig.SettingsMultiplication(isPositive = true)
+            GameType.Division -> GamePagesConfig.SettingsMultiplication(isPositive = false)
+            GameType.Subtraction -> GamePagesConfig.SettingsAdditional(isPositive = false)
+            GameType.Equations -> GamePagesConfig.SettingsEquations
         }
 
-        private val pagesNavigation = StackNavigation<PagesConfig>()
+        private val pagesNavigation = StackNavigation<GamePagesConfig>()
 
         private fun startGame(settings: GameSettings) {
-            launch(dispatchers.main) { pagesNavigation.replaceCurrent(PagesConfig.Game(settings)) }
+            launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Game(settings)) }
         }
 
         override val pages: Value<ChildStack<*, PageChild>> =
@@ -65,10 +66,10 @@ interface RootGameComponent {
                 initialStack = { listOf(initialSettings) },
                 key = "game_pages",
                 handleBackButton = true,
-                serializer = PagesConfig.serializer()
+                serializer = GamePagesConfig.serializer()
             ) { config, componentContext ->
                 when (config) {
-                    is PagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
+                    is GamePagesConfig.SettingsMultiplication -> PageChild.SettingsMultiplication(
                         MultiplicationSettingsComponent.Impl(
                             context = componentContext,
                             isPositive = config.isPositive,
@@ -77,7 +78,7 @@ interface RootGameComponent {
                         )
                     )
 
-                    is PagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
+                    is GamePagesConfig.SettingsAdditional -> PageChild.SettingsAdditional(
                         AdditionalSettingsComponent.Impl(
                             context = componentContext,
                             isPositive = config.isPositive,
@@ -87,7 +88,7 @@ interface RootGameComponent {
                         )
                     )
 
-                    is PagesConfig.SettingsEquations -> PageChild.SettingsEquations(
+                    is GamePagesConfig.SettingsEquations -> PageChild.SettingsEquations(
                         EquationsSettingsComponent.Impl(
                             context = componentContext,
                             onStartGame = ::startGame,
@@ -96,16 +97,16 @@ interface RootGameComponent {
                         )
                     )
 
-                    is PagesConfig.Game -> PageChild.Game(
+                    is GamePagesConfig.Game -> PageChild.Game(
                         GameComponent.Impl(
                             context = componentContext,
                             settings = config.settings,
                             provider = dependencies.getGameProvider(),
-                            onFinish = { result -> launch(dispatchers.main) { pagesNavigation.replaceCurrent(PagesConfig.Result(result)) } }
+                            onFinish = { result -> launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Result(result)) } }
                         )
                     )
 
-                    is PagesConfig.Result -> PageChild.Result(
+                    is GamePagesConfig.Result -> PageChild.Result(
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
@@ -118,21 +119,21 @@ interface RootGameComponent {
 
         init {
             launch {
-                pages.trackScreens<PagesConfig>(screenAnalytics) {
+                pages.trackScreens<GamePagesConfig>(screenAnalytics) {
                     when (it) {
-                        is PagesConfig.SettingsAdditional -> Event.Screen.GameSettings(
+                        is GamePagesConfig.SettingsAdditional -> Event.Screen.GameSettings(
                             if (it.isPositive) GameType.Additional else GameType.Subtraction
                         )
 
-                        is PagesConfig.SettingsMultiplication -> Event.Screen.GameSettings(
+                        is GamePagesConfig.SettingsMultiplication -> Event.Screen.GameSettings(
                             if (it.isPositive) GameType.Multiplication else GameType.Division
                         )
 
-                        is PagesConfig.SettingsEquations -> Event.Screen.GameSettings(GameType.Equations)
+                        is GamePagesConfig.SettingsEquations -> Event.Screen.GameSettings(GameType.Equations)
 
-                        is PagesConfig.Game -> Event.Screen.Game(it.settings.difficult)
+                        is GamePagesConfig.Game -> Event.Screen.Game(it.settings.difficult)
 
-                        is PagesConfig.Result -> Event.Screen.GameResult(
+                        is GamePagesConfig.Result -> Event.Screen.GameResult(
                             correctCount = it.result.correctCount,
                             incorrectCount = it.result.inCorrectCount,
                             totalCount = it.result.totalCount,
@@ -145,12 +146,26 @@ interface RootGameComponent {
         }
 
         @Serializable
-        private sealed interface PagesConfig {
-            data class SettingsAdditional(val isPositive: Boolean) : PagesConfig
-            data object SettingsEquations : PagesConfig
-            data class SettingsMultiplication(val isPositive: Boolean) : PagesConfig
-            data class Game(val settings: GameSettings) : PagesConfig
-            data class Result(val result: GameResult) : PagesConfig
+        private sealed interface GamePagesConfig {
+            @Serializable
+            @SerialName("SettingsAdditional")
+            data class SettingsAdditional(val isPositive: Boolean) : GamePagesConfig
+
+            @Serializable
+            @SerialName("SettingsEquations")
+            data object SettingsEquations : GamePagesConfig
+
+            @Serializable
+            @SerialName("SettingsMultiplication")
+            data class SettingsMultiplication(val isPositive: Boolean) : GamePagesConfig
+
+            @Serializable
+            @SerialName("Game")
+            data class Game(val settings: GameSettings) : GamePagesConfig
+
+            @Serializable
+            @SerialName("Result")
+            data class Result(val result: GameResult) : GamePagesConfig
         }
     }
 }

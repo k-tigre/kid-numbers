@@ -45,6 +45,7 @@ interface RootGameComponent {
     ) : RootGameComponent, BaseComponentContext by context {
 
         private val dispatchers: CoreDispatchers = dependencies.dispatchers
+        private val resultStore = dependencies.resultStore
 
         private val initialSettings = when (gameType) {
             GameType.Additional -> GamePagesConfig.SettingsAdditional(isPositive = true)
@@ -102,7 +103,10 @@ interface RootGameComponent {
                             context = componentContext,
                             settings = config.settings,
                             provider = dependencies.getGameProvider(),
-                            onFinish = { result -> launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Result(result)) } }
+                            onFinish = { result ->
+                                launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Result(result)) }
+                                launch(dispatchers.io) { resultStore.save(result) }
+                            }
                         )
                     )
 
@@ -110,7 +114,6 @@ interface RootGameComponent {
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
-                            resultStore = dependencies.resultStore,
                             onFinish = onClose
                         )
                     )

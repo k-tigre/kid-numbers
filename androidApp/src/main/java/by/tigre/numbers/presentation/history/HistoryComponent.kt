@@ -3,8 +3,16 @@ package by.tigre.numbers.presentation.history
 import by.tigre.numbers.data.ResultStore
 import by.tigre.numbers.data.platform.DateFormatter
 import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
+import by.tigre.tools.presentation.base.appChildSlot
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -12,19 +20,22 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 interface HistoryComponent {
 
     val results: StateFlow<ScreenState>
     val filter: StateFlow<Filter>
-
     val filterVisibility: StateFlow<Boolean>
+    val details: Value<ChildSlot<*, ResultComponent>>
+
     fun onFilterVisibleChanges(visible: Boolean)
     fun onDifficultFilterChanges(difficult: Difficult, isEnabled: Boolean)
     fun onGameTypeFilterChanges(type: GameType, isEnabled: Boolean)
     fun onOnlySuccessChanges(isEnabled: Boolean)
     fun onGroupExpandChanges(isExpanded: Boolean, group: HistoryGroup)
     fun onCloseClicked()
+    fun onItemClicked(item: HistoryItem)
 
     sealed interface ScreenState {
         data object Loading : ScreenState
@@ -51,14 +62,29 @@ interface HistoryComponent {
 
     class Impl(
         context: BaseComponentContext,
-        resultStore: ResultStore,
+        private val resultStore: ResultStore,
         dateFormatter: DateFormatter,
         private val onClose: () -> Unit
     ) : HistoryComponent, BaseComponentContext by context {
         private val expendedGroup = MutableStateFlow(setOf<String>())
+        private val detailsNavigation = SlotNavigation<DetailsItemConfig>()
 
         override val filterVisibility = MutableStateFlow(false)
         override val filter = MutableStateFlow(DEFAULT_FILTER)
+
+
+        override val details: Value<ChildSlot<*, ResultComponent>> =
+            appChildSlot(
+                source = detailsNavigation,
+                serializer = DetailsItemConfig.serializer(),
+                handleBackButton = true,
+            ) { config, childComponentContext ->
+                ResultComponent.Impl(
+                    context = childComponentContext,
+                    result = config.result,
+                    onFinish = detailsNavigation::dismiss
+                )
+            }
 
         override val results: StateFlow<ScreenState> = filter
             .map { filter ->
@@ -76,7 +102,7 @@ interface HistoryComponent {
                         isExpanded = expended.contains(date),
                         items = items.map { item ->
                             HistoryItem(
-                                id = item.date,
+                                id = item.id,
                                 time = dateFormatter.formatTime(item.date),
                                 duration = item.duration,
                                 difficult = item.difficult,
@@ -105,6 +131,14 @@ interface HistoryComponent {
 
         override fun onFilterVisibleChanges(visible: Boolean) {
             filterVisibility.tryEmit(visible)
+        }
+
+        override fun onItemClicked(item: HistoryItem) {
+            launch {
+                resultStore.getDetails(item.id)?.let {
+                    detailsNavigation.activate(DetailsItemConfig(it))
+                }
+            }
         }
 
         override fun onDifficultFilterChanges(difficult: Difficult, isEnabled: Boolean) {
@@ -146,6 +180,11 @@ interface HistoryComponent {
                 )
             }
         }
+
+        @Serializable
+        private data class DetailsItemConfig(
+            val result: GameResult
+        )
 
         private companion object {
             val DEFAULT_FILTER = Filter(

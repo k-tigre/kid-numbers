@@ -1,8 +1,10 @@
 package by.tigre.numbers.presentation.history
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,11 +31,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -42,22 +44,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.numbers.presentation.utils.toLabel
-import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlin.random.Random
+import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
 
 class HistoryView(
     private val component: HistoryComponent,
@@ -83,6 +78,23 @@ class HistoryView(
         }
     )
 ) {
+
+    @Composable
+    override fun Draw(modifier: Modifier) {
+        val details by component.details.subscribeAsState()
+        AnimatedContent(
+            modifier = modifier,
+            targetState = details.child?.instance,
+            transitionSpec = { fadeIn().togetherWith(fadeOut()) }
+        ) { item ->
+            if (item == null) {
+                super.Draw(modifier)
+            } else {
+                HistoryItemView(item, component::onCloseClicked).Draw(modifier)
+            }
+        }
+    }
+
     @Composable
     override fun DrawContent(innerPadding: PaddingValues) {
         val results = component.results.collectAsState()
@@ -98,7 +110,7 @@ class HistoryView(
             when (val state = results.value) {
                 is HistoryComponent.ScreenState.Loading -> DrawLoadingState()
                 is HistoryComponent.ScreenState.Empty -> DrawEmptyState(state)
-                is HistoryComponent.ScreenState.History -> DrawHistoryItems(state)
+                is HistoryComponent.ScreenState.History -> DrawHistoryItems(state, onItemClicked = component::onItemClicked)
             }
         }
     }
@@ -134,11 +146,9 @@ class HistoryView(
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DrawHistoryItems(state: HistoryComponent.ScreenState.History) {
+    private fun DrawHistoryItems(state: HistoryComponent.ScreenState.History, onItemClicked: (HistoryComponent.HistoryItem) -> Unit) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-
+            modifier = Modifier.fillMaxSize(),
         ) {
             state.groups.forEach { group ->
                 stickyHeader(key = group.date) {
@@ -148,7 +158,7 @@ class HistoryView(
                 if (group.isExpanded) {
                     group.items.forEachIndexed { index, item ->
                         item(key = item.id) {
-                            DrawExpandedItem(item, index == 0)
+                            DrawExpandedItem(item = item, isFirst = index == 0, onClick = { onItemClicked(item) })
                         }
                     }
                 }
@@ -156,14 +166,12 @@ class HistoryView(
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun LazyItemScope.DrawHistoryDayHeader(
         group: HistoryComponent.HistoryGroup
     ) {
         Column(
-            modifier = Modifier
-                .animateItemPlacement()
+            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                 .clickable { component.onGroupExpandChanges(group.isExpanded.not(), group) }
@@ -192,14 +200,13 @@ class HistoryView(
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun LazyItemScope.DrawExpandedItem(item: HistoryComponent.HistoryItem, isFirst: Boolean) {
+    private fun LazyItemScope.DrawExpandedItem(item: HistoryComponent.HistoryItem, isFirst: Boolean, onClick: () -> Unit) {
         Card(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, top = if (isFirst) 16.dp else 0.dp, bottom = 16.dp)
                 .fillMaxWidth()
-                .animateItemPlacement(),
+                .animateItem(),
             border = if (item.totalCount == item.correctCount) {
                 BorderStroke(
                     width = 1.dp,
@@ -207,7 +214,8 @@ class HistoryView(
                 )
             } else {
                 null
-            }
+            },
+            onClick = onClick
         ) {
             Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
                 Text(
@@ -340,28 +348,29 @@ class HistoryView(
     }
 }
 
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+/*@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(showSystemUi = true, device = Devices.NEXUS_10)
 @Composable
 private fun Preview() {
     val component = object : HistoryComponent {
         override val results: StateFlow<HistoryComponent.ScreenState> = MutableStateFlow(
             HistoryComponent.ScreenState.History(
-                groups = listOf(HistoryComponent.HistoryGroup(
-                    date = "2000-12-12",
-                    isExpanded = true,
-                    items = (1..20).map {
-                        HistoryComponent.HistoryItem(
-                            id = it.toLong(),
-                            time = "12: 12",
-                            duration = Random.nextLong(3_600_000),
-                            difficult = Difficult.Hard,
-                            correctCount = it * 10,
-                            totalCount = 12,
-                            gameType = GameType.Division
-                        )
-                    }
-                )
+                groups = listOf(
+                    HistoryComponent.HistoryGroup(
+                        date = "2000-12-12",
+                        isExpanded = true,
+                        items = (1..20).map {
+                            HistoryComponent.HistoryItem(
+                                id = it.toLong(),
+                                time = "12: 12",
+                                duration = Random.nextLong(3_600_000),
+                                difficult = Difficult.Hard,
+                                correctCount = it * 10,
+                                totalCount = 12,
+                                gameType = GameType.Division
+                            )
+                        }
+                    )
                 )
             )
         )
@@ -374,11 +383,13 @@ private fun Preview() {
             )
         )
         override val filterVisibility = MutableStateFlow(true)
+//        override val details: Value<ChildSlot<*, ResultComponent>> = mock
 
         override fun onFilterVisibleChanges(visible: Boolean) {
             filterVisibility.tryEmit(visible)
         }
 
+        override fun onItemClicked(item: HistoryComponent.HistoryItem) = Unit
         override fun onDifficultFilterChanges(difficult: Difficult, isEnabled: Boolean) = Unit
         override fun onGameTypeFilterChanges(type: GameType, isEnabled: Boolean) = Unit
         override fun onOnlySuccessChanges(isEnabled: Boolean) = Unit
@@ -397,4 +408,4 @@ private fun Preview() {
             ).Draw(Modifier)
         }
     }
-}
+}*/

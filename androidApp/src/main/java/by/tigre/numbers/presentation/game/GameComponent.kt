@@ -8,6 +8,7 @@ import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.tools.coroutines.extensions.tickerFlow
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +50,7 @@ interface GameComponent {
 
         private val resultQuestions = mutableListOf<GameResult.Result>()
         private val allQuestions = gameOption.questions
+        private val nextButtonClicks = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
         private val time = tickerFlow(1000, 0)
             .map { it * 1000 }
@@ -104,6 +106,24 @@ interface GameComponent {
                         onNextClicked()
                     }
             }
+
+            launch {
+                nextButtonClicks.debounce(100)
+                    .collect {
+                        val state = questionsState.value
+                        if (state.current >= state.total) {
+                            finishGame()
+                        } else {
+                            questionsState.emit(
+                                state.copy(
+                                    current = state.current + 1,
+                                    correctCount = state.correctCount + if (answerResult.value == true) 1 else 0
+                                )
+                            )
+                            answerX.emit("")
+                        }
+                    }
+            }
         }
 
         private fun completeQuestions() {
@@ -127,18 +147,7 @@ interface GameComponent {
         }
 
         override fun onNextClicked() {
-            val state = questionsState.value
-            if (state.current >= state.total) {
-                finishGame()
-            } else {
-                questionsState.tryEmit(
-                    state.copy(
-                        current = state.current + 1,
-                        correctCount = state.correctCount + if (answerResult.value == true) 1 else 0
-                    )
-                )
-                answerX.tryEmit("")
-            }
+            nextButtonClicks.tryEmit(Unit)
         }
 
         private fun finishGame() {

@@ -16,11 +16,12 @@ interface ResultStore {
     suspend fun save(result: GameResult)
 
     suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult>
+    suspend fun getDetails(id: Long): GameResult?
 
     class Impl(
         private val database: DatabaseNumbers,
         scope: CoroutineScope,
-        analytics: EventAnalytics
+        private val analytics: EventAnalytics
     ) : ResultStore {
 
         private val json = Json
@@ -49,14 +50,15 @@ interface ResultStore {
 
         override suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult> {
             val mapper =
-                { _: Long, date: Long, duration: Long, itemDifficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType? ->
+                { id: Long, date: Long, duration: Long, itemDifficult: Difficult, correctCount: Int, totalCount: Int, gameType: GameType? ->
                     HistoryGameResult(
                         difficult = itemDifficult,
                         correctCount = correctCount,
                         date = date,
                         totalCount = totalCount,
                         duration = duration,
-                        gameType = gameType
+                        gameType = gameType,
+                        id = id
                     )
                 }
             return if (onlySuccess) {
@@ -64,6 +66,18 @@ interface ResultStore {
             } else {
                 database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, mapper)
             }.executeAsList()
+        }
+
+        override suspend fun getDetails(id: Long): GameResult? {
+
+            return database.historyItemsQueries.getItem(historyId = id).executeAsOneOrNull()?.let { data ->
+                try {
+                    json.decodeFromString<GameResult>(data)
+                } catch (_: Exception) {
+                    analytics.trackEvent(event = Event.Action.Logic.Error("GetHistoryItem"))
+                    null
+                }
+            }
         }
     }
 }

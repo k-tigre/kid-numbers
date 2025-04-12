@@ -9,8 +9,8 @@ insertHistory:
 INSERT INTO HistoryItem(historyId, data)
 VALUES(?, ?);
 
-getItems:
-SELECT * FROM HistoryItem WHERE historyId = :historyId;
+getItem:
+SELECT data FROM HistoryItem WHERE historyId = :historyId LIMIT 1;
 
 getCounts:
 SELECT historyId, count(historyId) FROM HistoryItem GROUP BY historyId ORDER BY count(historyId) DESC LIMIT 1;

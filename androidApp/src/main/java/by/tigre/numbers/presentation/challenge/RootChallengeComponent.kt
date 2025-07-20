@@ -1,9 +1,11 @@
 package by.tigre.numbers.presentation.challenge
 
+import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.di.ChallengesDependencies
 import by.tigre.numbers.entity.Challenge
+import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.challenge.creator.DetailsComponent
 import by.tigre.numbers.presentation.challenge.list.ListComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
@@ -77,25 +79,24 @@ interface RootChallengeComponent {
             }
 
         init {
-//            launch {
-//                pages.trackScreens<PagesConfig>(screenAnalytics) {
-//                    when (it) {
-//                        PagesConfig.Menu -> Event.Screen.MainMenu
-//                        PagesConfig.History -> Event.Screen.History
-//                        is PagesConfig.Game -> Event.Screen.RootGame
-//                    }
-//                }
-//            }
+            launch {
+                pages.trackScreens<ChallengePagesConfig>(screenAnalytics, "ChallengePagesConfig") {
+                    when (it) {
+                        ChallengePagesConfig.List -> Event.Screen.ChallengesList
+                        is ChallengePagesConfig.Details -> Event.Screen.ChallengeDetails
+                    }
+                }
+            }
         }
 
         @Serializable
         private sealed interface ChallengePagesConfig {
             @Serializable
-            @SerialName("List")
+            @SerialName("ChallengePagesConfig_List")
             data object List : ChallengePagesConfig
 
             @Serializable
-            @SerialName("Details")
+            @SerialName("ChallengePagesConfig_Details")
             data class Details(val challengeId: String?) : ChallengePagesConfig
         }
     }

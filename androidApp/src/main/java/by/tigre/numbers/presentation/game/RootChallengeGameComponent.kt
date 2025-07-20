@@ -62,7 +62,7 @@ interface RootChallengeGameComponent {
         private val screenAnalytics: ScreenAnalytics = dependencies.screenAnalytics
         private val analytics: EventAnalytics = dependencies.eventAnalytics
 
-        private val pagesNavigation = StackNavigation<GamePagesConfig>()
+        private val pagesNavigation = StackNavigation<ChallengeGamePagesConfig>()
         private val challengeState = MutableStateFlow(challenge)
 
         override val pages: Value<ChildStack<*, PageChild>> =
@@ -71,17 +71,17 @@ interface RootChallengeGameComponent {
                 initialStack = { listOf(getNextConfig()) },
                 key = "challenge_game_pages",
                 handleBackButton = true,
-                serializer = GamePagesConfig.serializer()
+                serializer = ChallengeGamePagesConfig.serializer()
             ) { config, componentContext ->
                 when (config) {
-                    is GamePagesConfig.Game -> PageChild.Game(
+                    is ChallengeGamePagesConfig.Game -> PageChild.Game(
                         GameComponent.Impl(
                             context = componentContext,
                             settings = config.task.gameSettings,
                             provider = dependencies.getGameProvider(),
                             onFinish = { result ->
                                 launch(dispatchers.main) {
-                                    pagesNavigation.replaceCurrent(GamePagesConfig.Result(result, config.challengeId))
+                                    pagesNavigation.replaceCurrent(ChallengeGamePagesConfig.Result(result, config.challengeId))
                                     challengeState.emit(
                                         challengeState.value.let {
                                             it.copy(
@@ -100,7 +100,7 @@ interface RootChallengeGameComponent {
                         )
                     )
 
-                    is GamePagesConfig.Result -> PageChild.GameResult(
+                    is ChallengeGamePagesConfig.Result -> PageChild.GameResult(
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
@@ -110,7 +110,7 @@ interface RootChallengeGameComponent {
                         )
                     )
 
-                    is GamePagesConfig.ChallengeResult -> PageChild.ChallengeResult(
+                    is ChallengeGamePagesConfig.ChallengeResult -> PageChild.ChallengeResult(
                         ChallengeResultComponent.Impl(
                             context = componentContext,
                             resultStore = resultStore,
@@ -141,7 +141,7 @@ interface RootChallengeGameComponent {
                     }
                     timeTicker = false
                     if (completedTaskCount != taskCount) {
-                        launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.ChallengeResult(challenge.id)) }
+                        launch(dispatchers.main) { pagesNavigation.replaceCurrent(ChallengeGamePagesConfig.ChallengeResult(challenge.id)) }
                     }
                 }
                 State(
@@ -179,12 +179,12 @@ interface RootChallengeGameComponent {
 
         init {
             launch {
-                pages.trackScreens<GamePagesConfig>(screenAnalytics) {
+                pages.trackScreens<ChallengeGamePagesConfig>(screenAnalytics, "ChallengeGamePagesConfig") {
                     when (it) {
 
-                        is GamePagesConfig.Game -> Event.Screen.Game(it.task.gameSettings.difficult)
+                        is ChallengeGamePagesConfig.Game -> Event.Screen.Game(it.task.gameSettings.difficult)
 
-                        is GamePagesConfig.Result -> Event.Screen.GameResult(
+                        is ChallengeGamePagesConfig.Result -> Event.Screen.GameResult(
                             correctCount = it.result.correctCount,
                             incorrectCount = it.result.inCorrectCount,
                             totalCount = it.result.totalCount,
@@ -192,38 +192,38 @@ interface RootChallengeGameComponent {
                             type = it.result.type
                         )
 
-                        is GamePagesConfig.ChallengeResult -> Event.Screen.ChallengeResult
+                        is ChallengeGamePagesConfig.ChallengeResult -> Event.Screen.ChallengeResult
                     }
                 }
             }
         }
 
-        private fun getNextConfig(): GamePagesConfig {
+        private fun getNextConfig(): ChallengeGamePagesConfig {
             val challenge = challengeState.value
             val task = challenge.tasks.firstOrNull { it.isCompleted.not() }
             return if (task != null) {
-                GamePagesConfig.Game(task, challenge.id)
+                ChallengeGamePagesConfig.Game(task, challenge.id)
             } else {
-                GamePagesConfig.ChallengeResult(challenge.id)
+                ChallengeGamePagesConfig.ChallengeResult(challenge.id)
             }
         }
 
         @Serializable
-        private sealed interface GamePagesConfig {
+        private sealed interface ChallengeGamePagesConfig {
 
             @Serializable
             @SerialName("Game")
-            data class Game(val task: Challenge.Task, val challengeId: String) : GamePagesConfig
+            data class Game(val task: Challenge.Task, val challengeId: String) : ChallengeGamePagesConfig
 
             @Serializable
             @SerialName("Result")
-            data class Result(val result: GameResult, val challengeId: String) : GamePagesConfig
+            data class Result(val result: GameResult, val challengeId: String) : ChallengeGamePagesConfig
 
             @Serializable
             @SerialName("ChallengeResult")
             data class ChallengeResult(
                 val challengeId: String
-            ) : GamePagesConfig
+            ) : ChallengeGamePagesConfig
         }
     }
 }

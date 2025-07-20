@@ -119,7 +119,7 @@ interface RootComponent {
 
         init {
             launch {
-                pages.trackScreens<MenuPagesConfig>(screenAnalytics) {
+                pages.trackScreens<MenuPagesConfig>(screenAnalytics, "MenuPagesConfig") {
                     when (it) {
                         MenuPagesConfig.Menu -> Event.Screen.MainMenu
                         MenuPagesConfig.History -> Event.Screen.History
@@ -134,26 +134,26 @@ interface RootComponent {
         @Serializable
         private sealed interface MenuPagesConfig {
             @Serializable
-            @SerialName("Menu")
+            @SerialName("MenuPagesConfig_Menu")
             data object Menu : MenuPagesConfig
 
             @Serializable
-            @SerialName("History")
+            @SerialName("MenuPagesConfig_History")
             data object History : MenuPagesConfig
 
             @Serializable
-            @SerialName("Challenge")
+            @SerialName("MenuPagesConfig_Challenge")
             data object Challenge : MenuPagesConfig
 
             @Serializable
-            @SerialName("Game")
+            @SerialName("MenuPagesConfig_Game")
             data class Game(
                 @SerialName("GameType")
                 val type: GameType
             ) : MenuPagesConfig
 
             @Serializable
-            @SerialName("ChallengeGame")
+            @SerialName("MenuPagesConfig_ChallengeGame")
             data class ChallengeGame(val challenge: by.tigre.numbers.entity.Challenge) : MenuPagesConfig
         }
     }

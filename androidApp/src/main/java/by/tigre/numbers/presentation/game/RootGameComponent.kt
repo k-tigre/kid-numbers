@@ -122,7 +122,7 @@ interface RootGameComponent {
 
         init {
             launch {
-                pages.trackScreens<GamePagesConfig>(screenAnalytics) {
+                pages.trackScreens<GamePagesConfig>(screenAnalytics, "GamePagesConfig") {
                     when (it) {
                         is GamePagesConfig.SettingsAdditional -> Event.Screen.GameSettings(
                             if (it.isPositive) GameType.Additional else GameType.Subtraction

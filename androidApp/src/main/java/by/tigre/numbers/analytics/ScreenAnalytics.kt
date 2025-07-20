@@ -1,5 +1,6 @@
 package by.tigre.numbers.analytics
 
+import by.tigre.tools.logger.extensions.debugLog
 import by.tigre.tools.tools.coroutines.CoreDispatchers
 import by.tigre.tools.tools.coroutines.CoreScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +24,7 @@ interface ScreenAnalytics {
         init {
             scope.launch {
                 screens
+                    .debugLog("ScreenAnalytics-trackScreens")
                     .distinctUntilChanged()
                     .scan((null to null) as Pair<Event.Screen?, Event.Screen?>) { previous, current ->
                         if (current.skip) {

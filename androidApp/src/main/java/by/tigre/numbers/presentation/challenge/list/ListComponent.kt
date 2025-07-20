@@ -71,6 +71,7 @@ interface ListComponent {
                 }
 
                 if (challenge.isDied) {
+                    analytics.trackEvent(Event.Action.UI.Button.ChallengeClose)
                     fullChallenge.tasks.forEach { task ->
                         if (task.isCompleted.not()) {
                             store.setTaskCompleted(task.id)
@@ -78,6 +79,11 @@ interface ListComponent {
                     }
                     store.setChallengeCompleted(challenge.challenge.id)
                 } else {
+                    if (challenge.challenge.status == Challenge.Status.Active) {
+                        analytics.trackEvent(Event.Action.UI.Button.ChallengeContinue)
+                    } else {
+                        analytics.trackEvent(Event.Action.UI.Button.ChallengeStart)
+                    }
                     withContext(dispatchers.main) {
                         onStart(fullChallenge)
                     }

@@ -1,7 +1,5 @@
-@file:Suppress("UnstableApiUsage")
-
 import com.github.triplet.gradle.androidpublisher.ReleaseStatus
-
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 
 plugins {
     id(Plugin.Id.AndroidApplication.value)
@@ -23,7 +21,8 @@ android {
 
         versionName = Application.version.name
         versionCode = Application.version.code
-        resourceConfigurations.addAll(listOf("en", "ru"))
+        @Suppress("UnstableApiUsage")
+        androidResources.localeFilters.addAll(listOf("en", "ru"))
 
         buildConfigField("String", "MIXPANEL_TOKEN", "\"${System.getenv("MIXPANEL_TOKEN") ?: ""}\"")
     }

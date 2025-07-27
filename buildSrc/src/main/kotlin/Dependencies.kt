@@ -165,10 +165,10 @@ enum class Plugin(group: String, artifact: String, version: Version) {
         Kotlin(Library.Version.Kotlin.value),
         Google("4.3.13"),
         Crashlytics("2.9.1"),
-        Versions("0.51.0"),
+        Versions("0.52.0"),
         SQLDelight(Library.Version.SQLDelight.value),
         GooglePlayPublisher("3.8.4"),
-        FirebasePublisher("5.0.0"),
+        FirebasePublisher("5.1.1"),
     }
 }
 

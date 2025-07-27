@@ -53,26 +53,26 @@ enum class Library(group: String, artifact: String, version: Version) {
     val notation = "$group:$artifact:${version.value}"
 
     internal enum class Version(val value: String) {
-        ActivityCompose("1.9.3"),
-        AndroidXAppcompat("1.7.0"),
-        AndroidXCore("1.12.0"),
+        ActivityCompose("1.10.1"),
+        AndroidXAppcompat("1.7.1"),
+        AndroidXCore("1.16.0"),
         AndroidXAnnotation("1.7.1"),
         AndroidXSplash("1.0.0"),
-        Kotlin("2.1.0"),
-        Coroutines("1.10.1"),
-        KotlinSerializationJson("1.8.0"),
+        Kotlin("2.2.0"),
+        Coroutines("1.10.2"),
+        KotlinSerializationJson("1.9.0"),
         SQLDelight("2.0.2"),
-        Leakcanary("2.13"),
-        Compose("1.7.6"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
-        ComposeFoundation("1.7.6"), /*MUST BE CHANGED WITH ACCOMPANIST VERSION*/
-        ComposeMaterial3("1.3.1"),
-        Accompanist("0.34.0") /*MUST BE CHANGED WITH COMPOSE VERSION*/,
+        Leakcanary("2.14"),
+        Compose("1.8.3"),
+        ComposeFoundation("1.8.3"),
+        ComposeMaterial3("1.3.2"),
+        Accompanist("0.37.3"),
         CoilCompose("2.7.0"),
-        Decompose("2.2.2"),
-        Mixpanel("8.0.1"),
+        Decompose("2.2.3"),
+        Mixpanel("8.2.0"),
 
-        DebugComposeCustomView("1.2.0-alpha02"),
-        DebugComposeCustomViewPoolingcontainer("1.0.0"),
+        DebugComposeCustomView("1.2.0"),
+        DebugComposeCustomViewPoolingcontainer("1.1.0"),
     }
 }
 
@@ -117,14 +117,14 @@ enum class Toolkit(
 }
 
 enum class FirebaseLibrary(group: String, artifact: String) {
-    FirebaseCrashLytics("com.google.firebase", "firebase-crashlytics-ktx"),
-    FirebaseAnalytics("com.google.firebase", "firebase-analytics-ktx")
+    FirebaseCrashLytics("com.google.firebase", "firebase-crashlytics"),
+    FirebaseAnalytics("com.google.firebase", "firebase-analytics")
     ;
 
     val notation = "$group:$artifact"
 
     companion object {
-        val bom = "com.google.firebase:firebase-bom:32.7.2"
+        const val bom = "com.google.firebase:firebase-bom:34.0.0"
     }
 }
 
@@ -161,7 +161,7 @@ enum class Plugin(group: String, artifact: String, version: Version) {
     }
 
     enum class Version(val value: String) {
-        Android("8.2.2"),
+        Android("8.11.1"),
         Kotlin(Library.Version.Kotlin.value),
         Google("4.3.13"),
         Crashlytics("2.9.1"),
@@ -175,7 +175,7 @@ enum class Plugin(group: String, artifact: String, version: Version) {
 //const val KotlinCompilerExtensionVersion = "1.5.15" /*must be synchronized with kotlin and agp version*/
 
 enum class Tools(val version: String) {
-    Build("34.0.0"),
+    Build("35.0.0"),
 }
 
 sealed class Project(id: String) {

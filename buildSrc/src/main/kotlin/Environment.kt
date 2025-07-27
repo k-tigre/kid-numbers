@@ -17,7 +17,7 @@ enum class Environment(
     Qa(
         gradleName = "qa",
         suffix = ".dev",
-        debuggable = true,
+        debuggable = false,
         useProguard = true,
         remoteAnalytics = true,
         appNameSuffix = " Qa"

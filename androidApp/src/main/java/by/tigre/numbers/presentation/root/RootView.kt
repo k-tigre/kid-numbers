@@ -1,6 +1,7 @@
 package by.tigre.numbers.presentation.root
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import by.tigre.numbers.presentation.challenge.RootChallengeView
@@ -30,7 +31,9 @@ class RootView(
                 is RootComponent.PageChild.History -> HistoryView(child.component)
                 is RootComponent.PageChild.Challenge -> RootChallengeView(child.component)
                 is RootComponent.PageChild.GameChallenge -> RootChallengeGameView(child.component)
-            }.Draw(modifier = Modifier.fillMaxSize())
+            }.Draw(modifier = Modifier
+                .safeDrawingPadding()
+                .fillMaxSize())
         }
     }
 }

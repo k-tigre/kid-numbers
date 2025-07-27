@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -28,7 +29,7 @@ class RootChallengeGameView(
 
     @Composable
     override fun Draw(modifier: Modifier) {
-        Column(modifier = modifier) {
+        Column(modifier = Modifier) {
             DrawState()
 
             Children(
@@ -51,6 +52,7 @@ class RootChallengeGameView(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
+                .safeDrawingPadding()
         ) {
             val state = component.state.collectAsState().value
 
@@ -65,7 +67,7 @@ class RootChallengeGameView(
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 0.dp),
                     text = stringResource(R.string.screen_game_challenge_duration, state.time)
                 )
             }

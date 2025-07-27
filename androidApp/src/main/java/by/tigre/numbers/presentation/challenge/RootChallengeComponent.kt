@@ -14,7 +14,7 @@ import by.tigre.tools.tools.coroutines.CoreDispatchers
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,8 +57,8 @@ interface RootChallengeComponent {
                             context = componentContext,
                             onClose = onClose,
                             dependencies = dependencies,
-                            onCreate = { pagesNavigation.push(ChallengePagesConfig.Details(null)) },
-                            onEdit = { pagesNavigation.push(ChallengePagesConfig.Details(it)) },
+                            onCreate = { pagesNavigation.pushNew(ChallengePagesConfig.Details(null)) },
+                            onEdit = { pagesNavigation.pushNew(ChallengePagesConfig.Details(it)) },
                             onStart = onStartChallenge
                         )
                     )

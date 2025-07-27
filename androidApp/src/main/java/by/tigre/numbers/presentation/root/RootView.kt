@@ -10,9 +10,9 @@ import by.tigre.numbers.presentation.game.RootGameView
 import by.tigre.numbers.presentation.history.HistoryView
 import by.tigre.numbers.presentation.menu.MenuView
 import by.tigre.tools.tools.platform.compose.ComposableView
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootView(
     private val component: RootComponent,

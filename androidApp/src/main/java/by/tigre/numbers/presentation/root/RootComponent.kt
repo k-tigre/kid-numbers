@@ -17,7 +17,7 @@ import by.tigre.tools.presentation.base.appChildStack
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
@@ -47,15 +47,15 @@ interface RootComponent {
 
         private val mainMenuRouter = object : MenuComponent.Router {
             override fun showGameSettings(type: GameType) {
-                pagesNavigation.push(MenuPagesConfig.Game(type))
+                pagesNavigation.pushNew(MenuPagesConfig.Game(type))
             }
 
             override fun showHistory() {
-                pagesNavigation.push(MenuPagesConfig.History)
+                pagesNavigation.pushNew(MenuPagesConfig.History)
             }
 
             override fun showChallenge() {
-                pagesNavigation.push(MenuPagesConfig.Challenge)
+                pagesNavigation.pushNew(MenuPagesConfig.Challenge)
             }
         }
 
@@ -102,7 +102,7 @@ interface RootComponent {
                             analytics = analytics,
                             screenAnalytics = screenAnalytics,
                             dependencies = challengesDependencies,
-                            onStartChallenge = { challenge -> pagesNavigation.push(MenuPagesConfig.ChallengeGame(challenge)) }
+                            onStartChallenge = { challenge -> pagesNavigation.pushNew(MenuPagesConfig.ChallengeGame(challenge)) }
                         )
                     )
 

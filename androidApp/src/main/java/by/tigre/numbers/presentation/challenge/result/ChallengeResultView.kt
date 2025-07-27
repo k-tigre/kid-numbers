@@ -29,7 +29,7 @@ import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 
 class ChallengeResultView(
     private val component: ChallengeResultComponent,

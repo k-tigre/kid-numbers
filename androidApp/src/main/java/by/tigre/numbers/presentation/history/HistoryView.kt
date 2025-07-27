@@ -52,7 +52,7 @@ import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 
 class HistoryView(
     private val component: HistoryComponent,
@@ -90,7 +90,7 @@ class HistoryView(
             if (item == null) {
                 super.Draw(modifier)
             } else {
-                HistoryItemView(item, component::onCloseClicked).Draw(modifier)
+                HistoryItemView(item, component::onCloseItemClicked).Draw(modifier)
             }
         }
     }
@@ -173,7 +173,8 @@ class HistoryView(
         group: HistoryComponent.HistoryGroup
     ) {
         Column(
-            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+            modifier = Modifier
+                .animateItem(fadeInSpec = null, fadeOutSpec = null)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                 .clickable { component.onGroupExpandChanges(group.isExpanded.not(), group) }

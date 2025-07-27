@@ -23,7 +23,7 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.popTo
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -239,7 +239,7 @@ interface DetailsComponent {
         }
 
         override fun onTaskTypeSelected(type: GameType) {
-            pagesNavigation.push(
+            pagesNavigation.pushNew(
                 when (type) {
                     GameType.Additional -> PagesConfig.SettingsAdditional(isPositive = true)
                     GameType.Subtraction -> PagesConfig.SettingsAdditional(isPositive = false)

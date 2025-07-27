@@ -1,18 +1,19 @@
 package by.tigre.tools.presentation.base
 
 import com.arkivanov.decompose.childContext
+import com.arkivanov.decompose.router.children.NavigationSource
 import com.arkivanov.decompose.router.slot.ChildSlot
-import com.arkivanov.decompose.router.slot.SlotNavigationSource
+import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigationSource
+import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.serialization.KSerializer
 
 fun <C : Any, T : Any> BaseComponentContext.appChildStack(
-    source: StackNavigationSource<C>,
+    source: NavigationSource<StackNavigation.Event<C>>,
     initialStack: () -> List<C>,
     serializer: KSerializer<C>? = null,
     key: String = "DefaultStack",
@@ -35,7 +36,7 @@ fun <C : Any, T : Any> BaseComponentContext.appChildStack(
     }
 
 fun <C : Any, T : Any> BaseComponentContext.appChildSlot(
-    source: SlotNavigationSource<C>,
+    source: NavigationSource<SlotNavigation.Event<C>>,
     initialConfiguration: () -> C? = { null },
     serializer: KSerializer<C>? = null,
     key: String = "DefaultChildSlot",

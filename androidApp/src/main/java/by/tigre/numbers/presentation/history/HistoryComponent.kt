@@ -35,6 +35,7 @@ interface HistoryComponent {
     fun onOnlySuccessChanges(isEnabled: Boolean)
     fun onGroupExpandChanges(isExpanded: Boolean, group: HistoryGroup)
     fun onCloseClicked()
+    fun onCloseItemClicked()
     fun onItemClicked(item: HistoryItem)
 
     sealed interface ScreenState {
@@ -138,6 +139,10 @@ interface HistoryComponent {
                     detailsNavigation.activate(DetailsItemConfig(it))
                 }
             }
+        }
+
+        override fun onCloseItemClicked() {
+            detailsNavigation.dismiss()
         }
 
         override fun onDifficultFilterChanges(difficult: Difficult, isEnabled: Boolean) {

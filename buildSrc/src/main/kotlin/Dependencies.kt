@@ -39,7 +39,7 @@ enum class Library(group: String, artifact: String, version: Version) {
     Mixpanel("com.mixpanel.android", "mixpanel-android", Version.Mixpanel),
 
     Decompose("com.arkivanov.decompose", "decompose", Version.Decompose),
-    DecomposeExtensions("com.arkivanov.decompose", "extensions-compose-jetpack", Version.Decompose),
+    DecomposeExtensions("com.arkivanov.decompose", "extensions-compose", Version.Decompose),
 
     // TODO compose preview not working, check issue: https://issuetracker.google.com/issues/227767363
     DebugComposeCustomView("androidx.customview", "customview", Version.DebugComposeCustomView),
@@ -68,7 +68,7 @@ enum class Library(group: String, artifact: String, version: Version) {
         ComposeMaterial3("1.3.2"),
         Accompanist("0.37.3"),
         CoilCompose("2.7.0"),
-        Decompose("2.2.3"),
+        Decompose("3.3.0"),
         Mixpanel("8.2.0"),
 
         DebugComposeCustomView("1.2.0"),
@@ -171,8 +171,6 @@ enum class Plugin(group: String, artifact: String, version: Version) {
         FirebasePublisher("5.1.1"),
     }
 }
-
-//const val KotlinCompilerExtensionVersion = "1.5.15" /*must be synchronized with kotlin and agp version*/
 
 enum class Tools(val version: String) {
     Build("35.0.0"),

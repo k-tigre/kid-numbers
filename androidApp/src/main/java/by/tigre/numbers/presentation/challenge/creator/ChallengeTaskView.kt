@@ -43,7 +43,7 @@ import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
-import com.arkivanov.decompose.extensions.compose.jetpack.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 
 class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposableView(
     ToolbarConfig(

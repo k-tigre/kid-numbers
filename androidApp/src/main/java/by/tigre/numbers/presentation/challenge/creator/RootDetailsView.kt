@@ -9,9 +9,9 @@ import by.tigre.numbers.presentation.game.settings.AdditionalSettingsView
 import by.tigre.numbers.presentation.game.settings.EquationsSettingsView
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsView
 import by.tigre.tools.tools.platform.compose.ComposableView
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootDetailsView(
     private val component: DetailsComponent,

@@ -6,9 +6,9 @@ import androidx.compose.ui.Modifier
 import by.tigre.numbers.presentation.challenge.creator.RootDetailsView
 import by.tigre.numbers.presentation.challenge.list.ListView
 import by.tigre.tools.tools.platform.compose.ComposableView
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootChallengeView(
     private val component: RootChallengeComponent,

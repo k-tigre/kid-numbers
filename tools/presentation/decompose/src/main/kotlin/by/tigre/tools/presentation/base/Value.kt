@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 fun <T : Any> Value<T>.toFlow(): Flow<T> = callbackFlow {
     val observer: (T) -> Unit = { value: T -> trySend(value) }
 
-    val cancellation = observe(observer)
+    val cancellation = subscribe(observer)
 
     awaitClose { cancellation.cancel() }
 }

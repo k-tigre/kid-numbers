@@ -174,7 +174,7 @@ interface RootChallengeGameComponent {
         private fun formatTime(time: Long): String = if (DateFormatter.DAY_MILLIS < time) {
             formatter.formatDays(time)
         } else {
-            formatter.formatTimeWithoutZone(time.coerceAtLeast(0))
+            formatter.formatHoursMinutes(time.coerceAtLeast(0))
         }
 
         init {

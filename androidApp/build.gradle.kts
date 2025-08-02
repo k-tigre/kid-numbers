@@ -110,7 +110,7 @@ dependencies {
 
     implementation(Project.Tools.Coroutines)
     implementation(Library.AccompanistPermission)
-    implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics)
+    implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics, FirebaseLibrary.FirebaseMessaging)
     implementation(Library.Mixpanel)
 
     implementation(Project.Logger.Core)

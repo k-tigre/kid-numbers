@@ -118,8 +118,10 @@ enum class Toolkit(
 
 enum class FirebaseLibrary(group: String, artifact: String) {
     FirebaseCrashLytics("com.google.firebase", "firebase-crashlytics"),
-    FirebaseAnalytics("com.google.firebase", "firebase-analytics")
+    FirebaseAnalytics("com.google.firebase", "firebase-analytics"),
+    FirebaseMessaging("com.google.firebase", "firebase-messaging")
     ;
+//    implementation("com.google.firebase:firebase-messaging-ktx:25.0.0")
 
     val notation = "$group:$artifact"
 

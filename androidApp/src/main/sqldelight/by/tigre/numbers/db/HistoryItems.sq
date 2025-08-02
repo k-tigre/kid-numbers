@@ -14,3 +14,6 @@ SELECT data FROM HistoryItem WHERE historyId = :historyId LIMIT 1;
 
 getCounts:
 SELECT historyId, count(historyId) FROM HistoryItem GROUP BY historyId ORDER BY count(historyId) DESC LIMIT 1;
+
+drop:
+DELETE FROM  HistoryItem WHERE historyId = ?;

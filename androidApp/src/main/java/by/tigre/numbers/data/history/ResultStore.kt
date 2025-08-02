@@ -31,8 +31,10 @@ interface ResultStore {
         init {
             scope.launch {
                 delay(10_000)
-                if (database.historyItemsQueries.getCounts().executeAsOneOrNull() != null) {
+                val result = database.historyItemsQueries.getCounts().executeAsOneOrNull()
+                if (result != null && result.count > 1) {
                     analytics.trackEvent(Event.Action.Logic.WrongCountInDB)
+                    database.historyItemsQueries.drop(result.historyId)
                 }
             }
         }

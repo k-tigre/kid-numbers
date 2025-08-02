@@ -103,6 +103,7 @@ interface RootGameComponent {
                             context = componentContext,
                             settings = config.settings,
                             provider = dependencies.getGameProvider(),
+                            analytics = analytics,
                             onFinish = { result ->
                                 launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Result(result)) }
                                 launch(dispatchers.io) { resultStore.save(result) }

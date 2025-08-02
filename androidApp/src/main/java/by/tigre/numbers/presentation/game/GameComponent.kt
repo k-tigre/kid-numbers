@@ -1,5 +1,7 @@
 package by.tigre.numbers.presentation.game
 
+import by.tigre.numbers.analytics.Event
+import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.domain.GameProvider
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
@@ -43,6 +45,7 @@ interface GameComponent {
         context: BaseComponentContext,
         settings: GameSettings,
         provider: GameProvider,
+        private val analytics: EventAnalytics,
         private val onFinish: (GameResult) -> Unit
     ) : GameComponent, BaseComponentContext by context {
 
@@ -108,7 +111,9 @@ interface GameComponent {
             }
 
             launch {
-                nextButtonClicks.debounce(100)
+                nextButtonClicks
+                    .debounce(100)
+                    .filter { answerResult.value != null }
                     .collect {
                         val state = questionsState.value
                         if (state.current >= state.total) {
@@ -151,6 +156,9 @@ interface GameComponent {
         }
 
         private fun finishGame() {
+            if (resultQuestions.size != allQuestions.size) {
+                analytics.trackEvent(Event.Action.Logic.Error("Finish wrong answers count"))
+            }
             onFinish(
                 GameResult(
                     results = resultQuestions,

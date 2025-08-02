@@ -79,6 +79,7 @@ interface RootChallengeGameComponent {
                             context = componentContext,
                             settings = config.task.gameSettings,
                             provider = dependencies.getGameProvider(),
+                            analytics = analytics,
                             onFinish = { result ->
                                 launch(dispatchers.main) {
                                     pagesNavigation.replaceCurrent(ChallengeGamePagesConfig.Result(result, config.challengeId))

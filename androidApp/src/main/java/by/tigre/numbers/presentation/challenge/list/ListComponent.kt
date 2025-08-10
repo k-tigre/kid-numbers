@@ -77,7 +77,7 @@ interface ListComponent {
                             store.setTaskCompleted(task.id)
                         }
                     }
-                    store.setChallengeCompleted(challenge.challenge.id)
+                    store.setChallengeCompleted(challenge.challenge.id, isSuccess = false)
                 } else {
                     if (challenge.challenge.status == Challenge.Status.Active) {
                         analytics.trackEvent(Event.Action.UI.Button.ChallengeContinue)

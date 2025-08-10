@@ -134,8 +134,8 @@ interface RootChallengeGameComponent {
                 val timeLeft = (challenge.startDate + challenge.duration.milliseconds) - System.currentTimeMillis()
                 val isCompleted = completedTaskCount == taskCount || timeLeft < 0
                 if (isCompleted) {
-                    challengesStore.setChallengeCompleted(state.id)
-                    challengeState.value.tasks.forEach { task ->
+                    challengesStore.setChallengeCompleted(state.id, isSuccess = completedTaskCount == taskCount)
+                    state.tasks.forEach { task ->
                         if (task.isCompleted.not()) {
                             challengesStore.setTaskCompleted(task.id)
                         }

@@ -99,7 +99,7 @@ interface ChallengeResultComponent {
                     )
                 },
                 endDate = challenge.endDate,
-                isSuccess = items.all { it.correctCount == it.totalCount },
+                isSuccess = challenge.isSuccess,
                 startDate = challenge.startDate,
                 duration = challenge.duration,
             )

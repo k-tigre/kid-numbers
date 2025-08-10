@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -51,7 +52,7 @@ class ChallengeResultView(
             if (item == null) {
                 super.Draw(modifier)
             } else {
-                ResultView(item).Draw(modifier)
+                ResultView(item).Draw(modifier.safeDrawingPadding())
             }
         }
     }
@@ -70,7 +71,11 @@ class ChallengeResultView(
                             .fillMaxWidth()
                     ) {
                         item {
-                            Column(Modifier.fillMaxWidth()) {
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                            ) {
 
                                 val color = if (challenge.isSuccess) {
                                     LocalGameColorsPalette.current.gameSuccess
@@ -169,12 +174,14 @@ class ChallengeResultView(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_wrong_answers, result.totalCount - result.correctCount),
-                color = MaterialTheme.colorScheme.error,
-            )
+            if (result.totalCount - result.correctCount > 0) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 32.dp),
+                    text = stringResource(R.string.screen_game_result_total_wrong_answers, result.totalCount - result.correctCount),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
     }
 }

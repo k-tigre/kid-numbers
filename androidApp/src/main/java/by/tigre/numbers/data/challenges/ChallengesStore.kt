@@ -23,7 +23,7 @@ interface ChallengesStore {
     suspend fun getChallenge(id: String): Challenge?
     suspend fun start(id: String)
     suspend fun setTaskCompleted(id: Long)
-    suspend fun setChallengeCompleted(id: String)
+    suspend fun setChallengeCompleted(id: String, isSuccess: Boolean)
     suspend fun getNextTask(challengeId: String): Challenge.Task?
 
     class Impl(
@@ -65,7 +65,8 @@ interface ChallengesStore {
                     id = id,
                     date = System.currentTimeMillis(),
                     duration = challenge.duration,
-                    status = challenge.status
+                    status = challenge.status,
+                    isSuccess = challenge.isSuccess
                 )
 
                 challenge.tasks.forEach { task ->
@@ -98,7 +99,8 @@ interface ChallengesStore {
                 },
                 startDate = challenge.startDate ?: -1,
                 endDate = challenge.endDate ?: -1,
-                status = challenge.status
+                status = challenge.status,
+                isSuccess = challenge.isSuccess
             )
         }
 
@@ -110,8 +112,8 @@ interface ChallengesStore {
             database.challengesQueries.updateChallengeTask(isCompleted = true, id = id)
         }
 
-        override suspend fun setChallengeCompleted(id: String) {
-            database.challengesQueries.finishChallenge(id = id, endDate = System.currentTimeMillis())
+        override suspend fun setChallengeCompleted(id: String, isSuccess: Boolean) {
+            database.challengesQueries.finishChallenge(id = id, endDate = System.currentTimeMillis(), isSuccess = isSuccess)
         }
 
         override suspend fun getNextTask(challengeId: String): Challenge.Task? {

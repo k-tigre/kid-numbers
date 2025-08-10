@@ -1,0 +1,3 @@
+import kotlin.Boolean;
+
+ALTER TABLE Challenges ADD COLUMN isSuccess INTEGER AS Boolean NOT NULL DEFAULT 0;

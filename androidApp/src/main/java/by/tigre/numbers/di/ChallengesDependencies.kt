@@ -5,7 +5,7 @@ import by.tigre.numbers.domain.GameDurationProvider
 
 
 interface ChallengesDependencies : GameDependencies {
-    val challengesStore: ChallengesStore
+    override val challengesStore: ChallengesStore
 
     fun getDurationProvider(): GameDurationProvider
 }

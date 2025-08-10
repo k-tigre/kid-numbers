@@ -23,19 +23,24 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -46,6 +51,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
+import by.tigre.numbers.presentation.challenge.result.ChallengeResultComponent
+import by.tigre.numbers.presentation.challenge.result.ChallengeResultView
+import by.tigre.numbers.presentation.game.result.ResultComponent
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
@@ -53,6 +61,7 @@ import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import kotlinx.coroutines.launch
 
 class HistoryView(
     private val component: HistoryComponent,
@@ -87,36 +96,113 @@ class HistoryView(
             targetState = details.child?.instance,
             transitionSpec = { fadeIn().togetherWith(fadeOut()) }
         ) { item ->
-            if (item == null) {
-                super.Draw(modifier)
-            } else {
-                HistoryItemView(item, component::onCloseItemClicked).Draw(modifier)
+            when (item) {
+                is ResultComponent -> HistoryItemView(item, component::onCloseItemClicked).Draw(modifier)
+                is ChallengeResultComponent -> ChallengeResultView(item).Draw(modifier)
+                else -> super.Draw(modifier)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun DrawContent(innerPadding: PaddingValues) {
+        val pagerState = component.pagerState
+        val scope = rememberCoroutineScope()
+
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            SecondaryTabRow(
+                modifier = Modifier.fillMaxWidth(),
+                selectedTabIndex = pagerState.currentPage,
+            ) {
+                Tab(
+                    text = { Text(stringResource(R.string.screen_history_tab_tasks)) },
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        scope.launch { pagerState.animateScrollToPage(0) }
+                    },
+                )
+
+                Tab(
+                    text = { Text(stringResource(R.string.screen_history_tab_challenges)) },
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        scope.launch { pagerState.animateScrollToPage(1) }
+                    },
+                )
+            }
+
+            HorizontalPager(
+                state = pagerState,
+            ) { page ->
+                if (page == 0) {
+                    DrawTasksPage()
+                } else {
+                    DrawChallengesPage()
+                }
             }
         }
     }
 
     @Composable
-    override fun DrawContent(innerPadding: PaddingValues) {
-        val results = component.results.collectAsState()
+    private fun DrawTasksPage() {
+        val results = component.resultsTasks.collectAsState()
         val isFilterVisible = component.filterVisibility.collectAsState()
         Column(
             Modifier
-                .padding(innerPadding)
         ) {
             AnimatedVisibility(visible = isFilterVisible.value) {
-                DrawFilter()
+                DrawFilterTasks()
             }
 
-            when (val state = results.value) {
-                is HistoryComponent.ScreenState.Loading -> DrawLoadingState()
-                is HistoryComponent.ScreenState.Empty -> DrawEmptyState(state)
-                is HistoryComponent.ScreenState.History -> DrawHistoryItems(state, onItemClicked = component::onItemClicked)
+            AnimatedContent(
+                targetState = results.value,
+                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+                contentKey = { it::class.simpleName }
+            ) { state ->
+                when (state) {
+                    is HistoryComponent.ScreenStateTasks.Loading -> DrawLoadingState()
+                    is HistoryComponent.ScreenStateTasks.Empty -> DrawEmptyState(state.withFilter, isChallenge = false)
+                    is HistoryComponent.ScreenStateTasks.History -> DrawHistoryItems(state, onItemClicked = component::onItemClicked)
+                }
             }
         }
     }
 
     @Composable
-    private fun DrawEmptyState(state: HistoryComponent.ScreenState.Empty) {
+    private fun DrawChallengesPage() {
+        val results = component.resultsChallenges.collectAsState()
+        val isFilterVisible = component.filterVisibility.collectAsState()
+        Column(
+            Modifier
+        ) {
+            AnimatedVisibility(visible = isFilterVisible.value) {
+                DrawFilterChallenges()
+            }
+
+            AnimatedContent(
+                targetState = results.value,
+                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+                contentKey = { it::class.simpleName }
+            ) { state ->
+                when (state) {
+                    is HistoryComponent.ScreenStateChallenges.Loading -> DrawLoadingState()
+                    is HistoryComponent.ScreenStateChallenges.Empty -> DrawEmptyState(state.withFilter, isChallenge = true)
+                    is HistoryComponent.ScreenStateChallenges.History -> DrawHistoryChallengeItems(
+                        state,
+                        onItemClicked = component::onItemClicked
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun DrawEmptyState(withFilter: Boolean, isChallenge: Boolean) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -126,7 +212,12 @@ class HistoryView(
                     .align(Alignment.Center)
                     .padding(horizontal = 24.dp),
                 text = stringResource(
-                    if (state.withFilter) R.string.screen_history_empty_filter else R.string.screen_history_empty
+                    when {
+                        isChallenge && withFilter -> R.string.screen_history_empty_filter_challenges
+                        isChallenge -> R.string.screen_history_empty_challenges
+                        withFilter -> R.string.screen_history_empty_filter_tasks
+                        else -> R.string.screen_history_empty_tasks
+                    }
                 ),
                 textAlign = TextAlign.Center
             )
@@ -146,7 +237,7 @@ class HistoryView(
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    private fun DrawHistoryItems(state: HistoryComponent.ScreenState.History, onItemClicked: (HistoryComponent.HistoryItem) -> Unit) {
+    private fun DrawHistoryItems(state: HistoryComponent.ScreenStateTasks.History, onItemClicked: (HistoryComponent.HistoryItem) -> Unit) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
@@ -161,6 +252,51 @@ class HistoryView(
                     group.items.forEachIndexed { index, item ->
                         item(key = item.id) {
                             DrawExpandedItem(item = item, isFirst = index == 0, onClick = { onItemClicked(item) })
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    private fun DrawHistoryChallengeItems(
+        state: HistoryComponent.ScreenStateChallenges.History,
+        onItemClicked: (HistoryComponent.ChallengeItem) -> Unit
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+
+            ) {
+            state.challenges.forEachIndexed { index, challenge ->
+                item {
+                    Card(
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = if (index == 0) 16.dp else 0.dp, bottom = 16.dp)
+                            .fillMaxWidth()
+                            .animateItem(),
+                        border = if (challenge.isSuccess) {
+                            BorderStroke(
+                                width = 1.dp,
+                                color = LocalGameColorsPalette.current.gameSuccess.color
+                            )
+                        } else {
+                            null
+                        },
+                        onClick = { onItemClicked(challenge) }
+                    ) {
+                        Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)) {
+                            Text(
+                                text = stringResource(R.string.screen_history_item_time, challenge.time)
+                            )
+                            Text(
+                                text = stringResource(R.string.screen_history_item_duration, TIME_FORMAT.format(challenge.duration))
+                            )
+                            Text(
+                                text = stringResource(R.string.screen_history_item_total_questions, challenge.totalCount)
+                            )
                         }
                     }
                 }
@@ -246,7 +382,7 @@ class HistoryView(
     }
 
     @Composable
-    private fun DrawFilter() {
+    private fun DrawFilterTasks() {
         val filter = component.filter.collectAsState().value
 
         LazyVerticalGrid(
@@ -329,11 +465,11 @@ class HistoryView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = filter.onlySuccess,
-                            onClick = { component.onOnlySuccessChanges(filter.onlySuccess.not()) },
+                            selected = filter.onlySuccessTasks,
+                            onClick = { component.onOnlySuccessTaskChanges(filter.onlySuccessTasks.not()) },
                             role = Role.Switch
                         )
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
@@ -342,7 +478,47 @@ class HistoryView(
 
                     Checkbox(
                         modifier = Modifier.padding(horizontal = 4.dp),
-                        checked = filter.onlySuccess,
+                        checked = filter.onlySuccessTasks,
+                        onCheckedChange = null,
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun DrawFilterChallenges() {
+        val onlySuccessChallenges = component.filter.collectAsState().value.onlySuccessChallenges
+
+        LazyVerticalGrid(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            columns = GridCells.Fixed(3),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            item(span = { GridItemSpan(3) }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = onlySuccessChallenges,
+                            onClick = { component.onOnlySuccessChallengesChanges(onlySuccessChallenges.not()) },
+                            role = Role.Switch
+                        )
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.screen_history_filter_game_only_success),
+                    )
+
+                    Checkbox(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        checked = onlySuccessChallenges,
                         onCheckedChange = null,
                     )
                 }

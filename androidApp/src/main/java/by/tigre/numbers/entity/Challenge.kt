@@ -9,7 +9,8 @@ data class Challenge(
     val startDate: Long,
     val endDate: Long,
     val duration: Duration,
-    val status: Status
+    val status: Status,
+    val isSuccess: Boolean
 ) {
 
     @Serializable

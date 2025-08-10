@@ -68,7 +68,7 @@ interface DetailsComponent {
     data class Durations(val selected: Challenge.Duration?, val total: Long)
 
     enum class Mode {
-        View, Edit, Creation
+        ViewEditable, View, Edit, Creation
     }
 
     class Impl(
@@ -101,7 +101,7 @@ interface DetailsComponent {
             pagesNavigation.popTo(0)
         }
 
-        override val mode = MutableStateFlow(if (challengeId != null) Mode.View else Mode.Creation)
+        override val mode = MutableStateFlow(if (challengeId != null) Mode.ViewEditable else Mode.Creation)
         override val durations = MutableStateFlow(Durations(null, 0))
 
         override val pages: Value<ChildStack<*, PageChild>> =
@@ -164,6 +164,9 @@ interface DetailsComponent {
                                 total = -1
                             )
                         )
+                        if (challenge.startDate > 0) {
+                            mode.emit(Mode.View)
+                        }
                     } else {
                         store.remove(id = challengeId)
                         analytics.trackEvent(Event.Action.Logic.WrongChallengeInDB)
@@ -211,12 +214,13 @@ interface DetailsComponent {
                             duration = durations.value.selected ?: Challenge.Duration.TenMinutes,
                             status = Challenge.Status.New,
                             startDate = -1,
-                            endDate = -1
+                            endDate = -1,
+                            isSuccess = false
                         )
                     )
 
                     if (challengeId != null) {
-                        mode.tryEmit(Mode.View)
+                        mode.tryEmit(Mode.ViewEditable)
                     } else {
                         onClose()
                     }

@@ -10,8 +10,10 @@
     <string name="button_continue">Продолжить</string>
 
     <string name="screen_history_title">История</string>
-    <string name="screen_history_empty">Тут пока ничего нет, пройди тренировку и результат отобразится</string>
-    <string name="screen_history_empty_filter">Тут пока ничего нет, пройди тренировку и результат отобразится или измени условия фильтрации</string>
+    <string name="screen_history_empty_tasks">Тут пока ничего нет, пройди тренировку и результат отобразится</string>
+    <string name="screen_history_empty_filter_tasks">Тут пока ничего нет, пройди тренировку и результат отобразится или измени условия фильтрации</string>
+    <string name="screen_history_empty_challenges">Тут пока ничего нет, пройди испытания и результат отобразится</string>
+    <string name="screen_history_empty_filter_challenges">Тут пока ничего нет, пройди испытания и результат отобразится или измени условия фильтрации</string>
     <string name="screen_history_item_date">Дата: %s</string>
     <string name="screen_history_item_time">Время: %s</string>
     <string name="screen_history_item_duration">Длительность: %s</string>
@@ -22,6 +24,8 @@
     <string name="screen_history_filter_difficult">Сложность</string>
     <string name="screen_history_filter_game_type">Вид тренировки</string>
     <string name="screen_history_filter_game_only_success">Показать только полностью правильные</string>
+    <string name="screen_history_tab_challenges">Испытания</string>
+    <string name="screen_history_tab_tasks">Тренировки</string>
 
     <string name="screen_game_time_left">Осталось %s</string>
     <string name="screen_game_current_question">Вопрос %1$d из %2$d</string>

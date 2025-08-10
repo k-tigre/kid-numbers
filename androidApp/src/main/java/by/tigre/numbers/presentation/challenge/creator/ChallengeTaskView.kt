@@ -49,6 +49,7 @@ class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposa
     ToolbarConfig(
         title = {
             when (component.mode.collectAsState().value) {
+                DetailsComponent.Mode.ViewEditable -> stringResource(R.string.screen_challenge_creator_menu_details)
                 DetailsComponent.Mode.View -> stringResource(R.string.screen_challenge_creator_menu_details)
                 DetailsComponent.Mode.Edit -> stringResource(R.string.screen_challenge_creator_menu_edit)
                 DetailsComponent.Mode.Creation -> stringResource(R.string.screen_challenge_creator_menu_create)
@@ -57,7 +58,7 @@ class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposa
         navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onCloseClicked),
         actions = {
             when (component.mode.collectAsState().value) {
-                DetailsComponent.Mode.View -> listOf(
+                DetailsComponent.Mode.ViewEditable -> listOf(
                     ToolbarConfig.Action.Icon(
                         vector = ImageVector.vectorResource(
                             R.drawable.baseline_edit_24
@@ -65,6 +66,8 @@ class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposa
                         action = component::onEditClicked
                     )
                 )
+
+                DetailsComponent.Mode.View -> emptyList()
 
                 DetailsComponent.Mode.Edit,
                 DetailsComponent.Mode.Creation -> listOf(
@@ -223,7 +226,8 @@ class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposa
     override fun DrawContent(innerPadding: PaddingValues) {
         val tasks = component.tasks.collectAsState().value
         val isEditMode = when (component.mode.collectAsState().value) {
-            DetailsComponent.Mode.View -> false
+            DetailsComponent.Mode.View,
+            DetailsComponent.Mode.ViewEditable -> false
             DetailsComponent.Mode.Edit,
             DetailsComponent.Mode.Creation -> true
         }

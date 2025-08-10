@@ -4,8 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -41,22 +42,27 @@ class RootChallengeGameView(
                     is RootChallengeGameComponent.PageChild.Game -> GameView(child.component)
                     is RootChallengeGameComponent.PageChild.GameResult -> ResultView(child.component)
                     is RootChallengeGameComponent.PageChild.ChallengeResult -> ChallengeResultView(child.component)
-                }.Draw(modifier = Modifier.fillMaxSize())
+                }.Draw(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                )
             }
         }
     }
 
     @Composable
     private fun DrawState() {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
-                .safeDrawingPadding()
-        ) {
-            val state = component.state.collectAsState().value
+        val state = component.state.collectAsState().value
+        if (state.isCompleted.not()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp))
+                    .statusBarsPadding()
+                    .padding(bottom = 12.dp)
+            ) {
 
-            if (state.isCompleted.not()) {
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)

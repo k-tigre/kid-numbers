@@ -7,7 +7,8 @@ date INTEGER NOT NULL,
 startDate INTEGER,
 endDate INTEGER,
 duration INTEGER AS Challenge.Duration NOT NULL,
-status INTEGER AS Challenge.Status NOT NULL
+status INTEGER AS Challenge.Status NOT NULL,
+isSuccess INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 CREATE TABLE ChallengeTask(
@@ -25,7 +26,7 @@ BEGIN
 END;
 
 addChallenge:
-INSERT OR REPLACE INTO Challenges(id, date, duration, status) VALUES(?, ?, ?, ?);
+INSERT OR REPLACE INTO Challenges(id, date, duration, status, isSuccess) VALUES(?, ?, ?, ?, ?);
 
 addChallengeTask:
 INSERT INTO ChallengeTask(settings, isCompleted, challengesId) VALUES(?, ?, ?);
@@ -34,7 +35,7 @@ startChallenge:
 UPDATE Challenges SET status=1, startDate=? WHERE id=?;
 
 finishChallenge:
-UPDATE Challenges SET status=2, endDate=? WHERE id=?;
+UPDATE Challenges SET status=2, endDate=?, isSuccess=? WHERE id=?;
 
 removeChallenge:
 DELETE FROM Challenges WHERE id=?;
@@ -42,13 +43,21 @@ DELETE FROM Challenges WHERE id=?;
 getChallenge:
 SELECT * FROM Challenges WHERE id=? LIMIT 1;
 
-getChallengesWithCountFinished:
-SELECT Challenges.*,
-       COUNT(ChallengeTask.id) tasksCount
+getChallengesCompleted:
+SELECT Challenges.id, Challenges.startDate, Challenges.endDate, Challenges.isSuccess, COUNT(ChallengeTask.challengesId) AS taskCount
 FROM Challenges
-LEFT JOIN ChallengeTask ON ChallengeTask.challengesId = Challenges.id
+INNER JOIN ChallengeTask ON ChallengeTask.challengesId = Challenges.id
 WHERE status =2
-GROUP BY Challenges.id ORDER BY Challenges.date;
+GROUP BY Challenges.id
+ORDER BY Challenges.endDate;
+
+getChallengesCompletedWithFilter:
+SELECT Challenges.id, Challenges.startDate, Challenges.endDate, Challenges.isSuccess, COUNT(ChallengeTask.challengesId) AS taskCount
+FROM Challenges
+INNER JOIN ChallengeTask ON ChallengeTask.challengesId = Challenges.id
+WHERE status =2 AND Challenges.isSuccess IN ?
+GROUP BY Challenges.id
+ORDER BY Challenges.endDate DESC;
 
 getChallengesWithCountNotFinished:
 SELECT Challenges.*,

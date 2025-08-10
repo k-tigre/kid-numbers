@@ -3,6 +3,7 @@ package by.tigre.numbers.data.history
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.core.data.storage.DatabaseNumbers
+import by.tigre.numbers.entity.ChallengeCompleted
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
@@ -17,6 +18,7 @@ interface ResultStore {
     suspend fun save(result: GameResult, challengeId: String)
 
     suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult>
+    suspend fun loadCompletedChallenges(onlySuccess: Boolean): List<ChallengeCompleted>
     suspend fun loadForChallenge(id: String): List<HistoryGameResult>
     suspend fun getDetails(id: Long): GameResult?
 
@@ -80,6 +82,24 @@ interface ResultStore {
             } else {
                 database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, historyResultMapper)
             }.executeAsList()
+        }
+
+        override suspend fun loadCompletedChallenges(onlySuccess: Boolean): List<ChallengeCompleted> {
+            return database.challengesQueries.getChallengesCompletedWithFilter(
+                isSuccess = if (onlySuccess) listOf(true) else listOf(false, true)
+            ).executeAsList()
+                .mapNotNull { (id, startDate, endDate, isSuccess, taskCount) ->
+                    endDate ?: return@mapNotNull null
+                    startDate ?: return@mapNotNull null
+
+                    ChallengeCompleted(
+                        id = id,
+                        duration = endDate - startDate,
+                        startTime = startDate,
+                        taskCount = taskCount.toInt(),
+                        isSuccess = isSuccess
+                    )
+                }
         }
 
         override suspend fun loadForChallenge(id: String): List<HistoryGameResult> {

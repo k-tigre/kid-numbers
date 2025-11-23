@@ -104,6 +104,7 @@ interface RootGameComponent {
                             settings = config.settings,
                             provider = dependencies.getGameProvider(),
                             analytics = analytics,
+                            reminderController = dependencies.reminderController,
                             onFinish = { result ->
                                 launch(dispatchers.main) { pagesNavigation.replaceCurrent(GamePagesConfig.Result(result)) }
                                 launch(dispatchers.io) { resultStore.save(result) }

@@ -104,6 +104,12 @@
     <string name="screen_game_challenge_duration">Осталось времени: %1$s</string>
     <string name="screen_challenge_result_title">Результат испытания</string>
 
+    <string name="notification_general_channel_title">Общие уведомления</string>
+    <string name="notification_general_channel_description">Для всех общих уведомлений</string>
+
+    <string name="notification_reminder_title">Мы потеряли тебя</string>
+    <string name="notification_reminder_description">Вы давно не решали никаких заданий</string>
+
     <plurals name="day_count">
         <item quantity="one">%d день</item>
         <item quantity="many">%d дней</item>

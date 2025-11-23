@@ -3,6 +3,9 @@ package by.tigre.numbers.di
 import android.content.Context
 import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.data.platform.DateFormatter
+import by.tigre.numbers.data.storage.Preferences
+import by.tigre.numbers.domain.reminder.ReminderController
+import by.tigre.numbers.domain.reminder.WorkSchedulerWrapper
 import by.tigre.tools.tools.coroutines.CoreScope
 import by.tigre.tools.tools.coroutines.CoroutineModule
 
@@ -20,7 +23,11 @@ class ApplicationGraph(
     CoroutineModule by coroutineModule {
 
     override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl(context.resources) }
-    
+    override val reminderController: ReminderController = ReminderController.Impl(
+        preferences = Preferences.Impl(context, "main"),
+        workSchedulerWrapper = WorkSchedulerWrapper.Impl(context)
+    )
+
     companion object {
         fun create(
             context: Context,
@@ -39,6 +46,7 @@ class ApplicationGraph(
             val gameModule = GameModule.Impl(
                 analyticsModule = analyticsModule
             )
+
             return ApplicationGraph(
                 storeModule = storeModule,
                 analyticsModule = analyticsModule,

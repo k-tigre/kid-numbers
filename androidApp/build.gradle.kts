@@ -100,6 +100,7 @@ dependencies {
     implementation(Library.AndroidXAppcompat)
     implementation(Library.CoroutinesAndroid)
     implementation(Library.KotlinSerializationJson)
+    implementation(Library.AndroidXWork)
 
     implementation(Library.SQLDelightAndroid)
     implementation(Library.SQLDelightCoroutines)

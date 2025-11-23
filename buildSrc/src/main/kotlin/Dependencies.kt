@@ -9,6 +9,7 @@ enum class Library(group: String, artifact: String, version: Version) {
     AndroidXCore("androidx.core", "core-ktx", Version.AndroidXCore),
     AndoirdXAnnotation("androidx.annotation", "annotation", Version.AndroidXAnnotation),
     AndroidXSplash("androidx.core", "core-splashscreen", Version.AndroidXSplash),
+    AndroidXWork("androidx.work", "work-runtime-ktx", Version.AndroidXWork),
 
     KotlinStd("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", Version.Kotlin),
 
@@ -58,6 +59,7 @@ enum class Library(group: String, artifact: String, version: Version) {
         AndroidXCore("1.16.0"),
         AndroidXAnnotation("1.7.1"),
         AndroidXSplash("1.0.0"),
+        AndroidXWork("2.11.0"),
         Kotlin("2.2.0"),
         Coroutines("1.10.2"),
         KotlinSerializationJson("1.9.0"),

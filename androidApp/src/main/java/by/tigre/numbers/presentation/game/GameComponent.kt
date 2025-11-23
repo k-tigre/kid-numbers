@@ -3,6 +3,7 @@ package by.tigre.numbers.presentation.game
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.domain.GameProvider
+import by.tigre.numbers.domain.reminder.ReminderController
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
@@ -45,6 +46,7 @@ interface GameComponent {
         context: BaseComponentContext,
         settings: GameSettings,
         provider: GameProvider,
+        private val reminderController: ReminderController,
         private val analytics: EventAnalytics,
         private val onFinish: (GameResult) -> Unit
     ) : GameComponent, BaseComponentContext by context {
@@ -167,6 +169,8 @@ interface GameComponent {
                     type = gameOption.type
                 )
             )
+
+            reminderController.handleFinishTask()
         }
 
         override fun onEnterClicked() {

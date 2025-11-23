@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import by.tigre.numbers.domain.reminder.NotificationHelper
 import by.tigre.numbers.presentation.root.RootComponent
 import by.tigre.numbers.presentation.root.RootView
 import by.tigre.tools.presentation.base.BaseComponentContextImpl
@@ -20,12 +21,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val graph = (application as App).graph
+        val fromReminder = intent.getBooleanExtra(NotificationHelper.KEY_FROM_REMINDER, false)
+
         val root = RootComponent.Impl(
             context = BaseComponentContextImpl(defaultComponentContext()),
             gameDependencies = graph,
             challengesDependencies = graph,
             analytics = graph.eventAnalytics,
-            screenAnalytics = graph.screenAnalytics
+            screenAnalytics = graph.screenAnalytics,
+            fromReminder = fromReminder
         )
         enableEdgeToEdge()
 

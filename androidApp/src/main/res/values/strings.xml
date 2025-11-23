@@ -104,6 +104,12 @@
     <string name="screen_game_challenge_duration">Time remaining: %1$s</string>
     <string name="screen_challenge_result_title">Challenge result</string>
 
+    <string name="notification_general_channel_title">General notifications</string>
+    <string name="notification_general_channel_description">For all general notifications</string>
+
+    <string name="notification_reminder_title">We lost you</string>
+    <string name="notification_reminder_description">You haven\'t solved any tasks for a long time</string>
+
     <plurals name="day_count">
         <item quantity="one">%d day</item>
         <item quantity="many">%d days</item>

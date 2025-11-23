@@ -21,6 +21,7 @@ sealed class Event(val name: String) {
             data object RandomBigDeep : Logic("RandomBigDeep")
             data object WrongCountInDB : Logic("WrongCountInDB")
             data object WrongChallengeInDB : Logic("WrongChallengeInDB")
+            data object ShowReminder : Logic("ShowReminder")
             data class Error(val type: String) : Logic("Error"), WithPayload {
                 override val payload: Map<String, String> by lazy { mapOf("type" to type) }
             }

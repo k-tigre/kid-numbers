@@ -40,7 +40,8 @@ interface RootComponent {
         gameDependencies: GameDependencies,
         challengesDependencies: ChallengesDependencies,
         screenAnalytics: ScreenAnalytics,
-        analytics: EventAnalytics
+        analytics: EventAnalytics,
+        fromReminder: Boolean
     ) : RootComponent, BaseComponentContext by context {
 
         private val pagesNavigation = StackNavigation<MenuPagesConfig>()
@@ -129,6 +130,12 @@ interface RootComponent {
                         is MenuPagesConfig.Game -> Event.Screen.RootGame
                     }
                 }
+            }
+
+            if (fromReminder) {
+                gameDependencies.reminderController.handleReminderClicked()
+            } else {
+                gameDependencies.reminderController.handleAppShown()
             }
         }
 

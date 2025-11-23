@@ -80,6 +80,7 @@ interface RootChallengeGameComponent {
                             settings = config.task.gameSettings,
                             provider = dependencies.getGameProvider(),
                             analytics = analytics,
+                            reminderController = dependencies.reminderController,
                             onFinish = { result ->
                                 launch(dispatchers.main) {
                                     pagesNavigation.replaceCurrent(ChallengeGamePagesConfig.Result(result, config.challengeId))

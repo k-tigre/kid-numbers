@@ -17,7 +17,7 @@ interface ResultStore {
     suspend fun save(result: GameResult)
     suspend fun save(result: GameResult, challengeId: String)
 
-    suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult>
+    suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean, limit: Long = 10_000): List<HistoryGameResult>
     suspend fun loadCompletedChallenges(onlySuccess: Boolean): List<ChallengeCompleted>
     suspend fun loadForChallenge(id: String): List<HistoryGameResult>
     suspend fun getDetails(id: Long): GameResult?
@@ -76,11 +76,16 @@ interface ResultStore {
                 )
             }
 
-        override suspend fun load(difficult: List<Difficult>, types: List<GameType>, onlySuccess: Boolean): List<HistoryGameResult> {
+        override suspend fun load(
+            difficult: List<Difficult>,
+            types: List<GameType>,
+            onlySuccess: Boolean,
+            limit: Long
+        ): List<HistoryGameResult> {
             return if (onlySuccess) {
-                database.historyQueries.selectByTypeAndDifficultOnlyCorrect(difficult, types, limit = 10_000, historyResultMapper)
+                database.historyQueries.selectByTypeAndDifficultOnlyCorrect(difficult, types, limit = limit, historyResultMapper)
             } else {
-                database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = 10_000, historyResultMapper)
+                database.historyQueries.selectByTypeAndDifficult(difficult, types, limit = limit, historyResultMapper)
             }.executeAsList()
         }
 

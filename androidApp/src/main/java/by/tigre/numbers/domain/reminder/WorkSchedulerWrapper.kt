@@ -34,7 +34,6 @@ interface WorkSchedulerWrapper {
         private companion object {
             const val JOB_ID = 10
             const val TAG = "WorkSchedulerWrapper"
-            const val START_TIME = "reminder_start_time"
         }
     }
 }

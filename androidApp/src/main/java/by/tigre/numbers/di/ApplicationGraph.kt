@@ -3,9 +3,6 @@ package by.tigre.numbers.di
 import android.content.Context
 import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.data.platform.DateFormatter
-import by.tigre.numbers.data.storage.Preferences
-import by.tigre.numbers.domain.reminder.ReminderController
-import by.tigre.numbers.domain.reminder.WorkSchedulerWrapper
 import by.tigre.tools.tools.coroutines.CoreScope
 import by.tigre.tools.tools.coroutines.CoroutineModule
 
@@ -14,19 +11,17 @@ class ApplicationGraph(
     analyticsModule: AnalyticsModule,
     gameModule: GameModule,
     coroutineModule: CoroutineModule,
+    reminderModule: ReminderModule,
     context: Context
 ) : GameDependencies,
     ChallengesDependencies,
     StoreModule by storeModule,
     AnalyticsModule by analyticsModule,
     GameModule by gameModule,
-    CoroutineModule by coroutineModule {
+    CoroutineModule by coroutineModule,
+    ReminderModule by reminderModule {
 
     override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl(context.resources) }
-    override val reminderController: ReminderController = ReminderController.Impl(
-        preferences = Preferences.Impl(context, "main"),
-        workSchedulerWrapper = WorkSchedulerWrapper.Impl(context)
-    )
 
     companion object {
         fun create(
@@ -47,12 +42,18 @@ class ApplicationGraph(
                 analyticsModule = analyticsModule
             )
 
+            val reminderModule = ReminderModule.Impl(
+                context = context,
+                storeModule = storeModule,
+            )
+
             return ApplicationGraph(
                 storeModule = storeModule,
                 analyticsModule = analyticsModule,
                 gameModule = gameModule,
                 coroutineModule = coroutineModule,
-                context = context
+                context = context,
+                reminderModule = reminderModule
             )
         }
     }

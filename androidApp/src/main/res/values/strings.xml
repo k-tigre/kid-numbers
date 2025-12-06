@@ -109,6 +109,12 @@
 
     <string name="notification_reminder_title">We lost you</string>
     <string name="notification_reminder_description">You haven\'t solved any tasks for a long time</string>
+    <string name="dialog_reminder_start_challenges_title">It\'s time to overcome challenges</string>
+    <string name="dialog_reminder_start_challenges_subtitle">Are you ready to face them together?</string>
+    <string name="dialog_reminder_show_challenges_title">Ready for new challenges</string>
+    <string name="dialog_reminder_show_challenges_subtitle"> Let\'s tackle these obstacles together</string>
+    <string name="dialog_reminder_show_challenges_button_cancel">Later</string>
+    <string name="dialog_reminder_show_challenges_button_show">Go</string>
 
     <plurals name="day_count">
         <item quantity="one">%d day</item>

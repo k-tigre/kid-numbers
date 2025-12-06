@@ -26,19 +26,19 @@ interface ReminderController {
 
         override fun handleReminderClicked() {
             preferences.saveLong(LAST_REMINDER_TIME, Clock.System.now().epochSeconds)
-            workSchedulerWrapper.requestReminderNotification(DAY_2_IN_SECONDS * 1000)
+            workSchedulerWrapper.requestReminderNotification(DAY_7_IN_SECONDS * 1000)
         }
 
         override fun handleAppShown() {
             preferences.saveLong(LAST_APP_SHOWN_TIME, Clock.System.now().epochSeconds)
-            workSchedulerWrapper.requestReminderNotification(DAY_1_IN_SECONDS * 1000)
+            workSchedulerWrapper.requestReminderNotification(DAY_4_IN_SECONDS * 1000)
         }
 
         override fun isNeedShowReminder(): Boolean {
             val current = Clock.System.now().epochSeconds
-            val reminder = preferences.loadLong(LAST_REMINDER_TIME, 0) + DAY_1_IN_SECONDS - HOUR_1_IN_SECONDS
+            val reminder = preferences.loadLong(LAST_REMINDER_TIME, 0) + DAY_7_IN_SECONDS - HOUR_1_IN_SECONDS
             val finish = preferences.loadLong(LAST_FINISH_TIME, 0) + DAY_2_IN_SECONDS - HOUR_1_IN_SECONDS
-            val shown = preferences.loadLong(LAST_APP_SHOWN_TIME, 0) + DAY_1_IN_SECONDS - HOUR_1_IN_SECONDS
+            val shown = preferences.loadLong(LAST_APP_SHOWN_TIME, 0) + DAY_4_IN_SECONDS - HOUR_1_IN_SECONDS
             Log.i("ReminderController") { "isNeedShowReminder: reminder=${reminder - current} -- finish=${finish - current} -- shown=${shown - current}" }
             return finish < current && reminder < current && shown < current
         }
@@ -50,6 +50,8 @@ interface ReminderController {
             const val HOUR_1_IN_SECONDS = 60 * 60L
             const val DAY_1_IN_SECONDS = 24 * HOUR_1_IN_SECONDS
             const val DAY_2_IN_SECONDS = 2 * DAY_1_IN_SECONDS
+            const val DAY_4_IN_SECONDS = 4 * DAY_1_IN_SECONDS
+            const val DAY_7_IN_SECONDS = 7 * DAY_1_IN_SECONDS
         }
     }
 }

@@ -15,11 +15,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface ChallengesStore {
-    suspend fun add(challenge: Challenge)
+    suspend fun add(challenge: Challenge): String
     suspend fun remove(id: String)
 
     val challenges: Flow<List<ChallengeWithCount>>
     val hasActiveChallenge: Flow<Boolean>
+    val hasChallenges: Flow<Boolean>
     suspend fun getChallenge(id: String): Challenge?
     suspend fun start(id: String)
     suspend fun setTaskCompleted(id: Long)
@@ -53,14 +54,18 @@ interface ChallengesStore {
         override val hasActiveChallenge: Flow<Boolean> = challenges
             .map { it.any { challenge -> challenge.status == Challenge.Status.Active } }
 
+        override val hasChallenges: Flow<Boolean> = challenges
+            .map { it.isNotEmpty() }
+
         @OptIn(ExperimentalUuidApi::class)
-        override suspend fun add(challenge: Challenge) {
+        override suspend fun add(challenge: Challenge): String {
+            val id = Uuid.random().toHexString()
             database.transaction {
                 if (challenge.id != Challenge.NO_ID) {
                     database.challengesQueries.removeChallenge(challenge.id)
                 }
 
-                val id = Uuid.random().toHexString()
+
                 database.challengesQueries.addChallenge(
                     id = id,
                     date = System.currentTimeMillis(),
@@ -77,6 +82,8 @@ interface ChallengesStore {
                     )
                 }
             }
+
+            return id
         }
 
         override suspend fun remove(id: String) {

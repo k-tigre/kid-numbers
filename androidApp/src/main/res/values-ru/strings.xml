@@ -109,6 +109,13 @@
 
     <string name="notification_reminder_title">Мы потеряли тебя</string>
     <string name="notification_reminder_description">Вы давно не решали никаких заданий</string>
+    <string name="dialog_reminder_start_challenges_title">Настало время преодолеть вызовы</string>
+    <string name="dialog_reminder_start_challenges_subtitle">Готовы ли вы пройти их вместе?</string>
+
+    <string name="dialog_reminder_show_challenges_title">Вперед к новым достижениям</string>
+    <string name="dialog_reminder_show_challenges_subtitle">Давайте вместе преодолеем все преграды</string>
+    <string name="dialog_reminder_show_challenges_button_cancel">Позже</string>
+    <string name="dialog_reminder_show_challenges_button_show">Перейти</string>
 
     <plurals name="day_count">
         <item quantity="one">%d день</item>

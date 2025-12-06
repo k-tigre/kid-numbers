@@ -3,8 +3,11 @@ package by.tigre.numbers.presentation.root
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
+import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.di.ChallengesDependencies
 import by.tigre.numbers.di.GameDependencies
+import by.tigre.numbers.domain.reminder.ReminderChallengeGenerator
+import by.tigre.numbers.domain.reminder.ReminderController
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.extension.trackScreens
 import by.tigre.numbers.presentation.challenge.RootChallengeComponent
@@ -13,19 +16,32 @@ import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
 import by.tigre.numbers.presentation.menu.MenuComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
+import by.tigre.tools.presentation.base.appChildSlot
 import by.tigre.tools.presentation.base.appChildStack
+import by.tigre.tools.tools.coroutines.CoreDispatchers
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface RootComponent {
 
     val pages: Value<ChildStack<*, PageChild>>
+    val dialogs: Value<ChildSlot<*, DialogChild>>
+
+    fun onDismissDialog()
+    fun onStartChallengeFromReminder(challengeId: String)
+    fun onShowChallenges()
+    fun onReminderLaterClicked(withChallenge: Boolean)
 
     sealed interface PageChild {
         class Menu(val component: MenuComponent) : PageChild
@@ -35,17 +51,27 @@ interface RootComponent {
         class GameChallenge(val component: RootChallengeGameComponent) : PageChild
     }
 
+    sealed interface DialogChild {
+        data class Reminder(val challengeId: String) : DialogChild
+        data object ReminderHasChallenge : DialogChild
+    }
+
     class Impl(
         context: BaseComponentContext,
         gameDependencies: GameDependencies,
         challengesDependencies: ChallengesDependencies,
         screenAnalytics: ScreenAnalytics,
-        analytics: EventAnalytics,
+        private val analytics: EventAnalytics,
         fromReminder: Boolean
     ) : RootComponent, BaseComponentContext by context {
 
-        private val pagesNavigation = StackNavigation<MenuPagesConfig>()
+        private val challengeStore: ChallengesStore = challengesDependencies.challengesStore
+        private val reminderController: ReminderController = challengesDependencies.reminderController
+        private val reminderChallengeGenerator: ReminderChallengeGenerator = challengesDependencies.reminderChallengeGenerator
+        private val dispatchers: CoreDispatchers = challengesDependencies.dispatchers
 
+        private val pagesNavigation = StackNavigation<MenuPagesConfig>()
+        private val dialogsNavigation = SlotNavigation<DialogsConfig>()
         private val mainMenuRouter = object : MenuComponent.Router {
             override fun showGameSettings(type: GameType) {
                 pagesNavigation.pushNew(MenuPagesConfig.Game(type))
@@ -119,6 +145,19 @@ interface RootComponent {
                 }
             }
 
+        override val dialogs: Value<ChildSlot<*, DialogChild>> =
+            appChildSlot(
+                source = dialogsNavigation,
+                serializer = DialogsConfig.serializer(),
+                key = "root_dialogs",
+                handleBackButton = true,
+            ) { config, _ ->
+                when (config) {
+                    is DialogsConfig.Reminder -> DialogChild.Reminder(config.challengeId)
+                    is DialogsConfig.ReminderHasChallenge -> DialogChild.ReminderHasChallenge
+                }
+            }
+
         init {
             launch {
                 pages.trackScreens<MenuPagesConfig>(screenAnalytics, "MenuPagesConfig") {
@@ -133,10 +172,51 @@ interface RootComponent {
             }
 
             if (fromReminder) {
-                gameDependencies.reminderController.handleReminderClicked()
+                reminderController.handleReminderClicked()
+                launch {
+                    val challengeId = reminderChallengeGenerator.generateIfNeeded()
+                    withContext(dispatchers.main) {
+                        if (challengeId != null) {
+                            dialogsNavigation.activate(DialogsConfig.Reminder(challengeId))
+                        } else {
+                            dialogsNavigation.activate(DialogsConfig.ReminderHasChallenge)
+                        }
+                    }
+                }
             } else {
-                gameDependencies.reminderController.handleAppShown()
+                reminderController.handleAppShown()
             }
+        }
+
+        override fun onDismissDialog() {
+            dialogsNavigation.dismiss()
+        }
+
+        override fun onStartChallengeFromReminder(challengeId: String) {
+            dialogsNavigation.dismiss()
+            analytics.trackEvent(Event.Action.UI.Button.ReminderStartClicked)
+            launch {
+                challengeStore.start(challengeId)
+                val challenge = challengeStore.getChallenge(challengeId)
+                if (challenge != null) {
+                    withContext(dispatchers.main) {
+                        pagesNavigation.pushNew(MenuPagesConfig.ChallengeGame(challenge))
+                    }
+                } else {
+                    analytics.trackEvent(Event.Action.Logic.FailedToFindReminderChallenge)
+                }
+            }
+        }
+
+        override fun onShowChallenges() {
+            dialogsNavigation.dismiss()
+            analytics.trackEvent(Event.Action.UI.Button.ReminderShowChallengesClicked)
+            mainMenuRouter.showChallenge()
+        }
+
+        override fun onReminderLaterClicked(withChallenge: Boolean) {
+            dialogsNavigation.dismiss()
+            analytics.trackEvent(Event.Action.UI.Button.ReminderLaterClicked(withChallenge))
         }
 
         @Serializable
@@ -163,6 +243,20 @@ interface RootComponent {
             @Serializable
             @SerialName("MenuPagesConfig_ChallengeGame")
             data class ChallengeGame(val challenge: by.tigre.numbers.entity.Challenge) : MenuPagesConfig
+        }
+
+        @Serializable
+        private sealed interface DialogsConfig {
+            @Serializable
+            @SerialName("Reminder")
+            data class Reminder(
+                @SerialName("challengeId")
+                val challengeId: String
+            ) : DialogsConfig
+
+            @Serializable
+            @SerialName("ReminderHasChallenge")
+            data object ReminderHasChallenge : DialogsConfig
         }
     }
 }

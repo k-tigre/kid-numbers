@@ -15,6 +15,7 @@ import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.data.history.ResultStore
 import by.tigre.numbers.data.history.StoreDifficultAdapter
 import by.tigre.numbers.data.history.StoreGameTypeAdapter
+import by.tigre.numbers.data.storage.Preferences
 import by.tigre.numbers.db.Challenges
 import by.tigre.numbers.db.History
 import by.tigre.tools.tools.coroutines.CoroutineModule
@@ -22,6 +23,7 @@ import by.tigre.tools.tools.coroutines.CoroutineModule
 interface StoreModule {
     val resultStore: ResultStore
     val challengesStore: ChallengesStore
+    val preferences: Preferences
 
     class Impl(
         context: Context,
@@ -105,5 +107,7 @@ interface StoreModule {
         override val challengesStore: ChallengesStore by lazy {
             ChallengesStore.Impl(database = database, scope = coroutineModule.scope)
         }
+
+        override val preferences: Preferences = Preferences.Impl(context, "main")
     }
 }

@@ -11,7 +11,15 @@ sealed class Event(val name: String) {
                 data object ChallengeStart : Button("Challenge_Start")
                 data object ChallengeClose : Button("Challenge_Close")
                 data object ChallengeContinue : Button("Challenge_Continue")
+                data object ReminderStartClicked : Button("ReminderStartClicked")
+                data object ReminderShowChallengesClicked : Button("ReminderShowChallengesClicked")
+                data class ReminderLaterClicked(
+                    val withChallenge: Boolean
+                ) : Button("ReminderLaterClicked"), WithPayload {
+                    override val payload: Map<String, String> by lazy { mapOf("withChallenge" to withChallenge.toString()) }
+                }
             }
+
             data class SettingScroll(val type: GameType) : UI("SettingScroll"), WithPayload {
                 override val payload: Map<String, String> by lazy { mapOf("type" to type.name) }
             }
@@ -21,6 +29,7 @@ sealed class Event(val name: String) {
             data object RandomBigDeep : Logic("RandomBigDeep")
             data object WrongCountInDB : Logic("WrongCountInDB")
             data object WrongChallengeInDB : Logic("WrongChallengeInDB")
+            data object FailedToFindReminderChallenge : Logic("FailedToFindReminderChallenge")
             data object ShowReminder : Logic("ShowReminder")
             data class Error(val type: String) : Logic("Error"), WithPayload {
                 override val payload: Map<String, String> by lazy { mapOf("type" to type) }

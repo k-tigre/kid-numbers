@@ -2,8 +2,8 @@ package by.tigre.numbers.data.platform
 
 import android.content.res.Resources
 import android.icu.text.SimpleDateFormat
+import android.icu.util.TimeZone
 import by.tigre.numbers.R
-import java.util.Locale
 
 interface DateFormatter {
     fun formatTime(timestamp: Long): String
@@ -16,7 +16,9 @@ interface DateFormatter {
         private val formatterDate = SimpleDateFormat.getDateInstance()
         private val formatterDateTime = SimpleDateFormat.getDateTimeInstance()
         private val formatterTime = SimpleDateFormat.getTimeInstance()
-        private val formatterTimeWithoutZone = SimpleDateFormat("H:mm:ss", Locale.US)
+        private val formatterTimeWithoutZone = SimpleDateFormat("H:mm:ss").apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
 
         override fun formatTime(timestamp: Long): String = formatterTime.format(timestamp)
 

@@ -8,6 +8,7 @@ import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.HistoryGameResult
+import by.tigre.numbers.entity.StatisticData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ interface ResultStore {
     suspend fun loadCompletedChallenges(onlySuccess: Boolean): List<ChallengeCompleted>
     suspend fun loadForChallenge(id: String): List<HistoryGameResult>
     suspend fun getDetails(id: Long): GameResult?
+    suspend fun loadStatistic(): StatisticData
 
     class Impl(
         private val database: DatabaseNumbers,
@@ -122,6 +124,76 @@ interface ResultStore {
                     null
                 }
             }
+        }
+
+        override suspend fun loadStatistic(): StatisticData {
+            val now = System.currentTimeMillis()
+            val since7Days = now - 7L * 86_400_000L
+            val since30Days = now - 30L * 86_400_000L
+
+            val total = database.historyQueries.selectStatisticTotal().executeAsOneOrNull()
+            val totalCorrect = (total?.correct?.toLong()) ?: 0L
+            val totalAll = (total?.total?.toLong()) ?: 0L
+
+            val byType = database.historyQueries.selectStatisticByType().executeAsList()
+                .mapNotNull { row ->
+                    val gameType = row.gameType ?: return@mapNotNull null
+                    gameType to StatisticData.TypeStatistic(
+                        correct = row.correct?.toLong() ?: 0L,
+                        total = row.total?.toLong() ?: 0L
+                    )
+                }.toMap()
+
+            val avg7Days = calculatePeriodAverage(since7Days)
+            val avg30Days = calculatePeriodAverage(since30Days)
+            val avg7DaysByType = calculatePeriodAverageByType(since7Days)
+            val avg30DaysByType = calculatePeriodAverageByType(since30Days)
+
+            return StatisticData(
+                totalCorrect = totalCorrect,
+                totalAll = totalAll,
+                byType = byType,
+                avg7Days = avg7Days,
+                avg30Days = avg30Days,
+                avg7DaysByType = avg7DaysByType,
+                avg30DaysByType = avg30DaysByType
+            )
+        }
+
+        private suspend fun calculatePeriodAverage(since: Long): StatisticData.PeriodAverage {
+            val stats = database.historyQueries.selectStatisticTotalByPeriod(since).executeAsOneOrNull()
+            val daysResult = database.historyQueries.selectDaysCountByPeriod(since).executeAsOneOrNull()
+            val days = daysResult?.toLong() ?: 0L
+            return if (days > 0L) {
+                StatisticData.PeriodAverage(
+                    correctPerDay = (stats?.correct?.toFloat() ?: 0f) / days,
+                    totalPerDay = (stats?.total?.toFloat() ?: 0f) / days
+                )
+            } else {
+                StatisticData.PeriodAverage(0f, 0f)
+            }
+        }
+
+        private suspend fun calculatePeriodAverageByType(since: Long): Map<GameType, StatisticData.PeriodAverage> {
+            val stats = database.historyQueries.selectStatisticByPeriod(since).executeAsList()
+            val days = database.historyQueries.selectDaysCountByTypeAndPeriod(since).executeAsList()
+            val daysMap = days.mapNotNull { row ->
+                val gameType = row.gameType ?: return@mapNotNull null
+                gameType to (row.days?.toLong() ?: 0L)
+            }.toMap()
+
+            return stats.mapNotNull { row ->
+                val gameType = row.gameType ?: return@mapNotNull null
+                val dayCount = daysMap[gameType] ?: 0L
+                if (dayCount > 0L) {
+                    gameType to StatisticData.PeriodAverage(
+                        correctPerDay = (row.correct?.toFloat() ?: 0f) / dayCount,
+                        totalPerDay = (row.total?.toFloat() ?: 0f) / dayCount
+                    )
+                } else {
+                    gameType to StatisticData.PeriodAverage(0f, 0f)
+                }
+            }.toMap()
         }
     }
 }

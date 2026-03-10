@@ -43,6 +43,13 @@ class MenuView(
 
             item {
                 DrawItem(
+                    title = stringResource(R.string.main_menu_statistic),
+                    action = component::onStatisticClicked
+                )
+            }
+
+            item {
+                DrawItem(
                     title = stringResource(R.string.main_menu_history),
                     action = component::onHistoryClicked
                 )

@@ -14,11 +14,13 @@ interface MenuComponent {
     fun onGameClicked(type: GameType)
     fun onHistoryClicked()
     fun onChallengeClicked()
+    fun onStatisticClicked()
 
     interface Router {
         fun showGameSettings(type: GameType)
         fun showHistory()
         fun showChallenge()
+        fun showStatistic()
     }
 
     class Impl(
@@ -42,6 +44,10 @@ interface MenuComponent {
 
         override fun onChallengeClicked() {
             router.showChallenge()
+        }
+
+        override fun onStatisticClicked() {
+            router.showStatistic()
         }
     }
 }

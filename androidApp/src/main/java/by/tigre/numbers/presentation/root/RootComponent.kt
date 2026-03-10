@@ -15,6 +15,7 @@ import by.tigre.numbers.presentation.game.RootChallengeGameComponent
 import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
 import by.tigre.numbers.presentation.menu.MenuComponent
+import by.tigre.numbers.presentation.statistic.StatisticComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildSlot
 import by.tigre.tools.presentation.base.appChildStack
@@ -46,6 +47,7 @@ interface RootComponent {
     sealed interface PageChild {
         class Menu(val component: MenuComponent) : PageChild
         class History(val component: HistoryComponent) : PageChild
+        class Statistic(val component: StatisticComponent) : PageChild
         class Game(val component: RootGameComponent) : PageChild
         class Challenge(val component: RootChallengeComponent) : PageChild
         class GameChallenge(val component: RootChallengeGameComponent) : PageChild
@@ -84,6 +86,10 @@ interface RootComponent {
             override fun showChallenge() {
                 pagesNavigation.pushNew(MenuPagesConfig.Challenge)
             }
+
+            override fun showStatistic() {
+                pagesNavigation.pushNew(MenuPagesConfig.Statistic)
+            }
         }
 
         override val pages: Value<ChildStack<*, PageChild>> =
@@ -121,6 +127,14 @@ interface RootComponent {
                             challengesStore = gameDependencies.challengesStore,
                             dateFormatter = gameDependencies.dateFormatter,
                             onClose = { pagesNavigation.pop() })
+                    )
+
+                    MenuPagesConfig.Statistic -> PageChild.Statistic(
+                        StatisticComponent.Impl(
+                            context = componentContext,
+                            resultStore = gameDependencies.resultStore,
+                            onClose = { pagesNavigation.pop() }
+                        )
                     )
 
                     MenuPagesConfig.Challenge -> PageChild.Challenge(
@@ -164,6 +178,7 @@ interface RootComponent {
                     when (it) {
                         MenuPagesConfig.Menu -> Event.Screen.MainMenu
                         MenuPagesConfig.History -> Event.Screen.History
+                        MenuPagesConfig.Statistic -> Event.Screen.Statistic
                         MenuPagesConfig.Challenge -> Event.Screen.RootChallenge
                         is MenuPagesConfig.ChallengeGame -> Event.Screen.RootGameChallenge
                         is MenuPagesConfig.Game -> Event.Screen.RootGame
@@ -228,6 +243,10 @@ interface RootComponent {
             @Serializable
             @SerialName("MenuPagesConfig_History")
             data object History : MenuPagesConfig
+
+            @Serializable
+            @SerialName("MenuPagesConfig_Statistic")
+            data object Statistic : MenuPagesConfig
 
             @Serializable
             @SerialName("MenuPagesConfig_Challenge")

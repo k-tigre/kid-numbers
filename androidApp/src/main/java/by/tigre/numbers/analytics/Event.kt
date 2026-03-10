@@ -58,6 +58,7 @@ sealed class Event(val name: String) {
     sealed class Screen(name: String, val skip: Boolean = false) : Event(name) {
         data object MainMenu : Screen("MainMenu")
         data object History : Screen("History")
+        data object Statistic : Screen("Statistic")
         data object RootGame : Screen("RootGame", skip = true)
         data object RootChallenge : Screen("RootChallenge", skip = true)
         data object RootGameChallenge : Screen("RootGameChallenge", skip = true)

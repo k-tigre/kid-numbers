@@ -34,6 +34,38 @@ INSERT INTO History(date, duration, difficult, correctCount, totalCount, gameTyp
 SELECT last_insert_rowid();
 }
 
+selectStatisticByPeriod:
+SELECT gameType, SUM(correctCount) AS correct, SUM(totalCount) AS total
+FROM History
+WHERE date >= :since AND gameType IS NOT NULL
+GROUP BY gameType;
+
+selectStatisticTotalByPeriod:
+SELECT SUM(correctCount) AS correct, SUM(totalCount) AS total
+FROM History
+WHERE date >= :since;
+
+selectStatisticTotal:
+SELECT SUM(correctCount) AS correct, SUM(totalCount) AS total
+FROM History;
+
+selectStatisticByType:
+SELECT gameType, SUM(correctCount) AS correct, SUM(totalCount) AS total
+FROM History
+WHERE gameType IS NOT NULL
+GROUP BY gameType;
+
+selectDaysCountByPeriod:
+SELECT COUNT(DISTINCT date / 86400000) AS days
+FROM History
+WHERE date >= :since;
+
+selectDaysCountByTypeAndPeriod:
+SELECT gameType, COUNT(DISTINCT date / 86400000) AS days
+FROM History
+WHERE date >= :since AND gameType IS NOT NULL
+GROUP BY gameType;
+
 insertHistoryWithData {
 INSERT INTO History(date, duration, difficult, correctCount, totalCount, gameType, challengeId) VALUES(?, ?, ?, ?, ?, ?, ?);
 INSERT INTO HistoryItem(historyId, data) VALUES(last_insert_rowid(), :historyData);

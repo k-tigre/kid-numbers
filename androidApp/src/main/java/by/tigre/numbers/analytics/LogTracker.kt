@@ -1,6 +1,6 @@
 package by.tigre.numbers.analytics
 
-import by.tigre.tools.logger.Log
+import by.tigre.logger.Log
 
 class LogTracker : Tracker {
     override fun trackEvent(event: Event.Action) {

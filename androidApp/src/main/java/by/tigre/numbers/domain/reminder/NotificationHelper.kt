@@ -11,7 +11,7 @@ import by.tigre.numbers.App
 import by.tigre.numbers.MainActivity
 import by.tigre.numbers.R
 import by.tigre.numbers.analytics.Event
-import by.tigre.tools.logger.Log
+import by.tigre.logger.Log
 
 class NotificationHelper(
     private val context: Context

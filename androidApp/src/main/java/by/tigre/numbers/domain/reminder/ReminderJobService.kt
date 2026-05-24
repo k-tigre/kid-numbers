@@ -3,7 +3,7 @@ package by.tigre.numbers.domain.reminder
 import android.annotation.SuppressLint
 import android.app.job.JobParameters
 import android.app.job.JobService
-import by.tigre.tools.logger.Log
+import by.tigre.logger.Log
 
 @SuppressLint("SpecifyJobSchedulerIdRange")
 class ReminderJobService : JobService() {

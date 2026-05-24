@@ -114,10 +114,10 @@ dependencies {
     implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics)
     implementation(Library.Mixpanel)
 
-    implementation(Project.Logger.Core)
-    implementation(Project.Logger.Crashlytics)
-    implementation(Project.Logger.Logcat)
-    implementation(Project.Logger.InternalStore)
+    implementation(Logger.Core)
+    implementation(Logger.Crashlytics)
+    implementation(Logger.Logcat)
+    implementation(Logger.InternalStore)
 
     // debugImplementation because LeakCanary should only run in debug builds.
     debugImplementation(Library.Leakcanary)

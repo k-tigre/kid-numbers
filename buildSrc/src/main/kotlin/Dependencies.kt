@@ -118,6 +118,19 @@ enum class Toolkit(
     )
 }
 
+private const val tigreLoggerGroup = "com.github.k-tigre"
+private const val tigreLoggerVersion = "1.0.2"
+
+enum class Logger(artifact: String) {
+    Core("logger-core"),
+    Logcat("logger-logcat"),
+    Crashlytics("logger-crashlytics"),
+    InternalStore("logger-internal-store"),
+    ;
+
+    val notation = "$tigreLoggerGroup:$artifact:$tigreLoggerVersion"
+}
+
 enum class FirebaseLibrary(group: String, artifact: String) {
     FirebaseCrashLytics("com.google.firebase", "firebase-crashlytics"),
     FirebaseAnalytics("com.google.firebase", "firebase-analytics")
@@ -195,12 +208,6 @@ sealed class Project(id: String) {
         }
     }
 
-    sealed class Logger(id: String) : Project("logger:$id") {
-        object Core : Logger("core")
-        object Crashlytics : Logger("crashlytics")
-        object Logcat : Logger("logcat")
-        object InternalStore : Logger("internal-store")
-    }
 }
 
 fun DependencyHandler.plugin(plugin: Plugin) = add(ScriptHandler.CLASSPATH_CONFIGURATION, plugin.notation)
@@ -211,6 +218,7 @@ fun DependencyHandler.implementation(toolkit: Toolkit) {
 }
 
 fun DependencyHandler.implementation(library: Library) = add("implementation", library.notation)
+fun DependencyHandler.implementation(logger: Logger) = add("implementation", logger.notation)
 fun DependencyHandler.debugImplementation(library: Library) = add("debugImplementation", library.notation)
 fun DependencyHandler.implementation(vararg firebaseLibrary: FirebaseLibrary) {
     add("implementation", platform(FirebaseLibrary.bom))

@@ -5,7 +5,7 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.JOB_SCHEDULER_SERVICE
-import by.tigre.tools.logger.Log
+import by.tigre.logger.Log
 import kotlin.time.ExperimentalTime
 
 interface WorkSchedulerWrapper {

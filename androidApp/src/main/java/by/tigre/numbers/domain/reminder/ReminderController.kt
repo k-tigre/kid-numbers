@@ -1,7 +1,7 @@
 package by.tigre.numbers.domain.reminder
 
 import by.tigre.numbers.data.storage.Preferences
-import by.tigre.tools.logger.Log
+import by.tigre.logger.Log
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

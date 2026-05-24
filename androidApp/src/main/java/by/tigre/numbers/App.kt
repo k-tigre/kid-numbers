@@ -1,15 +1,17 @@
 package by.tigre.numbers
 
 import android.app.Application
+import android.os.Process
+import by.tigre.logger.CrashlyticsLogger
+import by.tigre.logger.DbLogger
+import by.tigre.logger.Log
+import by.tigre.logger.LogDatabaseDriverFactory
+import by.tigre.logger.LogcatLogger
 import by.tigre.numbers.analytics.FirebaseTracker
 import by.tigre.numbers.analytics.LogTracker
 import by.tigre.numbers.analytics.MixpanelTracker
 import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.di.ApplicationGraph
-import by.tigre.tools.logger.CrashlyticsLogger
-import by.tigre.tools.logger.DbLogger
-import by.tigre.tools.logger.Log
-import by.tigre.tools.logger.LogcatLogger
 
 class App : Application() {
     lateinit var graph: ApplicationGraph
@@ -38,9 +40,14 @@ class App : Application() {
     }
 
     private fun initLoggers() {
-        val crashlyticsLogger = CrashlyticsLogger(BuildConfig.BUILD_TYPE)
+        val crashlyticsLogger = CrashlyticsLogger()
         if (BuildConfig.DEBUG) {
-            Log.init(Log.Level.VERBOSE, LogcatLogger(), crashlyticsLogger, DbLogger(this))
+            Log.init(
+                Log.Level.VERBOSE,
+                LogcatLogger(),
+                crashlyticsLogger,
+                DbLogger(LogDatabaseDriverFactory.create(this), Process.myPid())
+            )
         } else {
             Log.init(Log.Level.DEBUG, crashlyticsLogger)
         }

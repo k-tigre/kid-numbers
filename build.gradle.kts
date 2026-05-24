@@ -36,8 +36,8 @@ subprojects {
             }
 
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+                sourceCompatibility = JavaVersion.VERSION_21
+                targetCompatibility = JavaVersion.VERSION_21
             }
 
             testOptions {
@@ -54,8 +54,8 @@ subprojects {
 
     plugins.matching { it is JavaPlugin }.whenPluginAdded {
         configure<JavaPluginExtension> {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
         }
     }
 
@@ -63,7 +63,7 @@ subprojects {
         compilerOptions {
             allWarningsAsErrors = false
             apiVersion.set(KotlinVersion.KOTLIN_2_1)
-            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 

@@ -4,7 +4,10 @@
 .idea
 .DS_Store
 /build
+/bin
 */build
+*/bin
+**/bin
 /captures
 .externalNativeBuild
 .cxx

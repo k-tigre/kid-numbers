@@ -2,14 +2,14 @@ package by.tigre.numbers.extension
 
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.ScreenAnalytics
-import by.tigre.tools.logger.Log
-import by.tigre.tools.logger.extensions.TAG_UNEXPECTED
-import by.tigre.tools.logger.extensions.debugLog
+import by.tigre.logger.Log
+import by.tigre.logger.extensions.debugLog
 import by.tigre.tools.presentation.base.toFlow
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.mapNotNull
 
+const val TAG_UNEXPECTED = "UNEXPECTED"
 
 suspend inline fun <reified T> Value<ChildStack<*, *>>.trackScreens(
     analytics: ScreenAnalytics,

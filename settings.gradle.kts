@@ -4,6 +4,17 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/k-tigre/logger")
+            credentials {
+                username = providers.gradleProperty("gpr.user").orNull
+                    ?: System.getenv("GITHUB_ACTOR")
+                    ?: ""
+                password = providers.gradleProperty("gpr.key").orNull
+                    ?: System.getenv("GITHUB_TOKEN")
+                    ?: ""
+            }
+        }
     }
 }
 
@@ -14,8 +25,3 @@ include(":androidApp")
 include(":tools:presentation:compose")
 include(":tools:presentation:decompose")
 include(":tools:coroutines")
-
-include(":logger:core")
-include(":logger:logcat")
-include(":logger:crashlytics")
-include(":logger:internal-store")

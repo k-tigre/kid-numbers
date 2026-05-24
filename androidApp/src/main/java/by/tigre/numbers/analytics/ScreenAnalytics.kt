@@ -1,6 +1,6 @@
 package by.tigre.numbers.analytics
 
-import by.tigre.tools.logger.extensions.debugLog
+import by.tigre.logger.extensions.debugLog
 import by.tigre.tools.tools.coroutines.CoreDispatchers
 import by.tigre.tools.tools.coroutines.CoreScope
 import kotlinx.coroutines.flow.MutableSharedFlow

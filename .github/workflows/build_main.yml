@@ -20,6 +20,7 @@ jobs:
           ./gradlew testQaUnitTest assembleQa
         env:
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload to Firebase
         run: |
           ./gradlew appDistributionUploadQa

@@ -106,6 +106,9 @@ interface RootChallengeGameComponent {
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
+                            featureFlags = dependencies.featureFlags,
+                            leaderboardRepository = dependencies.leaderboardRepository,
+                            leaderboardPreferences = dependencies.leaderboardPreferences,
                             onFinish = {
                                 pagesNavigation.replaceCurrent(getNextConfig())
                             }
@@ -118,6 +121,9 @@ interface RootChallengeGameComponent {
                             resultStore = resultStore,
                             challengesStore = challengesStore,
                             dateFormatter = dependencies.dateFormatter,
+                            featureFlags = dependencies.featureFlags,
+                            leaderboardRepository = dependencies.leaderboardRepository,
+                            leaderboardPreferences = dependencies.leaderboardPreferences,
                             challengeId = config.challengeId,
                             onClose = onClose
                         )

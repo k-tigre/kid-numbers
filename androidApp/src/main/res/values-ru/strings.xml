@@ -5,6 +5,7 @@
     <string name="main_menu_active_challenges">Испытания: есть активные</string>
     <string name="main_menu_no_active_challenges">Испытания: нет активных</string>
     <string name="main_menu_statistic">Статистика</string>
+    <string name="main_menu_leaderboard">Доска почёта</string>
 
     <string name="button_start">Начать</string>
     <string name="button_close">Закрыть</string>
@@ -133,4 +134,18 @@
         <item quantity="many">%d дней</item>
         <item quantity="few">%d дня</item>
     </plurals>
+
+    <string name="screen_leaderboard_title">Доска почёта</string>
+    <string name="screen_leaderboard_empty">Пока нет результатов. Пройди тренировку без ошибок!</string>
+    <string name="screen_leaderboard_load_error">Не удалось загрузить доску почёта</string>
+    <string name="screen_leaderboard_item">%1$d. %2$s — %3$d очк.</string>
+    <string name="screen_leaderboard_item_games">%d игр</string>
+    <string name="screen_leaderboard_backfill_done">Из истории начислено идеальных игр: %d</string>
+    <string name="screen_leaderboard_submit_title">Добавить очки в доску почёта?</string>
+    <string name="screen_leaderboard_submit_rating">Очки за эту игру: +%d</string>
+    <string name="screen_leaderboard_submit_nickname">Ник</string>
+    <string name="screen_leaderboard_submit_send">Отправить</string>
+    <string name="screen_leaderboard_submit_skip">Пропустить</string>
+    <string name="screen_leaderboard_submit_error_empty_nickname">Введите ник</string>
+    <string name="screen_leaderboard_submit_error_generic">Не удалось отправить. Попробуйте позже.</string>
 </resources>

@@ -15,6 +15,7 @@ enum class Library(group: String, artifact: String, version: Version) {
 
     CoroutinesCore("org.jetbrains.kotlinx", "kotlinx-coroutines-core", Version.Coroutines),
     CoroutinesAndroid("org.jetbrains.kotlinx", "kotlinx-coroutines-android", Version.Coroutines),
+    CoroutinesPlayServices("org.jetbrains.kotlinx", "kotlinx-coroutines-play-services", Version.Coroutines),
 
     KotlinSerializationJson("org.jetbrains.kotlinx", "kotlinx-serialization-json", Version.KotlinSerializationJson),
 
@@ -133,7 +134,9 @@ enum class Logger(artifact: String) {
 
 enum class FirebaseLibrary(group: String, artifact: String) {
     FirebaseCrashLytics("com.google.firebase", "firebase-crashlytics"),
-    FirebaseAnalytics("com.google.firebase", "firebase-analytics")
+    FirebaseAnalytics("com.google.firebase", "firebase-analytics"),
+    FirebaseFirestore("com.google.firebase", "firebase-firestore"),
+    FirebaseRemoteConfig("com.google.firebase", "firebase-config"),
     ;
 
     val notation = "$group:$artifact"

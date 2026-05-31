@@ -12,6 +12,7 @@ import by.tigre.numbers.analytics.LogTracker
 import by.tigre.numbers.analytics.MixpanelTracker
 import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.di.ApplicationGraph
+import com.google.firebase.FirebaseApp
 
 class App : Application() {
     lateinit var graph: ApplicationGraph
@@ -20,6 +21,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         initLoggers()
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
 
         graph = ApplicationGraph.create(
             context = this,

@@ -2,7 +2,10 @@ package by.tigre.numbers.presentation.challenge.result
 
 import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.data.history.ResultStore
+import by.tigre.numbers.data.leaderboard.LeaderboardRepository
 import by.tigre.numbers.data.platform.DateFormatter
+import by.tigre.numbers.data.remoteconfig.FeatureFlags
+import by.tigre.numbers.data.storage.LeaderboardPreferences
 import by.tigre.numbers.entity.Challenge
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameResult
@@ -58,6 +61,9 @@ interface ChallengeResultComponent {
         private val resultStore: ResultStore,
         private val challengesStore: ChallengesStore,
         private val dateFormatter: DateFormatter,
+        private val featureFlags: FeatureFlags,
+        private val leaderboardRepository: LeaderboardRepository,
+        private val leaderboardPreferences: LeaderboardPreferences,
         private val challengeId: String,
         private val onClose: () -> Unit
     ) : ChallengeResultComponent, BaseComponentContext by context {
@@ -73,6 +79,9 @@ interface ChallengeResultComponent {
                 ResultComponent.Impl(
                     context = childComponentContext,
                     result = config.result,
+                    featureFlags = featureFlags,
+                    leaderboardRepository = leaderboardRepository,
+                    leaderboardPreferences = leaderboardPreferences,
                     onFinish = detailsNavigation::dismiss
                 )
             }

@@ -10,6 +10,9 @@ interface Preferences {
     fun saveLong(key: String, value: Long?)
     fun loadLong(key: String, default: Long): Long
 
+    fun saveString(key: String, value: String?)
+    fun loadString(key: String, default: String): String
+
     class Impl(context: Context, name: String) : Preferences {
         private val preference = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
@@ -36,5 +39,17 @@ interface Preferences {
         }
 
         override fun loadLong(key: String, default: Long): Long = preference.getLong(key, default)
+
+        override fun saveString(key: String, value: String?) {
+            preference.edit {
+                if (value != null) {
+                    putString(key, value)
+                } else {
+                    remove(key)
+                }
+            }
+        }
+
+        override fun loadString(key: String, default: String): String = preference.getString(key, default) ?: default
     }
 }

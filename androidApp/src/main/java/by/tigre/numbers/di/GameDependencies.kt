@@ -21,4 +21,8 @@ interface GameDependencies {
     val eventAnalytics: EventAnalytics
     val reminderController: ReminderController
     val reminderChallengeGenerator: ReminderChallengeGenerator
+    val leaderboardRepository: by.tigre.numbers.data.leaderboard.LeaderboardRepository
+    val featureFlags: by.tigre.numbers.data.remoteconfig.FeatureFlags
+    val leaderboardPreferences: by.tigre.numbers.data.storage.LeaderboardPreferences
+    val leaderboardHistoryBackfill: by.tigre.numbers.data.leaderboard.LeaderboardHistoryBackfill
 }

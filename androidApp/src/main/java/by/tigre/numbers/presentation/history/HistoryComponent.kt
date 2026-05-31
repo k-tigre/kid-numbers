@@ -3,7 +3,10 @@ package by.tigre.numbers.presentation.history
 import androidx.compose.foundation.pager.PagerState
 import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.data.history.ResultStore
+import by.tigre.numbers.data.leaderboard.LeaderboardRepository
 import by.tigre.numbers.data.platform.DateFormatter
+import by.tigre.numbers.data.remoteconfig.FeatureFlags
+import by.tigre.numbers.data.storage.LeaderboardPreferences
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
@@ -92,6 +95,9 @@ interface HistoryComponent {
         private val resultStore: ResultStore,
         private val challengesStore: ChallengesStore,
         dateFormatter: DateFormatter,
+        private val featureFlags: FeatureFlags,
+        private val leaderboardRepository: LeaderboardRepository,
+        private val leaderboardPreferences: LeaderboardPreferences,
         private val onClose: () -> Unit
     ) : HistoryComponent, BaseComponentContext by context {
         private val expendedGroup = MutableStateFlow(setOf<String>())
@@ -114,6 +120,9 @@ interface HistoryComponent {
                         resultStore = resultStore,
                         challengesStore = challengesStore,
                         dateFormatter = dateFormatter,
+                        featureFlags = featureFlags,
+                        leaderboardRepository = leaderboardRepository,
+                        leaderboardPreferences = leaderboardPreferences,
                         challengeId = config.id,
                         onClose = detailsNavigation::dismiss
                     )
@@ -121,6 +130,9 @@ interface HistoryComponent {
                     is DetailsItemConfig.Task -> ResultComponent.Impl(
                         context = childComponentContext,
                         result = config.result,
+                        featureFlags = featureFlags,
+                        leaderboardRepository = leaderboardRepository,
+                        leaderboardPreferences = leaderboardPreferences,
                         onFinish = detailsNavigation::dismiss
                     )
                 }

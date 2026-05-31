@@ -9,16 +9,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -47,6 +53,8 @@ class ResultView(
     override fun Draw(modifier: Modifier) {
         Column(modifier.fillMaxSize()) {
             val result by component.results.collectAsState()
+            val dialogState by component.leaderboardDialog.collectAsState()
+            DrawLeaderboardDialog(dialogState)
 
             IconButton(onClick = component::onClose, modifier = Modifier.align(Alignment.End)) {
                 Icon(painter = painterResource(id = R.drawable.baseline_close_24), contentDescription = "")
@@ -93,6 +101,46 @@ class ResultView(
                 }
             }
         }
+    }
+
+    @Composable
+    private fun DrawLeaderboardDialog(dialogState: LeaderboardSubmitDialogState?) {
+        if (dialogState == null || dialogState.submitSkipped || dialogState.submitted) return
+        var nickname by remember(dialogState.defaultNickname) { mutableStateOf(dialogState.defaultNickname) }
+        AlertDialog(
+            onDismissRequest = component::onSkipLeaderboardSubmit,
+            title = { Text(stringResource(R.string.screen_leaderboard_submit_title)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.screen_leaderboard_submit_rating, dialogState.gameScore))
+                    OutlinedTextField(
+                        value = nickname,
+                        onValueChange = { nickname = it.take(24) },
+                        label = { Text(stringResource(R.string.screen_leaderboard_submit_nickname)) },
+                        singleLine = true,
+                    )
+                    dialogState.submitError?.let { error ->
+                        val message = when (error) {
+                            LeaderboardSubmitDialogState.SubmitError.EmptyNickname ->
+                                stringResource(R.string.screen_leaderboard_submit_error_empty_nickname)
+                            LeaderboardSubmitDialogState.SubmitError.Generic ->
+                                stringResource(R.string.screen_leaderboard_submit_error_generic)
+                        }
+                        Text(text = message, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { component.onSubmitScore(nickname) }) {
+                    Text(stringResource(R.string.screen_leaderboard_submit_send))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = component::onSkipLeaderboardSubmit) {
+                    Text(stringResource(R.string.screen_leaderboard_submit_skip))
+                }
+            },
+        )
     }
 
     @Composable
@@ -169,6 +217,12 @@ private fun Preview() {
         override fun onClose() {
             TODO("Not yet implemented")
         }
+
+        override val leaderboardDialog = MutableStateFlow<LeaderboardSubmitDialogState?>(null)
+
+        override fun onSubmitScore(nickname: String) = Unit
+
+        override fun onSkipLeaderboardSubmit() = Unit
     }
 
     AppTheme {

@@ -15,12 +15,14 @@ interface MenuComponent {
     fun onHistoryClicked()
     fun onChallengeClicked()
     fun onStatisticClicked()
+    fun onLeaderboardClicked()
 
     interface Router {
         fun showGameSettings(type: GameType)
         fun showHistory()
         fun showChallenge()
         fun showStatistic()
+        fun showLeaderboard()
     }
 
     class Impl(
@@ -48,6 +50,10 @@ interface MenuComponent {
 
         override fun onStatisticClicked() {
             router.showStatistic()
+        }
+
+        override fun onLeaderboardClicked() {
+            router.showLeaderboard()
         }
     }
 }

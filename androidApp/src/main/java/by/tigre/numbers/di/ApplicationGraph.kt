@@ -5,6 +5,7 @@ import by.tigre.numbers.analytics.Tracker
 import by.tigre.numbers.data.platform.DateFormatter
 import by.tigre.tools.tools.coroutines.CoreScope
 import by.tigre.tools.tools.coroutines.CoroutineModule
+import kotlinx.coroutines.launch
 
 class ApplicationGraph(
     storeModule: StoreModule,
@@ -12,6 +13,7 @@ class ApplicationGraph(
     gameModule: GameModule,
     coroutineModule: CoroutineModule,
     reminderModule: ReminderModule,
+    leaderboardModule: LeaderboardModule,
     context: Context
 ) : GameDependencies,
     ChallengesDependencies,
@@ -19,7 +21,8 @@ class ApplicationGraph(
     AnalyticsModule by analyticsModule,
     GameModule by gameModule,
     CoroutineModule by coroutineModule,
-    ReminderModule by reminderModule {
+    ReminderModule by reminderModule,
+    LeaderboardModule by leaderboardModule {
 
     override val dateFormatter: DateFormatter by lazy { DateFormatter.Impl(context.resources) }
 
@@ -41,20 +44,30 @@ class ApplicationGraph(
             val gameModule = GameModule.Impl(
                 analyticsModule = analyticsModule
             )
-
+            val leaderboardModule = LeaderboardModule.Impl(storeModule = storeModule)
             val reminderModule = ReminderModule.Impl(
                 context = context,
                 storeModule = storeModule,
             )
-
+            launchRemoteConfigRefresh(coroutineModule, leaderboardModule)
             return ApplicationGraph(
                 storeModule = storeModule,
                 analyticsModule = analyticsModule,
                 gameModule = gameModule,
                 coroutineModule = coroutineModule,
                 context = context,
-                reminderModule = reminderModule
+                reminderModule = reminderModule,
+                leaderboardModule = leaderboardModule,
             )
+        }
+
+        private fun launchRemoteConfigRefresh(
+            coroutineModule: CoroutineModule,
+            leaderboardModule: LeaderboardModule,
+        ) {
+            coroutineModule.scope.launch {
+                leaderboardModule.featureFlags.refreshRemoteConfig()
+            }
         }
     }
 }

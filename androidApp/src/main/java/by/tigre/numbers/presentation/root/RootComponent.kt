@@ -14,6 +14,7 @@ import by.tigre.numbers.presentation.challenge.RootChallengeComponent
 import by.tigre.numbers.presentation.game.RootChallengeGameComponent
 import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
+import by.tigre.numbers.presentation.leaderboard.LeaderboardComponentImpl
 import by.tigre.numbers.presentation.menu.MenuComponent
 import by.tigre.numbers.presentation.statistic.StatisticComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
@@ -48,6 +49,7 @@ interface RootComponent {
         class Menu(val component: MenuComponent) : PageChild
         class History(val component: HistoryComponent) : PageChild
         class Statistic(val component: StatisticComponent) : PageChild
+        class Leaderboard(val component: by.tigre.numbers.presentation.leaderboard.LeaderboardComponent) : PageChild
         class Game(val component: RootGameComponent) : PageChild
         class Challenge(val component: RootChallengeComponent) : PageChild
         class GameChallenge(val component: RootChallengeGameComponent) : PageChild
@@ -90,6 +92,10 @@ interface RootComponent {
             override fun showStatistic() {
                 pagesNavigation.pushNew(MenuPagesConfig.Statistic)
             }
+
+            override fun showLeaderboard() {
+                pagesNavigation.pushNew(MenuPagesConfig.Leaderboard)
+            }
         }
 
         override val pages: Value<ChildStack<*, PageChild>> =
@@ -126,6 +132,9 @@ interface RootComponent {
                             resultStore = gameDependencies.resultStore,
                             challengesStore = gameDependencies.challengesStore,
                             dateFormatter = gameDependencies.dateFormatter,
+                            featureFlags = gameDependencies.featureFlags,
+                            leaderboardRepository = gameDependencies.leaderboardRepository,
+                            leaderboardPreferences = gameDependencies.leaderboardPreferences,
                             onClose = { pagesNavigation.pop() })
                     )
 
@@ -134,6 +143,15 @@ interface RootComponent {
                             context = componentContext,
                             resultStore = gameDependencies.resultStore,
                             onClose = { pagesNavigation.pop() }
+                        )
+                    )
+
+                    MenuPagesConfig.Leaderboard -> PageChild.Leaderboard(
+                        LeaderboardComponentImpl(
+                            context = componentContext,
+                            leaderboardRepository = gameDependencies.leaderboardRepository,
+                            leaderboardHistoryBackfill = gameDependencies.leaderboardHistoryBackfill,
+                            navigateBack = { pagesNavigation.pop() },
                         )
                     )
 
@@ -179,6 +197,7 @@ interface RootComponent {
                         MenuPagesConfig.Menu -> Event.Screen.MainMenu
                         MenuPagesConfig.History -> Event.Screen.History
                         MenuPagesConfig.Statistic -> Event.Screen.Statistic
+                        MenuPagesConfig.Leaderboard -> Event.Screen.Leaderboard
                         MenuPagesConfig.Challenge -> Event.Screen.RootChallenge
                         is MenuPagesConfig.ChallengeGame -> Event.Screen.RootGameChallenge
                         is MenuPagesConfig.Game -> Event.Screen.RootGame
@@ -247,6 +266,10 @@ interface RootComponent {
             @Serializable
             @SerialName("MenuPagesConfig_Statistic")
             data object Statistic : MenuPagesConfig
+
+            @Serializable
+            @SerialName("MenuPagesConfig_Leaderboard")
+            data object Leaderboard : MenuPagesConfig
 
             @Serializable
             @SerialName("MenuPagesConfig_Challenge")

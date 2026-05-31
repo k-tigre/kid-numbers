@@ -111,7 +111,8 @@ dependencies {
 
     implementation(Project.Tools.Coroutines)
     implementation(Library.AccompanistPermission)
-    implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics)
+    implementation(FirebaseLibrary.FirebaseAnalytics, FirebaseLibrary.FirebaseCrashLytics, FirebaseLibrary.FirebaseFirestore, FirebaseLibrary.FirebaseRemoteConfig)
+    implementation(Library.CoroutinesPlayServices)
     implementation(Library.Mixpanel)
 
     implementation(Logger.Core)

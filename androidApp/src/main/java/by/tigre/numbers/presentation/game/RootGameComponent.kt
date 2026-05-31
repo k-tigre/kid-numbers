@@ -116,6 +116,9 @@ interface RootGameComponent {
                         ResultComponent.Impl(
                             context = componentContext,
                             result = config.result,
+                            featureFlags = dependencies.featureFlags,
+                            leaderboardRepository = dependencies.leaderboardRepository,
+                            leaderboardPreferences = dependencies.leaderboardPreferences,
                             onFinish = onClose
                         )
                     )

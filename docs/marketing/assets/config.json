@@ -1,0 +1,96 @@
+{
+  "brand": {
+    "background": "#FCF8F8",
+    "text": "#494949",
+    "accent": "#F6BE14",
+    "accentDark": "#775A00",
+    "success": "#4B8200",
+    "error": "#D91B00",
+    "phoneFrame": "#E5E2E1",
+    "phoneShadow": "#00000020"
+  },
+  "dimensions": {
+    "screenshot": { "width": 1080, "height": 1920 },
+    "appScreenshot": { "width": 868, "height": 1548 },
+    "featureGraphic": { "width": 1024, "height": 500 },
+    "uacBanner": { "width": 1200, "height": 628 }
+  },
+  "screenshots": [
+    {
+      "id": "01-main-menu",
+      "file": "01-main-menu.png",
+      "captionRu": "Всё для тренировки математики",
+      "captionEn": "Everything for math practice"
+    },
+    {
+      "id": "02-game-timer",
+      "file": "02-game-timer.png",
+      "captionRu": "Решай примеры на время",
+      "captionEn": "Solve problems against the clock"
+    },
+    {
+      "id": "03-feedback",
+      "file": "03-feedback.png",
+      "captionRu": "Мгновенная обратная связь",
+      "captionEn": "Instant feedback"
+    },
+    {
+      "id": "04-challenges",
+      "file": "04-challenges.png",
+      "captionRu": "Вызовы с дедлайном: 10 мин — 1 неделя",
+      "captionEn": "Challenges with deadlines"
+    },
+    {
+      "id": "05-leaderboard",
+      "file": "05-leaderboard.png",
+      "captionRu": "Соревнуйся с другими",
+      "captionEn": "Compete with others",
+      "disabled": true
+    },
+    {
+      "id": "06-statistics",
+      "file": "06-statistics.png",
+      "captionRu": "Прогресс за 7 и 30 дней",
+      "captionEn": "Progress over 7 and 30 days"
+    },
+    {
+      "id": "07-difficulty",
+      "file": "07-difficulty.png",
+      "captionRu": "3 уровня — от простого к сложному",
+      "captionEn": "3 levels of difficulty"
+    },
+    {
+      "id": "08-banner",
+      "file": "08-banner.png",
+      "captionRu": "Бесплатно · Без рекламы · RU/EN",
+      "captionEn": "Free · No ads · RU/EN",
+      "isBanner": true
+    }
+  ],
+  "featureGraphic": {
+    "title": "Numbers",
+    "subtitleRu": "Тренажёр арифметики",
+    "subtitleEn": "Math Trainer",
+    "badgeRu": "Бесплатно · Без рекламы",
+    "badgeEn": "Free · No ads"
+  },
+  "uacBanners": [
+    {
+      "id": "01-math-question",
+      "headline": "7 × 8 = ?",
+      "subtitleRu": "Без рекламы. Испытания и рейтинг.",
+      "subtitleEn": "No ads. Challenges and leaderboard.",
+      "ctaRu": "Скачать",
+      "ctaEn": "Download"
+    },
+    {
+      "id": "02-trainer",
+      "headlineRu": "Тренажёр арифметики",
+      "headlineEn": "Math Trainer for Kids",
+      "subtitleRu": "5 типов задач · Испытания · Рейтинг",
+      "subtitleEn": "5 task types · Challenges · Leaderboard",
+      "ctaRu": "Скачать бесплатно",
+      "ctaEn": "Download free"
+    }
+  ]
+}

@@ -43,6 +43,13 @@ enum class Library(group: String, artifact: String, version: Version) {
     Decompose("com.arkivanov.decompose", "decompose", Version.Decompose),
     DecomposeExtensions("com.arkivanov.decompose", "extensions-compose", Version.Decompose),
 
+    ComposeUiTestJunit4("androidx.compose.ui", "ui-test-junit4", Version.Compose),
+    AndroidXTestCore("androidx.test", "core", Version.AndroidXTest),
+    JUnit4("junit", "junit", Version.JUnit4),
+    Robolectric("org.robolectric", "robolectric", Version.Robolectric),
+    Roborazzi("io.github.takahirom.roborazzi", "roborazzi", Version.Roborazzi),
+    RoborazziCompose("io.github.takahirom.roborazzi", "roborazzi-compose", Version.Roborazzi),
+
     // TODO compose preview not working, check issue: https://issuetracker.google.com/issues/227767363
     DebugComposeCustomView("androidx.customview", "customview", Version.DebugComposeCustomView),
     DebugComposeCustomViewPoolingcontainer(
@@ -73,6 +80,10 @@ enum class Library(group: String, artifact: String, version: Version) {
         CoilCompose("2.7.0"),
         Decompose("3.3.0"),
         Mixpanel("8.2.0"),
+        JUnit4("4.13.2"),
+        AndroidXTest("1.6.1"),
+        Robolectric("4.14.1"),
+        Roborazzi("1.40.1"),
 
         DebugComposeCustomView("1.2.0"),
         DebugComposeCustomViewPoolingcontainer("1.1.0"),
@@ -223,6 +234,7 @@ fun DependencyHandler.implementation(toolkit: Toolkit) {
 fun DependencyHandler.implementation(library: Library) = add("implementation", library.notation)
 fun DependencyHandler.implementation(logger: Logger) = add("implementation", logger.notation)
 fun DependencyHandler.debugImplementation(library: Library) = add("debugImplementation", library.notation)
+fun DependencyHandler.testImplementation(library: Library) = add("testImplementation", library.notation)
 fun DependencyHandler.implementation(vararg firebaseLibrary: FirebaseLibrary) {
     add("implementation", platform(FirebaseLibrary.bom))
     firebaseLibrary.forEach { lib -> add("implementation", lib.notation) }

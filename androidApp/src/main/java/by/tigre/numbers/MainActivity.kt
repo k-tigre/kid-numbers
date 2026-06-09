@@ -19,10 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val graph = (application as App).graph
+        enableEdgeToEdge()
         val fromReminder = intent.getBooleanExtra(NotificationHelper.KEY_FROM_REMINDER, false)
-
         val root = RootComponent.Impl(
             context = BaseComponentContextImpl(defaultComponentContext()),
             gameDependencies = graph,
@@ -31,8 +30,6 @@ class MainActivity : AppCompatActivity() {
             screenAnalytics = graph.screenAnalytics,
             fromReminder = fromReminder
         )
-        enableEdgeToEdge()
-
         setContent {
             AppTheme {
                 Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {

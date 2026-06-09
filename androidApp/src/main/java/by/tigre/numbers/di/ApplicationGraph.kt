@@ -29,7 +29,7 @@ class ApplicationGraph(
     companion object {
         fun create(
             context: Context,
-            tracker: (CoreScope) -> Tracker
+            tracker: (CoreScope) -> Tracker,
         ): ApplicationGraph {
             val coroutineModule = CoroutineModule.Impl()
             val analyticsModule = AnalyticsModule.Impl(
@@ -44,7 +44,7 @@ class ApplicationGraph(
             val gameModule = GameModule.Impl(
                 analyticsModule = analyticsModule
             )
-            val leaderboardModule = LeaderboardModule.Impl(storeModule = storeModule)
+            val leaderboardModule: LeaderboardModule = LeaderboardModule.Impl(storeModule = storeModule)
             val reminderModule = ReminderModule.Impl(
                 context = context,
                 storeModule = storeModule,

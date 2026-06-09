@@ -1,0 +1,3 @@
+• Automated Google Play screenshot build and upload in CI
+• Release notes and listing metadata sourced from CHANGELOG.md
+• Marketing assets committed to the repository after each release

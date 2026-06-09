@@ -12,6 +12,7 @@ plugins {
     id(Plugin.Id.FirebasePublisher.value)
     id(Plugin.Id.SQLDelight.value)
     id(Plugin.Id.KotlinSerialization.value)
+    id("io.github.takahirom.roborazzi") version "1.40.1"
 }
 
 android {
@@ -37,7 +38,6 @@ android {
         create(Environment.Qa.gradleName) {
             initWith(getAt(Environment.Debug.gradleName))
         }
-
         val releaseStorePassword = System.getenv("NUMBERS_RELEASE_JKS")
         val releaseKeyPassword = System.getenv("NUMBERS_RELEASE_JKS")
 
@@ -93,6 +93,14 @@ android {
         buildConfig = true
         viewBinding = false
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+roborazzi {
+    outputDir.set(rootProject.file("docs/marketing/assets/screenshots"))
 }
 
 dependencies {
@@ -122,6 +130,14 @@ dependencies {
 
     // debugImplementation because LeakCanary should only run in debug builds.
     debugImplementation(Library.Leakcanary)
+
+    testImplementation(Library.JUnit4)
+    testImplementation(Library.AndroidXTestCore)
+    testImplementation(Library.Robolectric)
+    testImplementation(Library.Roborazzi)
+    testImplementation(Library.RoborazziCompose)
+    testImplementation(Library.ComposeUiTestJunit4)
+    testImplementation(Library.DebugComposeUiToolingPreview)
 }
 
 sqldelight {
@@ -138,4 +154,81 @@ play {
     track.set("alpha")
     userFraction.set(0.5)
     releaseStatus.set(ReleaseStatus.COMPLETED)
+}
+
+val syncPlayListingAssetsAction = Action<Task> {
+    val outputDir = rootProject.file("docs/marketing/assets/output")
+    val playBase = file("src/main/play/listings")
+    fun syncScreenshots(sourceDir: File, targetDir: File) {
+        targetDir.mkdirs()
+        targetDir.listFiles()?.forEach { it.delete() }
+        sourceDir.listFiles()
+            ?.filter { it.isFile && it.extension.equals("png", ignoreCase = true) }
+            ?.sortedBy { it.name }
+            ?.forEachIndexed { index, sourceFile ->
+                sourceFile.copyTo(targetDir.resolve("${index + 1}.png"), overwrite = true)
+            }
+    }
+    fun syncFeatureGraphic(sourceFile: File, targetFile: File) {
+        targetFile.parentFile.mkdirs()
+        sourceFile.copyTo(targetFile, overwrite = true)
+    }
+    syncScreenshots(
+        outputDir.resolve("screenshots/ru"),
+        playBase.resolve("ru-RU/graphics/phone-screenshots"),
+    )
+    syncScreenshots(
+        outputDir.resolve("screenshots/en"),
+        playBase.resolve("en-US/graphics/phone-screenshots"),
+    )
+    syncFeatureGraphic(
+        outputDir.resolve("feature-graphic/feature-graphic-ru.png"),
+        playBase.resolve("ru-RU/graphics/feature-graphic/1.png"),
+    )
+    syncFeatureGraphic(
+        outputDir.resolve("feature-graphic/feature-graphic-en.png"),
+        playBase.resolve("en-US/graphics/feature-graphic/1.png"),
+    )
+}
+
+tasks.register("buildMarketingAssets") {
+    group = "marketing"
+    description = "Render final Google Play PNGs from Roborazzi screenshots"
+    dependsOn("recordRoborazziDebug")
+    doLast {
+        val assetsDir = rootProject.file("docs/marketing/assets")
+        val script = assetsDir.resolve("scripts/build_assets.py")
+        exec {
+            workingDir = assetsDir
+            commandLine("python", script.absolutePath)
+        }
+    }
+}
+
+tasks.register("syncPlayListingAssets") {
+    group = "marketing"
+    description = "Copy generated marketing PNGs into src/main/play/listings for GPP upload"
+    dependsOn("buildMarketingAssets")
+    doLast(syncPlayListingAssetsAction)
+}
+
+tasks.register("buildMarketingScreenshots") {
+    group = "marketing"
+    description = "Record Roborazzi screenshots and build final Google Play assets"
+    dependsOn("syncPlayListingAssets")
+}
+
+tasks.register("publishReleaseToPlay") {
+    group = "publishing"
+    description = "Build marketing assets, upload listing metadata, and publish release bundle to Play"
+    dependsOn("buildMarketingScreenshots")
+}
+
+afterEvaluate {
+    tasks.named("publishReleaseListing").configure {
+        dependsOn("buildMarketingScreenshots")
+    }
+    tasks.named("publishReleaseToPlay").configure {
+        dependsOn("publishReleaseListing", "publishReleaseBundle")
+    }
 }

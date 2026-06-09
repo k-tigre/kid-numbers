@@ -37,7 +37,7 @@ jobs:
           python scripts/changelog_tool.py finalize --version "$VERSION"
       - name: Build, publish listing, and upload to Play
         run: |
-          ./gradlew testReleaseUnitTest publishReleaseToPlay assembleRelease
+          ./gradlew testDebugUnitTest publishReleaseToPlay assembleRelease
         env:
           NUMBERS_RELEASE_JKS: ${{ secrets.NUMBERS_RELEASE_JKS }}
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}

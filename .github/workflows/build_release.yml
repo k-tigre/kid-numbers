@@ -26,6 +26,8 @@ jobs:
           python-version: '3.11'
       - name: Install Python deps for marketing assets
         run: pip install pillow
+      - name: Install font dependencies for headless screenshot rendering
+        run: sudo apt-get update && sudo apt-get install -y fontconfig fonts-dejavu-core
       - name: Prepare release version and notes
         run: |
           chmod +x scripts/bump-version.sh scripts/generate-play-release-notes.sh scripts/commit-release-assets.sh
@@ -37,7 +39,7 @@ jobs:
           python scripts/changelog_tool.py finalize --version "$VERSION"
       - name: Build, publish listing, and upload to Play
         run: |
-          ./gradlew publishReleaseToPlay assembleRelease
+          ./gradlew testDebugUnitTest publishReleaseToPlay assembleRelease
         env:
           NUMBERS_RELEASE_JKS: ${{ secrets.NUMBERS_RELEASE_JKS }}
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}

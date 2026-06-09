@@ -131,6 +131,7 @@ dependencies {
     // debugImplementation because LeakCanary should only run in debug builds.
     debugImplementation(Library.Leakcanary)
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
+    testDebugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
 
     testImplementation(Library.JUnit4)
     testImplementation(Library.AndroidXTestCore)
@@ -194,7 +195,8 @@ val syncPlayListingAssetsAction = Action<Task> {
 
 tasks.register("buildMarketingAssets") {
     group = "marketing"
-    description = "Render final Google Play PNGs from committed app screenshots"
+    description = "Render final Google Play PNGs from Roborazzi screenshots"
+    dependsOn("recordRoborazziDebug")
     doLast {
         val assetsDir = rootProject.file("docs/marketing/assets")
         val script = assetsDir.resolve("scripts/build_assets.py")
@@ -214,7 +216,7 @@ tasks.register("syncPlayListingAssets") {
 
 tasks.register("buildMarketingScreenshots") {
     group = "marketing"
-    description = "Build final Google Play assets from committed screenshots"
+    description = "Record Roborazzi screenshots and build final Google Play assets"
     dependsOn("syncPlayListingAssets")
 }
 

@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import android.content.ComponentName
+import android.content.Context
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.test.core.app.ApplicationProvider
 import by.tigre.numbers.R
 import by.tigre.numbers.presentation.challenge.list.ListView
 import by.tigre.numbers.presentation.game.GameView
@@ -21,15 +24,30 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import java.io.File
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 abstract class MarketingScreenshotTestBase(
     private val locale: MarketingScreenshotLocale,
 ) {
-    @get:Rule
+    @get:Rule(order = 0)
+    val registerScreenshotTestActivityRule: TestWatcher = object : TestWatcher() {
+        override fun starting(description: Description) {
+            val appContext: Context = ApplicationProvider.getApplicationContext()
+            Shadows.shadowOf(appContext.packageManager).addActivityIfNotPresent(
+                ComponentName(
+                    appContext.packageName,
+                    ScreenshotTestActivity::class.java.name,
+                ),
+            )
+        }
+    }
+    @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<ScreenshotTestActivity>()
     @Test
     fun mainMenu() = captureScreen("01-main-menu") {

@@ -17,9 +17,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Install font dependencies for headless screenshot rendering
+        run: sudo apt-get update && sudo apt-get install -y fontconfig fonts-dejavu-core
       - name: Build and verify
         run: |
-          ./gradlew testQaUnitTest assembleQa
+          ./gradlew testQaUnitTest testDebugUnitTest assembleQa
         env:
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

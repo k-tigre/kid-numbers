@@ -111,7 +111,8 @@ interface RootComponent {
                         MenuComponent.Impl(
                             context = componentContext,
                             router = mainMenuRouter,
-                            challengesDependencies = challengesDependencies
+                            challengesDependencies = challengesDependencies,
+                            featureFlags = gameDependencies.featureFlags,
                         )
                     )
 

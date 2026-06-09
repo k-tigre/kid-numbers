@@ -16,6 +16,7 @@ class LeaderboardHistoryBackfill(
 ) {
 
     suspend fun runIfNeeded(defaultNickname: String): Result<Int> = runCatching {
+        if (!featureFlags.isLeaderboardEnabled.value) return@runCatching 0
         if (leaderboardPreferences.isBackfillDone()) return@runCatching 0
         val userId: String = leaderboardPreferences.getOrCreateUserId()
         val nickname: String = leaderboardPreferences.loadNickname(default = defaultNickname)

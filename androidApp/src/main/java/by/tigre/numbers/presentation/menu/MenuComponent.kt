@@ -1,5 +1,6 @@
 package by.tigre.numbers.presentation.menu
 
+import by.tigre.numbers.data.remoteconfig.FeatureFlags
 import by.tigre.numbers.di.ChallengesDependencies
 import by.tigre.numbers.entity.GameType
 import by.tigre.tools.presentation.base.BaseComponentContext
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 interface MenuComponent {
     val gameTypes: List<GameType>
     val hasActiveChallenge: StateFlow<Boolean>
+    val isLeaderboardEnabled: StateFlow<Boolean>
 
     fun onGameClicked(type: GameType)
     fun onHistoryClicked()
@@ -28,11 +30,13 @@ interface MenuComponent {
     class Impl(
         context: BaseComponentContext,
         private val router: Router,
-        challengesDependencies: ChallengesDependencies
+        challengesDependencies: ChallengesDependencies,
+        featureFlags: FeatureFlags,
     ) : MenuComponent, BaseComponentContext by context {
 
         override val hasActiveChallenge: StateFlow<Boolean> = challengesDependencies.challengesStore.hasActiveChallenge
             .stateIn(this, started = SharingStarted.WhileSubscribed(), initialValue = false)
+        override val isLeaderboardEnabled: StateFlow<Boolean> = featureFlags.isLeaderboardEnabled
 
         override val gameTypes: List<GameType> = GameType.entries
 

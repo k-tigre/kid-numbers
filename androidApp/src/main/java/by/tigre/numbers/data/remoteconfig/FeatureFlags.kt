@@ -1,8 +1,13 @@
 package by.tigre.numbers.data.remoteconfig
 
 import by.tigre.numbers.entity.Difficult
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 interface FeatureFlags {
+    val isLeaderboardEnabled: StateFlow<Boolean>
+    val isPurchasesEnabled: StateFlow<Boolean>
     fun calculateLeaderboardRating(difficult: Difficult, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int
     suspend fun refreshRemoteConfig(): Boolean
 }
@@ -11,10 +16,32 @@ class FeatureFlagsImpl(
     private val provider: RemoteConfigProvider,
 ) : FeatureFlags {
 
+    private val _isLeaderboardEnabled: MutableStateFlow<Boolean> = MutableStateFlow(readLeaderboardEnabled())
+    override val isLeaderboardEnabled: StateFlow<Boolean> = _isLeaderboardEnabled.asStateFlow()
+    private val _isPurchasesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(readPurchasesEnabled())
+    override val isPurchasesEnabled: StateFlow<Boolean> = _isPurchasesEnabled.asStateFlow()
+
     override fun calculateLeaderboardRating(difficult: Difficult, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int {
         val json: String = provider.getString(RemoteConfigKeys.LEADERBOARD_RATING_JSON, default = "")
         return parseLeaderboardRatingConfig(json).calculate(difficult, elapsedSeconds, hintsUsed, mistakes)
     }
 
-    override suspend fun refreshRemoteConfig(): Boolean = provider.refresh()
+    override suspend fun refreshRemoteConfig(): Boolean {
+        val updated: Boolean = provider.refresh()
+        syncFromProvider()
+        return updated
+    }
+
+    private fun syncFromProvider() {
+        _isLeaderboardEnabled.value = readLeaderboardEnabled()
+        _isPurchasesEnabled.value = readPurchasesEnabled()
+    }
+
+    private fun readLeaderboardEnabled(): Boolean {
+        return provider.getBoolean(RemoteConfigKeys.LEADERBOARD_ENABLED, default = false)
+    }
+
+    private fun readPurchasesEnabled(): Boolean {
+        return provider.getBoolean(RemoteConfigKeys.PURCHASES_ENABLED, default = false)
+    }
 }

@@ -23,6 +23,7 @@ class MenuView(
 
     @Composable
     override fun Draw(modifier: Modifier) {
+        val leaderboardEnabled = component.isLeaderboardEnabled.collectAsState().value
         LazyColumn(
             modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -41,11 +42,13 @@ class MenuView(
                 }
             }
 
-            item {
-                DrawItem(
-                    title = stringResource(R.string.main_menu_leaderboard),
-                    action = component::onLeaderboardClicked
-                )
+            if (leaderboardEnabled) {
+                item {
+                    DrawItem(
+                        title = stringResource(R.string.main_menu_leaderboard),
+                        action = component::onLeaderboardClicked
+                    )
+                }
             }
 
             item {

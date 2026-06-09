@@ -34,7 +34,11 @@ interface ResultComponent {
         override val leaderboardDialog: StateFlow<LeaderboardSubmitDialogState?> = _leaderboardDialog.asStateFlow()
 
         init {
-            if (result.correctCount == result.totalCount && result.totalCount > 0) {
+            if (
+                featureFlags.isLeaderboardEnabled.value &&
+                result.correctCount == result.totalCount &&
+                result.totalCount > 0
+            ) {
                 val elapsedSeconds: Long = result.time / 1000L
                 val mistakes: Int = result.inCorrectCount
                 _leaderboardDialog.value = LeaderboardSubmitDialogState(

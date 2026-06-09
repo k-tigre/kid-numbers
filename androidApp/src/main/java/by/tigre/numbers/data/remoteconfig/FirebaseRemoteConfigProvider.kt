@@ -14,7 +14,7 @@ class FirebaseRemoteConfigProvider(
                 minimumFetchIntervalInSeconds = 3600
             },
         )
-        firebaseRemoteConfig.setDefaultsAsync(LocalRemoteConfigDefaults.strings)
+        firebaseRemoteConfig.setDefaultsAsync(LocalRemoteConfigDefaults.defaults)
     }
 
     override suspend fun refresh(): Boolean {
@@ -23,5 +23,9 @@ class FirebaseRemoteConfigProvider(
 
     override fun getString(key: String, default: String): String {
         return runCatching { firebaseRemoteConfig.getString(key) }.getOrDefault(default).ifBlank { default }
+    }
+
+    override fun getBoolean(key: String, default: Boolean): Boolean {
+        return runCatching { firebaseRemoteConfig.getBoolean(key) }.getOrDefault(default)
     }
 }

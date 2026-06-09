@@ -232,10 +232,9 @@ tasks.register("preparePlayContactMetadata") {
     doLast {
         val playDir = file("src/main/play")
         val email = System.getenv("PLAY_CONTACT_EMAIL")?.trim().orEmpty()
-        if (email.isBlank()) {
-            throw GradleException("PLAY_CONTACT_EMAIL environment variable is required for Play Store publish")
+        if (email.isNotBlank()) {
+            playDir.resolve("contact-email.txt").writeText("$email\n")
         }
-        playDir.resolve("contact-email.txt").writeText("$email\n")
         val website = System.getenv("PLAY_CONTACT_WEBSITE")?.trim().orEmpty()
         val websiteFile = playDir.resolve("contact-website.txt")
         if (website.isNotBlank()) {

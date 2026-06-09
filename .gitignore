@@ -16,3 +16,6 @@ local.properties
 /.idea/*
 !/.idea/codeStyles
 /!temp
+androidApp/src/main/play/contact-email.txt
+androidApp/src/main/play/contact-website.txt
+androidApp/src/main/play/contact-phone.txt

@@ -43,6 +43,8 @@ jobs:
         env:
           NUMBERS_RELEASE_JKS: ${{ secrets.NUMBERS_RELEASE_JKS }}
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
+          PLAY_CONTACT_EMAIL: ${{ secrets.PLAY_CONTACT_EMAIL }}
+          PLAY_CONTACT_WEBSITE: ${{ secrets.PLAY_CONTACT_WEBSITE }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit release assets to master

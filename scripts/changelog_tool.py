@@ -11,6 +11,10 @@ from pathlib import Path
 ROOT: Path = Path(__file__).resolve().parents[1]
 CHANGELOG: Path = ROOT / "CHANGELOG.md"
 MAX_LENGTH: int = 500
+DEFAULT_RELEASE_NOTES: dict[str, str] = {
+    "ru-RU": "Правка багов и улучшения",
+    "en-US": "Bug fixes and improvements",
+}
 VERSION_HEADER: re.Pattern[str] = re.compile(
     r"^## \[(?P<version>[^\]]+)\](?:\s*-\s*(?P<date>\d{4}-\d{2}-\d{2}))?\s*$",
     re.MULTILINE,
@@ -38,12 +42,16 @@ def split_sections(text: str) -> list[tuple[str, str, str | None]]:
     return sections
 
 
-def find_section(text: str, version: str) -> tuple[str, str | None, str]:
+def find_section(text: str, version: str) -> tuple[str, str | None, str] | None:
     for section_version, section_date, body in split_sections(text):
         if section_version == version:
             return section_version, section_date, body
-    available: str = ", ".join(v for v, _, _ in split_sections(text) if v != "Unreleased")
-    raise ValueError(f"Version [{version}] not found in CHANGELOG.md. Available: {available or 'none'}")
+    return None
+
+
+def default_release_notes(version: str, reason: str) -> dict[str, str]:
+    print(f"Version [{version}] {reason}, using default release notes")
+    return dict(DEFAULT_RELEASE_NOTES)
 
 
 def extract_locale(body: str, locale: str) -> str:
@@ -76,11 +84,14 @@ def trim_notes(notes: str) -> str:
 
 def extract_release_notes(version: str) -> dict[str, str]:
     text: str = read_changelog()
-    _, _, body = find_section(text, version)
+    section: tuple[str, str | None, str] | None = find_section(text, version)
+    if section is None:
+        return default_release_notes(version, "not found in CHANGELOG.md")
+    _, _, body = section
     ru_notes: str = extract_locale(body, "RU")
     en_notes: str = extract_locale(body, "EN")
     if not ru_notes and not en_notes:
-        raise ValueError(f"Version [{version}] has empty RU and EN release notes in CHANGELOG.md")
+        return default_release_notes(version, "has empty RU and EN release notes in CHANGELOG.md")
     if not ru_notes:
         ru_notes = en_notes
     if not en_notes:
@@ -93,7 +104,11 @@ def extract_release_notes(version: str) -> dict[str, str]:
 
 def finalize_version(version: str, release_date: str | None = None) -> bool:
     text: str = read_changelog()
-    _, section_date, _ = find_section(text, version)
+    section: tuple[str, str | None, str] | None = find_section(text, version)
+    if section is None:
+        print(f"Version [{version}] not found in CHANGELOG.md, skipping finalize")
+        return False
+    _, section_date, _ = section
     if section_date:
         print(f"Version [{version}] already has release date {section_date}")
         return False

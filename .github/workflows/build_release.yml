@@ -29,9 +29,12 @@ jobs:
       - name: Prepare release version and notes
         run: |
           chmod +x scripts/bump-version.sh scripts/generate-play-release-notes.sh scripts/commit-release-assets.sh
+          VERSION="${GITHUB_REF_NAME#refs/tags/}"
+          VERSION="${VERSION#v.}"
+          export RELEASE_VERSION="$VERSION"
           ./scripts/bump-version.sh
           ./scripts/generate-play-release-notes.sh alpha
-          python scripts/changelog_tool.py finalize --version "${GITHUB_REF_NAME#refs/tags/v.}"
+          python scripts/changelog_tool.py finalize --version "$VERSION"
       - name: Build, publish listing, and upload to Play
         run: |
           ./gradlew testReleaseUnitTest publishReleaseToPlay assembleRelease

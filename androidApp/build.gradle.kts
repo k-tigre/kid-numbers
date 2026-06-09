@@ -226,6 +226,26 @@ tasks.register("recordMarketingScreenshots") {
     dependsOn("recordRoborazziDebug", "buildMarketingScreenshots")
 }
 
+tasks.register("preparePlayContactMetadata") {
+    group = "publishing"
+    description = "Write Play contact files from PLAY_CONTACT_EMAIL and PLAY_CONTACT_WEBSITE env vars"
+    doLast {
+        val playDir = file("src/main/play")
+        val email = System.getenv("PLAY_CONTACT_EMAIL")?.trim().orEmpty()
+        if (email.isBlank()) {
+            throw GradleException("PLAY_CONTACT_EMAIL environment variable is required for Play Store publish")
+        }
+        playDir.resolve("contact-email.txt").writeText("$email\n")
+        val website = System.getenv("PLAY_CONTACT_WEBSITE")?.trim().orEmpty()
+        val websiteFile = playDir.resolve("contact-website.txt")
+        if (website.isNotBlank()) {
+            websiteFile.writeText("$website\n")
+        } else if (websiteFile.exists()) {
+            websiteFile.delete()
+        }
+    }
+}
+
 tasks.register("publishReleaseToPlay") {
     group = "publishing"
     description = "Build marketing assets, upload listing metadata, and publish release bundle to Play"
@@ -233,8 +253,11 @@ tasks.register("publishReleaseToPlay") {
 }
 
 afterEvaluate {
+    tasks.named("preparePlayContactMetadata").configure {
+        mustRunAfter("buildMarketingScreenshots")
+    }
     tasks.named("publishReleaseListing").configure {
-        dependsOn("buildMarketingScreenshots")
+        dependsOn("buildMarketingScreenshots", "preparePlayContactMetadata")
     }
     tasks.named("publishReleaseToPlay").configure {
         dependsOn("publishReleaseListing", "publishReleaseBundle")

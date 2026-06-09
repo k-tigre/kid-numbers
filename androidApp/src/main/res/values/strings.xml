@@ -2,8 +2,8 @@
 <resources>
     <string name="main_manu_learn">Practice %s</string>
     <string name="main_menu_history">History</string>
-    <string name="main_menu_active_challenges">Challenges: there are active ones</string>
-    <string name="main_menu_no_active_challenges">Challenges: no active</string>
+    <string name="main_menu_challenges">Challenges</string>
+    <string name="main_menu_challenges_active">Active</string>
     <string name="main_menu_statistic">Statistics</string>
     <string name="main_menu_leaderboard">Leaderboard</string>
 

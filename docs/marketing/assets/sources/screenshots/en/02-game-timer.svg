@@ -4,8 +4,8 @@
   <rect width="1080" height="1920" fill="#FCF8F8"/>
   <!-- layer: caption -->
   
-    <text x="540" y="120" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="600" fill="#494949">Solve problems against the</text>
-<text x="540" y="178" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="600" fill="#494949">clock</text>
+    <text x="540" y="120" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="600" fill="#494949">Solve problems against</text>
+<text x="540" y="178" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="600" fill="#494949">the clock</text>
 
     <rect x="340" y="200" width="400" height="6" rx="3" fill="#F6BE14"/>
     

@@ -2,8 +2,8 @@
 <resources>
     <string name="main_manu_learn">Практиковать %s</string>
     <string name="main_menu_history">История</string>
-    <string name="main_menu_active_challenges">Испытания: есть активные</string>
-    <string name="main_menu_no_active_challenges">Испытания: нет активных</string>
+    <string name="main_menu_challenges">Испытания</string>
+    <string name="main_menu_challenges_active">Активные</string>
     <string name="main_menu_statistic">Статистика</string>
     <string name="main_menu_leaderboard">Доска почёта</string>
 

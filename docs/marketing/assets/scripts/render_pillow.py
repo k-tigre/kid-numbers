@@ -1,8 +1,9 @@
 """Pillow-based PNG renderer (fallback when cairosvg is unavailable)."""
 from __future__ import annotations
+import shutil
 import textwrap
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 PHONE = {
     "x": 90,
@@ -14,6 +15,22 @@ PHONE = {
     "radius": 48,
 }
 
+FEATURE_GRAPHIC = {
+    "footer_y": 420,
+    "icon_x": 72,
+    "icon_y": 100,
+    "icon_size": 200,
+    "text_x": 296,
+    "title_y": 134,
+    "subtitle_y": 242,
+}
+
+FEATURE_DECOR_CIRCLES: list[tuple[int, int, int, float]] = [
+    (900, 150, 150, 0.14),
+    (960, 210, 105, 0.22),
+    (840, 230, 75, 0.30),
+]
+
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     value: str = hex_color.lstrip("#")
@@ -22,51 +39,160 @@ def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     return tuple(int(value[i : i + 2], 16) for i in (0, 2, 4))
 
 
-def ensure_icon_png(sources_dir: Path) -> Path:
-    png_path: Path = sources_dir / "icon.png"
-    if png_path.exists():
-        return png_path
-    size: int = 512
-    canvas: Image.Image = Image.new("RGBA", (size, size), (255, 255, 255, 255))
+def blend_rgb(
+    background: tuple[int, int, int],
+    foreground: tuple[int, int, int],
+    alpha: float,
+) -> tuple[int, int, int]:
+    return tuple(
+        int(background[channel] * (1.0 - alpha) + foreground[channel] * alpha)
+        for channel in range(3)
+    )
+
+
+def playstore_icon_path(assets_dir: Path) -> Path:
+    repo_root: Path = assets_dir.parent.parent.parent
+    return repo_root / "androidApp" / "src" / "main" / "ic_launcher-playstore.png"
+
+
+def render_icon_png_from_svg(svg_path: Path, png_path: Path, size: int = 512) -> bool:
+    try:
+        import cairosvg
+    except ImportError:
+        return False
+    png_path.parent.mkdir(parents=True, exist_ok=True)
+    cairosvg.svg2png(
+        url=str(svg_path.resolve()),
+        write_to=str(png_path.resolve()),
+        output_width=size,
+        output_height=size,
+    )
+    return png_path.exists()
+
+
+def draw_launcher_icon_fallback(size: int) -> Image.Image:
+    canvas: Image.Image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw: ImageDraw.ImageDraw = ImageDraw.Draw(canvas)
-    draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=96, fill=(255, 255, 255, 255))
+    corner_radius: int = round(size * 24 / 108)
+    draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=corner_radius, fill=(255, 255, 255, 255))
     gray: tuple[int, int, int] = (128, 129, 132)
-    cell: int = size // 4
-    padding: int = size // 8
+    inset: int = round(size * 20.8 / 108)
+    grid_size: int = size - inset * 2
+    cell: int = grid_size // 2
+    gap: int = round(size * 2 / 108)
     for row in range(2):
         for col in range(2):
-            x0: int = padding + col * (cell + padding // 2)
-            y0: int = padding + row * (cell + padding // 2)
+            x0: int = inset + col * (cell + gap)
+            y0: int = inset + row * (cell + gap)
             draw.rounded_rectangle(
-                (x0, y0, x0 + cell, y0 + cell),
-                radius=16,
+                (x0, y0, x0 + cell - gap, y0 + cell - gap),
+                radius=round(size * 2 / 108),
                 outline=gray,
-                width=8,
+                width=max(4, round(size * 2.5 / 108)),
             )
-    plus_center: tuple[int, int] = (padding + cell // 2, padding + cell // 2)
-    draw.line(
-        (plus_center[0] - 40, plus_center[1], plus_center[0] + 40, plus_center[1]),
-        fill=gray,
-        width=12,
-    )
-    draw.line(
-        (plus_center[0], plus_center[1] - 40, plus_center[0], plus_center[1] + 40),
-        fill=gray,
-        width=12,
-    )
-    minus_y: int = padding + cell + padding // 2 + cell // 2
-    draw.line((size - padding - cell, minus_y - 8, size - padding, minus_y - 8), fill=gray, width=12)
-    draw.line((size - padding - cell, minus_y + 8, size - padding, minus_y + 8), fill=gray, width=12)
-    multiply_center: tuple[int, int] = (padding + cell // 2, padding + cell + padding // 2 + cell // 2)
-    for dx, dy in [(-30, -30), (30, 30), (-30, 30), (30, -30)]:
+    stroke: int = max(6, round(size * 5 / 108))
+    plus_cx: int = inset + (cell - gap) // 2
+    plus_cy: int = inset + (cell - gap) // 2
+    plus_arm: int = round(size * 10 / 108)
+    draw.line((plus_cx - plus_arm, plus_cy, plus_cx + plus_arm, plus_cy), fill=gray, width=stroke)
+    draw.line((plus_cx, plus_cy - plus_arm, plus_cx, plus_cy + plus_arm), fill=gray, width=stroke)
+    minus_x0: int = inset + cell + gap + round((cell - gap) * 0.2)
+    minus_x1: int = inset + cell + gap + round((cell - gap) * 0.8)
+    minus_y1: int = inset + (cell - gap) // 2 - round(size * 1.5 / 108)
+    minus_y2: int = inset + (cell - gap) // 2 + round(size * 1.5 / 108)
+    draw.line((minus_x0, minus_y1, minus_x1, minus_y1), fill=gray, width=stroke)
+    draw.line((minus_x0, minus_y2, minus_x1, minus_y2), fill=gray, width=stroke)
+    mult_cx: int = inset + (cell - gap) // 2
+    mult_cy: int = inset + cell + gap + (cell - gap) // 2
+    mult_arm: int = round(size * 8 / 108)
+    for dx, dy in [(-mult_arm, -mult_arm), (mult_arm, mult_arm), (-mult_arm, mult_arm), (mult_arm, -mult_arm)]:
         draw.line(
-            (multiply_center[0] + dx, multiply_center[1] + dy, multiply_center[0] - dx, multiply_center[1] - dy),
+            (mult_cx + dx, mult_cy + dy, mult_cx - dx, mult_cy - dy),
             fill=gray,
-            width=10,
+            width=max(4, round(size * 4 / 108)),
         )
-    png_path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(png_path, "PNG")
+    equals_x0: int = inset + cell + gap + round((cell - gap) * 0.2)
+    equals_x1: int = inset + cell + gap + round((cell - gap) * 0.8)
+    equals_cy: int = inset + cell + gap + (cell - gap) // 2
+    equals_gap: int = round(size * 3 / 108)
+    draw.line(
+        (equals_x0, equals_cy - equals_gap, equals_x1, equals_cy - equals_gap),
+        fill=gray,
+        width=stroke,
+    )
+    draw.line(
+        (equals_x0, equals_cy + equals_gap, equals_x1, equals_cy + equals_gap),
+        fill=gray,
+        width=stroke,
+    )
+    return canvas
+
+
+def ensure_icon_png(sources_dir: Path) -> Path:
+    png_path: Path = sources_dir / "icon.png"
+    playstore_icon: Path = playstore_icon_path(sources_dir)
+    if playstore_icon.exists():
+        if not png_path.exists() or png_path.stat().st_mtime < playstore_icon.stat().st_mtime:
+            png_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(playstore_icon, png_path)
+        return png_path
+    svg_path: Path = sources_dir / "icon.svg"
+    if svg_path.exists():
+        if not png_path.exists() or png_path.stat().st_mtime < svg_path.stat().st_mtime:
+            if not render_icon_png_from_svg(svg_path, png_path):
+                canvas: Image.Image = draw_launcher_icon_fallback(512)
+                png_path.parent.mkdir(parents=True, exist_ok=True)
+                canvas.save(png_path, "PNG")
+    elif not png_path.exists():
+        canvas = draw_launcher_icon_fallback(512)
+        png_path.parent.mkdir(parents=True, exist_ok=True)
+        canvas.save(png_path, "PNG")
     return png_path
+
+
+def paste_app_icon(
+    canvas: Image.Image,
+    icon_path: Path,
+    x: int,
+    y: int,
+    size: int,
+) -> None:
+    source: Image.Image = Image.open(icon_path).convert("RGBA")
+    corner_radius: int = round(size * 22 / 108)
+    inner_scale: float = 0.80
+    inner_size: int = round(size * inner_scale)
+    inner_offset: int = (size - inner_size) // 2
+    tile: Image.Image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    tile_draw: ImageDraw.ImageDraw = ImageDraw.Draw(tile)
+    tile_draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=corner_radius, fill=(255, 255, 255, 255))
+    inner_icon: Image.Image = source.resize((inner_size, inner_size), Image.Resampling.LANCZOS)
+    tile.paste(inner_icon, (inner_offset, inner_offset), inner_icon)
+    mask: Image.Image = Image.new("L", (size, size), 0)
+    mask_draw: ImageDraw.ImageDraw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=corner_radius, fill=255)
+    rounded_icon: Image.Image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    rounded_icon.paste(tile, (0, 0), mask)
+    shadow_layer: Image.Image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    shadow_draw: ImageDraw.ImageDraw = ImageDraw.Draw(shadow_layer)
+    shadow_draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=corner_radius, fill=(0, 0, 0, 14))
+    shadow: Image.Image = shadow_layer.filter(ImageFilter.GaussianBlur(radius=3))
+    base: Image.Image = canvas.convert("RGBA")
+    base.paste(shadow, (x + 1, y + 2), shadow)
+    base.paste(rounded_icon, (x, y), rounded_icon)
+    canvas.paste(base.convert("RGB"))
+
+
+def draw_feature_graphic_decor(
+    draw: ImageDraw.ImageDraw,
+    background: tuple[int, int, int],
+    accent: tuple[int, int, int],
+) -> None:
+    for center_x, center_y, radius, alpha in FEATURE_DECOR_CIRCLES:
+        fill: tuple[int, int, int] = blend_rgb(background, accent, alpha)
+        draw.ellipse(
+            (center_x - radius, center_y - radius, center_x + radius, center_y + radius),
+            fill=fill,
+        )
 
 
 def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -84,8 +210,20 @@ def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFo
 
 
 def wrap_text(text: str, max_chars: int = 28) -> list[str]:
+    if "\n" in text:
+        manual_lines: list[str] = [line.strip() for line in text.split("\n") if line.strip()]
+        return manual_lines if manual_lines else [text]
     lines: list[str] = textwrap.wrap(text, width=max_chars)
-    return lines if lines else [text]
+    if not lines:
+        return [text]
+    if len(lines) == 2 and len(lines[1].split()) == 1:
+        words: list[str] = text.split()
+        if len(words) >= 3:
+            first_line: str = " ".join(words[:-2])
+            second_line: str = " ".join(words[-2:])
+            if len(first_line) <= max_chars + 8 and len(second_line) <= max_chars:
+                return [first_line, second_line]
+    return lines
 
 
 def rounded_rectangle(
@@ -200,6 +338,21 @@ def draw_phone_frame(
         draw_placeholder(draw, screen_box, screenshot_file, hex_to_rgb("#747878"), hex_to_rgb("#F1EDEC"))
 
 
+def caption_accent_y(
+    line_count: int,
+    start_y: int,
+    line_height: int,
+    last_line: str,
+    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+) -> int:
+    if line_count == 1:
+        return 200
+    bbox: tuple[int, int, int, int] = font.getbbox(last_line)
+    text_height: int = bbox[3] - bbox[1]
+    last_line_top: int = start_y + (line_count - 1) * line_height
+    return last_line_top + text_height + 14
+
+
 def render_screenshot_png(
     caption: str,
     screenshot_file: str,
@@ -220,8 +373,9 @@ def render_screenshot_png(
     for index, line in enumerate(lines):
         draw_centered_text(draw, line, 540, start_y + index * line_height, caption_font, text_color)
     accent_width: int = min(len(caption) * 14, 400)
+    accent_y: int = caption_accent_y(len(lines), start_y, line_height, lines[-1], caption_font)
     draw.rounded_rectangle(
-        (540 - accent_width // 2, 200, 540 + accent_width // 2, 206),
+        (540 - accent_width // 2, accent_y, 540 + accent_width // 2, accent_y + 6),
         radius=3,
         fill=accent,
     )
@@ -238,22 +392,20 @@ def render_feature_graphic_png(
     icon_path: Path,
     output_path: Path,
 ) -> None:
+    layout: dict = FEATURE_GRAPHIC
     background: tuple[int, int, int] = hex_to_rgb(brand["background"])
     text_color: tuple[int, int, int] = hex_to_rgb(brand["text"])
     accent: tuple[int, int, int] = hex_to_rgb(brand["accent"])
     accent_dark: tuple[int, int, int] = hex_to_rgb(brand["accentDark"])
     canvas: Image.Image = Image.new("RGB", (1024, 500), background)
     draw: ImageDraw.ImageDraw = ImageDraw.Draw(canvas)
-    draw.rectangle((0, 420, 1024, 500), fill=accent)
+    draw_feature_graphic_decor(draw, background, accent)
+    draw.rectangle((0, layout["footer_y"], 1024, 500), fill=accent)
     draw_centered_text(draw, badge, 512, 438, load_font(32, True), accent_dark)
     if icon_path.exists():
-        icon: Image.Image = Image.open(icon_path).convert("RGBA")
-        icon = icon.resize((180, 180), Image.Resampling.LANCZOS)
-        canvas.paste(icon, (80, 110), icon)
-    draw.text((300, 120), title, font=load_font(96, True), fill=text_color)
-    draw.text((300, 230), subtitle, font=load_font(44), fill=text_color)
-    draw.ellipse((760, 80, 1000, 320), fill=accent + (64,))
-    draw_centered_text(draw, "+ − × ÷", 880, 175, load_font(64, True), accent_dark)
+        paste_app_icon(canvas, icon_path, layout["icon_x"], layout["icon_y"], layout["icon_size"])
+    draw.text((layout["text_x"], layout["title_y"]), title, font=load_font(96, True), fill=text_color)
+    draw.text((layout["text_x"], layout["subtitle_y"]), subtitle, font=load_font(44), fill=text_color)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(output_path, "PNG")
 

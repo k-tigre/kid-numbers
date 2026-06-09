@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
   <rect width="1024" height="500" fill="#FCF8F8"/>
+  <circle cx="900" cy="150" r="150" fill="#F6BE14" opacity="0.14"/>
+  <circle cx="960" cy="210" r="105" fill="#F6BE14" opacity="0.22"/>
+  <circle cx="840" cy="230" r="75" fill="#F6BE14" opacity="0.3"/>
   <rect x="0" y="420" width="1024" height="80" fill="#F6BE14"/>
   <text x="512" y="468" text-anchor="middle"
         font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="600"
         fill="#775A00">Free · No ads</text>
-  <image href="file:///H:/work/my/kids/numbers/docs/marketing/assets/sources/icon.svg" x="80" y="110" width="180" height="180"/>
-  <text x="300" y="200" font-family="Segoe UI, Arial, sans-serif"
+  <defs>
+    <filter id="iconShadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.10"/>
+    </filter>
+    <clipPath id="iconClip">
+      <rect x="72" y="100" width="200" height="200" rx="44"/>
+    </clipPath>
+  </defs>
+  <image href="file:///H:/work/my/kids/numbers/docs/marketing/assets/sources/icon.png" x="72" y="100" width="200" height="200"
+         clip-path="url(#iconClip)" filter="url(#iconShadow)"/>
+  <text x="296" y="206" font-family="Segoe UI, Arial, sans-serif"
         font-size="96" font-weight="bold" fill="#494949">Numbers</text>
-  <text x="300" y="270" font-family="Segoe UI, Arial, sans-serif"
+  <text x="296" y="276" font-family="Segoe UI, Arial, sans-serif"
         font-size="44" fill="#494949">Math Trainer</text>
-  <circle cx="880" cy="200" r="120" fill="#F6BE14" opacity="0.25"/>
-  <text x="880" y="220" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-        font-size="64" font-weight="bold" fill="#775A00">+ − × ÷</text>
 </svg>

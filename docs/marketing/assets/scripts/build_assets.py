@@ -21,7 +21,7 @@ try:
 except ImportError:
     cairosvg = None
 
-from render_pillow import render_all_from_config
+from render_pillow import FEATURE_DECOR_CIRCLES, FEATURE_GRAPHIC, ensure_icon_png, render_all_from_config
 
 ROOT: Path = Path(__file__).resolve().parent.parent
 SOURCES: Path = ROOT / "sources"
@@ -59,8 +59,20 @@ def remove_disabled_screenshot_assets(config: dict) -> None:
 
 
 def wrap_caption(text: str, max_chars: int = 28) -> list[str]:
+    if "\n" in text:
+        manual_lines: list[str] = [line.strip() for line in text.split("\n") if line.strip()]
+        return manual_lines if manual_lines else [text]
     lines: list[str] = textwrap.wrap(text, width=max_chars)
-    return lines if lines else [text]
+    if not lines:
+        return [text]
+    if len(lines) == 2 and len(lines[1].split()) == 1:
+        words: list[str] = text.split()
+        if len(words) >= 3:
+            first_line: str = " ".join(words[:-2])
+            second_line: str = " ".join(words[-2:])
+            if len(first_line) <= max_chars + 8 and len(second_line) <= max_chars:
+                return [first_line, second_line]
+    return lines
 
 
 def screenshot_href(screenshot_file: str) -> str:
@@ -138,6 +150,13 @@ def phone_frame_svg(brand: dict, screenshot_file: str, is_banner: bool) -> str:
     """
 
 
+def caption_accent_y(line_count: int, start_y: int, line_height: int) -> int:
+    if line_count == 1:
+        return 200
+    last_baseline: int = start_y + (line_count - 1) * line_height
+    return last_baseline + 22
+
+
 def caption_block(caption: str, brand: dict) -> str:
     lines: list[str] = wrap_caption(caption)
     line_height: int = 58
@@ -152,9 +171,10 @@ def caption_block(caption: str, brand: dict) -> str:
         )
     accent_width: int = min(len(caption) * 14, 400)
     accent_x: int = 540 - accent_width // 2
+    accent_y: int = caption_accent_y(len(lines), start_y, line_height)
     return f"""
     {text_lines}
-    <rect x="{accent_x}" y="200" width="{accent_width}" height="6" rx="3" fill="{brand['accent']}"/>
+    <rect x="{accent_x}" y="{accent_y}" width="{accent_width}" height="6" rx="3" fill="{brand['accent']}"/>
     """
 
 
@@ -183,22 +203,41 @@ def build_feature_graphic_svg(
     brand: dict,
     icon_path: Path,
 ) -> str:
+    layout: dict = FEATURE_GRAPHIC
     icon_href: str = icon_path.resolve().as_uri()
+    icon_x: int = layout["icon_x"]
+    icon_y: int = layout["icon_y"]
+    icon_size: int = layout["icon_size"]
+    icon_radius: int = round(icon_size * 24 / 108)
+    title_y: int = layout["title_y"] + 72
+    subtitle_y: int = layout["subtitle_y"] + 34
+    decor_circles: str = ""
+    for center_x, center_y, radius, alpha in FEATURE_DECOR_CIRCLES:
+        decor_circles += (
+            f'  <circle cx="{center_x}" cy="{center_y}" r="{radius}" '
+            f'fill="{brand["accent"]}" opacity="{alpha}"/>\n'
+        )
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
   <rect width="1024" height="500" fill="{brand['background']}"/>
-  <rect x="0" y="420" width="1024" height="80" fill="{brand['accent']}"/>
+{decor_circles}  <rect x="0" y="{layout['footer_y']}" width="1024" height="80" fill="{brand['accent']}"/>
   <text x="512" y="468" text-anchor="middle"
         font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="600"
         fill="{brand['accentDark']}">{escape(badge)}</text>
-  <image href="{icon_href}" x="80" y="110" width="180" height="180"/>
-  <text x="300" y="200" font-family="Segoe UI, Arial, sans-serif"
+  <defs>
+    <filter id="iconShadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.10"/>
+    </filter>
+    <clipPath id="iconClip">
+      <rect x="{icon_x}" y="{icon_y}" width="{icon_size}" height="{icon_size}" rx="{icon_radius}"/>
+    </clipPath>
+  </defs>
+  <image href="{icon_href}" x="{icon_x}" y="{icon_y}" width="{icon_size}" height="{icon_size}"
+         clip-path="url(#iconClip)" filter="url(#iconShadow)"/>
+  <text x="{layout['text_x']}" y="{title_y}" font-family="Segoe UI, Arial, sans-serif"
         font-size="96" font-weight="bold" fill="{brand['text']}">{escape(title)}</text>
-  <text x="300" y="270" font-family="Segoe UI, Arial, sans-serif"
+  <text x="{layout['text_x']}" y="{subtitle_y}" font-family="Segoe UI, Arial, sans-serif"
         font-size="44" fill="{brand['text']}">{escape(subtitle)}</text>
-  <circle cx="880" cy="200" r="120" fill="{brand['accent']}" opacity="0.25"/>
-  <text x="880" y="220" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-        font-size="64" font-weight="bold" fill="{brand['accentDark']}">+ − × ÷</text>
 </svg>
 """
 
@@ -249,7 +288,7 @@ def render_png(svg_path: Path, png_path: Path) -> None:
 
 def generate_svg_sources(config: dict) -> list[Path]:
     brand: dict = config["brand"]
-    icon_path: Path = SOURCES / "icon.svg"
+    icon_path: Path = ensure_icon_png(SOURCES)
     generated: list[Path] = []
     for locale, caption_key in [("ru", "captionRu"), ("en", "captionEn")]:
         locale_dir: Path = SOURCES / "screenshots" / locale
@@ -316,11 +355,12 @@ def main() -> None:
     SCREENSHOTS.mkdir(parents=True, exist_ok=True)
     remove_disabled_screenshot_assets(config)
     disabled_ids: set[str] = {item["id"] for item in config["screenshots"] if item.get("disabled")}
+    ensure_icon_png(SOURCES)
     if args.png_only:
         svg_paths: list[Path] = list(SOURCES.rglob("*.svg"))
         svg_paths = [
             path for path in svg_paths
-            if path.name != "icon.svg" and path.stem not in disabled_ids
+            if path.name not in {"icon.svg", "icon.png"} and path.stem not in disabled_ids
         ]
     else:
         svg_paths = generate_svg_sources(config)

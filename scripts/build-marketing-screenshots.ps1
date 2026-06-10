@@ -2,10 +2,6 @@
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
-Write-Host "Recording screenshots..."
+Write-Host "Recording screenshots and building marketing assets..."
 & .\gradlew.bat :androidApp:recordMarketingScreenshots
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-Write-Host "Building marketing assets..."
-Set-Location "docs\marketing\assets"
-python scripts\build_assets.py
 exit $LASTEXITCODE

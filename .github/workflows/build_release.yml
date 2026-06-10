@@ -5,52 +5,23 @@ on:
     tags:
       - 'v.[0-9]+.[0-9]+.[0-9]+'
 
-permissions:
-  contents: write
-
 jobs:
   build_apk_aab:
     name: Build release artifacts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install Python deps for marketing assets
-        run: pip install pillow
-      - name: Install font dependencies for headless screenshot rendering
-        run: sudo apt-get update && sudo apt-get install -y fontconfig fonts-dejavu-core
-      - name: Prepare release version and notes
+      - name: Build and publish release to Play
         run: |
-          chmod +x scripts/bump-version.sh scripts/generate-play-release-notes.sh scripts/commit-release-assets.sh
-          VERSION="${GITHUB_REF_NAME#refs/tags/}"
-          VERSION="${VERSION#v.}"
-          export RELEASE_VERSION="$VERSION"
-          ./scripts/bump-version.sh
-          ./scripts/generate-play-release-notes.sh alpha
-          python scripts/changelog_tool.py finalize --version "$VERSION"
-      - name: Build, publish listing, and upload to Play
-        run: |
-          ./gradlew testDebugUnitTest publishReleaseToPlay assembleRelease
+          ./gradlew testDebugUnitTest publishReleaseApp assembleRelease
         env:
           NUMBERS_RELEASE_JKS: ${{ secrets.NUMBERS_RELEASE_JKS }}
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
-          PLAY_CONTACT_EMAIL: ${{ secrets.PLAY_CONTACT_EMAIL }}
-          PLAY_CONTACT_WEBSITE: ${{ secrets.PLAY_CONTACT_WEBSITE }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit release assets to master
-        run: ./scripts/commit-release-assets.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -58,5 +29,3 @@ jobs:
           path: |
             androidApp/build/outputs/apk/release/androidApp-release.apk
             androidApp/build/outputs/bundle/release/androidApp-release.aab
-            docs/marketing/assets/output/screenshots/**/*
-            docs/marketing/assets/output/feature-graphic/**/*

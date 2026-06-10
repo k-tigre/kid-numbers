@@ -68,9 +68,9 @@ python scripts/build_assets.py
 
 ### 4. Загрузить в Google Play
 
-**Автоматически:** при релизном теге CI собирает креативы, публикует в Play и коммитит ассеты в `master`. Release notes — из [CHANGELOG.md](../../../CHANGELOG.md).
+**Локально:** `.\scripts\prepare-play-listing.ps1` — тексты и скриншоты, коммит в `master`, затем `.\scripts\publish-play-listing.ps1` или workflow **Publish Play listing**. Release notes при релизе — из [CHANGELOG.md](../../../CHANGELOG.md), загружаются отдельно от листинга.
 
-**Вручную:**
+**Вручную (только файлы):**
 
 | Файл | Куда |
 |------|------|
@@ -79,7 +79,7 @@ python scripts/build_assets.py
 | `output/feature-graphic/feature-graphic-ru.png` | Feature Graphic |
 | `output/uac-banners/*.png` | Google Ads UAC |
 
-Тексты листинга хранятся в `androidApp/src/main/play/listings/`.
+Тексты листинга: [play-listing.md](../play-listing.md) → `androidApp/src/main/play/listings/` (`sync-play-listing-texts.py`).
 
 ## Ручное редактирование
 

@@ -126,6 +126,8 @@ Package: `by.tigre.numbers` · версия 1.2.2
 
 ## 5. Google Play — тексты и ASO
 
+> **Источник для Play Console:** [marketing/play-listing.md](marketing/play-listing.md) — после правок запустите `scripts/prepare-play-listing.ps1`.
+
 ### Название
 
 - **RU:** `Numbers — тренажёр арифметики`

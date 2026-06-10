@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Deprecated: release assets are committed locally before tagging.
+# Kept for manual recovery if needed.
 set -euo pipefail
 
 VERSION="${RELEASE_VERSION:-}"

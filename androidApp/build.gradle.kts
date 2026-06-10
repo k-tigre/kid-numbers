@@ -246,20 +246,24 @@ tasks.register("preparePlayContactMetadata") {
     }
 }
 
-tasks.register("publishReleaseToPlay") {
+tasks.register("publishPlayListing") {
     group = "publishing"
-    description = "Build marketing assets, upload listing metadata, and publish release bundle to Play"
-    dependsOn("buildMarketingScreenshots")
+    description = "Upload Play Store listing (texts, screenshots, feature graphic) without a release"
+}
+
+tasks.register("publishReleaseApp") {
+    group = "publishing"
+    description = "Upload release bundle and release notes to Play (no listing update)"
 }
 
 afterEvaluate {
-    tasks.named("preparePlayContactMetadata").configure {
-        mustRunAfter("buildMarketingScreenshots")
-    }
     tasks.named("publishReleaseListing").configure {
-        dependsOn("buildMarketingScreenshots", "preparePlayContactMetadata")
+        dependsOn("preparePlayContactMetadata")
     }
-    tasks.named("publishReleaseToPlay").configure {
-        dependsOn("publishReleaseListing", "publishReleaseBundle")
+    tasks.named("publishPlayListing").configure {
+        dependsOn("publishReleaseListing")
+    }
+    tasks.named("publishReleaseApp").configure {
+        dependsOn("publishReleaseBundle")
     }
 }

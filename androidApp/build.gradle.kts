@@ -229,19 +229,22 @@ tasks.register("recordMarketingScreenshots") {
 tasks.register("preparePlayContactMetadata") {
     group = "publishing"
     description = "Write Play contact files from PLAY_CONTACT_EMAIL and PLAY_CONTACT_WEBSITE env vars"
+    val playDir = layout.projectDirectory.dir("src/main/play")
+    val contactEmailFile = playDir.file("contact-email.txt")
+    val contactWebsiteFile = playDir.file("contact-website.txt")
+    outputs.file(contactEmailFile)
+    outputs.file(contactWebsiteFile)
     doLast {
-        val playDir = file("src/main/play")
         val email = System.getenv("PLAY_CONTACT_EMAIL")?.trim().orEmpty()
         if (email.isBlank()) {
             throw GradleException("PLAY_CONTACT_EMAIL environment variable is required for Play Store publish")
         }
-        playDir.resolve("contact-email.txt").writeText("$email\n")
+        contactEmailFile.asFile.writeText("$email\n")
         val website = System.getenv("PLAY_CONTACT_WEBSITE")?.trim().orEmpty()
-        val websiteFile = playDir.resolve("contact-website.txt")
         if (website.isNotBlank()) {
-            websiteFile.writeText("$website\n")
-        } else if (websiteFile.exists()) {
-            websiteFile.delete()
+            contactWebsiteFile.asFile.writeText("$website\n")
+        } else if (contactWebsiteFile.asFile.exists()) {
+            contactWebsiteFile.asFile.delete()
         }
     }
 }
@@ -257,8 +260,11 @@ tasks.register("publishReleaseApp") {
 }
 
 afterEvaluate {
-    tasks.named("publishReleaseListing").configure {
+    tasks.named("generateReleasePlayResources").configure {
         dependsOn("preparePlayContactMetadata")
+    }
+    tasks.named("publishReleaseListing").configure {
+        dependsOn("generateReleasePlayResources")
     }
     tasks.named("publishPlayListing").configure {
         dependsOn("publishReleaseListing")

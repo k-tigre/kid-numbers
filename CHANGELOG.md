@@ -9,6 +9,17 @@
 
 ### EN
 
+## [1.4.0] - 2026-06-10
+### RU
+- Доска почёта: вкладки «Общий счёт» и «Скорость»
+- После идеальной тренировки — сравнение времени с рекордом
+- Рекорды скорости для каждого типа и настроек тренировки
+
+### EN
+- Leaderboard tabs: Total score and Speed
+- After a perfect run, see how your time compares to the record
+- Speed records per training type and settings
+
 ## [1.2.3]
 
 ### RU

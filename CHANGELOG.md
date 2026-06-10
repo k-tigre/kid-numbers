@@ -9,6 +9,17 @@
 
 ### EN
 
+## [1.4.1] - 2026-06-10
+### RU
+- Никнейм для доски почёта спрашивается один раз; идеальные тренировки отправляются автоматически
+- Никнейм можно изменить в настройках
+- Главное меню лучше отображается на маленьких экранах
+
+### EN
+- Leaderboard nickname is asked once; perfect runs submit automatically afterwards
+- Change your nickname anytime in Settings
+- Main menu layout improved on small screens
+
 ## [1.4.0] - 2026-06-10
 ### RU
 - Доска почёта: вкладки «Общий счёт» и «Скорость»

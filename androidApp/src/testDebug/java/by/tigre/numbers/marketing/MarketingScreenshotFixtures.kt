@@ -29,6 +29,7 @@ object MarketingScreenshotFixtures {
         override fun onChallengeClicked() = Unit
         override fun onStatisticClicked() = Unit
         override fun onLeaderboardClicked() = Unit
+        override fun onSettingsClicked() = Unit
     }
     fun challengesComponent(): ListComponent = object : ListComponent {
         override val challenges: StateFlow<List<ChallengeItem>> = MutableStateFlow(challengeItems())

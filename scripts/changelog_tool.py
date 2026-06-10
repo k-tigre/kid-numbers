@@ -102,6 +102,24 @@ def extract_release_notes(version: str) -> dict[str, str]:
     }
 
 
+def bump_application_version(version: str) -> None:
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        raise ValueError(f"Invalid version: '{version}' (expected X.Y.Z)")
+    major, minor, patch = version.split(".")
+    application_file: Path = ROOT / "buildSrc" / "src" / "main" / "kotlin" / "Application.kt"
+    text: str = application_file.read_text(encoding="utf-8")
+    updated, count = re.subn(
+        r"Version\(\d+, \d+, \d+\)",
+        f"Version({major}, {minor}, {patch})",
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise ValueError(f"Failed to update version in {application_file}")
+    application_file.write_text(updated, encoding="utf-8")
+    print(f"Bumped version to {major}.{minor}.{patch}")
+
+
 def finalize_version(version: str, release_date: str | None = None) -> bool:
     text: str = read_changelog()
     section: tuple[str, str | None, str] | None = find_section(text, version)
@@ -142,6 +160,8 @@ def main() -> int:
     extract_parser = subparsers.add_parser("extract", help="Print release notes for a version")
     extract_parser.add_argument("--version", required=True)
     extract_parser.add_argument("--locale", choices=["ru-RU", "en-US"], required=True)
+    bump_parser = subparsers.add_parser("bump-version", help="Update Application.kt version")
+    bump_parser.add_argument("--version", required=True)
     finalize_parser = subparsers.add_parser("finalize", help="Add release date to a version section")
     finalize_parser.add_argument("--version", required=True)
     finalize_parser.add_argument("--date")
@@ -156,6 +176,9 @@ def main() -> int:
     if args.command == "extract":
         notes: dict[str, str] = extract_release_notes(args.version)
         sys.stdout.write(notes[args.locale])
+        return 0
+    if args.command == "bump-version":
+        bump_application_version(args.version)
         return 0
     if args.command == "finalize":
         finalized: bool = finalize_version(args.version, args.date)

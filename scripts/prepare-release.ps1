@@ -4,12 +4,14 @@ param(
     [string]$Version
 )
 $ErrorActionPreference = "Stop"
+$Root = Split-Path -Parent $PSScriptRoot
+Set-Location $Root
 if ($Version -notmatch '^\d+\.\d+\.\d+$') {
     Write-Error "Invalid version: '$Version' (expected X.Y.Z)"
 }
-$bash = Get-Command bash -ErrorAction SilentlyContinue
-if (-not $bash) {
-    Write-Error "bash not found. Install Git for Windows or run: bash scripts/prepare-release.sh $Version"
-}
-& bash scripts/prepare-release.sh $Version
+python scripts/changelog_tool.py bump-version --version $Version
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+python scripts/changelog_tool.py write-play-notes --version $Version --track alpha
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+python scripts/changelog_tool.py finalize --version $Version
 exit $LASTEXITCODE

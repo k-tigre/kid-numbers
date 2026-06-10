@@ -6,6 +6,7 @@
     <string name="main_menu_challenges_active">Active</string>
     <string name="main_menu_statistic">Statistics</string>
     <string name="main_menu_leaderboard">Leaderboard</string>
+    <string name="main_menu_settings">Settings</string>
 
     <string name="button_close">Close</string>
     <string name="button_continue">Continue</string>
@@ -134,6 +135,11 @@
         <item quantity="other">%d days</item>
     </plurals>
 
+    <string name="screen_settings_title">Settings</string>
+    <string name="screen_settings_leaderboard_nickname_hint">Nickname shown on the leaderboard.</string>
+    <string name="screen_settings_save">Save</string>
+    <string name="screen_settings_saved">Saved</string>
+
     <string name="screen_leaderboard_title">Leaderboard</string>
     <string name="screen_leaderboard_empty">No scores yet. Complete a perfect training run!</string>
     <string name="screen_leaderboard_load_error">Failed to load leaderboard</string>
@@ -141,6 +147,7 @@
     <string name="screen_leaderboard_item_games">%d games</string>
     <string name="screen_leaderboard_backfill_done">Imported %d perfect games from your history</string>
     <string name="screen_leaderboard_submit_title">Add score to leaderboard?</string>
+    <string name="screen_leaderboard_submit_nickname_title">Choose a nickname for the leaderboard</string>
     <string name="screen_leaderboard_submit_rating">Points for this game: +%d</string>
     <string name="screen_leaderboard_submit_nickname">Nickname</string>
     <string name="screen_leaderboard_submit_send">Submit</string>

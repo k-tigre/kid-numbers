@@ -1,11 +1,14 @@
 package by.tigre.numbers.presentation.menu
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -28,45 +31,41 @@ class MenuView(
     @Composable
     override fun Draw(modifier: Modifier) {
         val leaderboardEnabled = component.isLeaderboardEnabled.collectAsState().value
-        LazyColumn(
-            modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
+        BoxWithConstraints(modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .heightIn(max = maxHeight)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 DrawChallengeItem()
-            }
-
-            component.gameTypes.forEach { type ->
-                item {
+                component.gameTypes.forEach { type ->
                     DrawItem(
                         title = stringResource(R.string.main_manu_learn, type.toLabel()),
-                        action = { component.onGameClicked(type) }
+                        action = { component.onGameClicked(type) },
                     )
                 }
-            }
-
-            if (leaderboardEnabled) {
-                item {
+                if (leaderboardEnabled) {
                     DrawItem(
                         title = stringResource(R.string.main_menu_leaderboard),
-                        action = component::onLeaderboardClicked
+                        action = component::onLeaderboardClicked,
+                    )
+                    DrawItem(
+                        title = stringResource(R.string.main_menu_settings),
+                        action = component::onSettingsClicked,
                     )
                 }
-            }
-
-            item {
                 DrawItem(
                     title = stringResource(R.string.main_menu_statistic),
-                    action = component::onStatisticClicked
+                    action = component::onStatisticClicked,
                 )
-            }
-
-            item {
                 DrawItem(
                     title = stringResource(R.string.main_menu_history),
-                    action = component::onHistoryClicked
+                    action = component::onHistoryClicked,
                 )
             }
         }

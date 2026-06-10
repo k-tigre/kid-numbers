@@ -60,6 +60,7 @@ sealed class Event(val name: String) {
         data object History : Screen("History")
         data object Statistic : Screen("Statistic")
         data object Leaderboard : Screen("Leaderboard")
+        data object Settings : Screen("Settings")
         data object RootGame : Screen("RootGame", skip = true)
         data object RootChallenge : Screen("RootChallenge", skip = true)
         data object RootGameChallenge : Screen("RootGameChallenge", skip = true)

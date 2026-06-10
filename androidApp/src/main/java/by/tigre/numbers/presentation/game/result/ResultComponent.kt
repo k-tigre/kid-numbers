@@ -50,7 +50,7 @@ interface ResultComponent {
                 val boardKey: String = LeaderboardBoardKey.from(settings)
                 leaderboardPreferences.saveLastBoardKey(boardKey)
                 leaderboardPreferences.saveLastBoardSettings(settings)
-                _leaderboardDialog.value = LeaderboardSubmitDialogState(
+                val dialog = LeaderboardSubmitDialogState(
                     gameScore = featureFlags.calculateLeaderboardRating(
                         settings = settings,
                         elapsedSeconds = elapsedSeconds,
@@ -63,18 +63,26 @@ interface ResultComponent {
                     elapsedSeconds = elapsedSeconds,
                     mistakes = mistakes,
                 )
-                launch {
-                    leaderboardRepository.fetchBestSpeedEntry(boardKey)
-                        .onSuccess { bestEntry ->
-                            val dialog: LeaderboardSubmitDialogState = _leaderboardDialog.value ?: return@onSuccess
-                            _leaderboardDialog.value = dialog.copy(
-                                speedComparison = LeaderboardSpeedComparisonCalculator.compare(
-                                    elapsedSeconds = elapsedSeconds,
-                                    mistakes = mistakes,
-                                    bestEntry = bestEntry,
-                                ),
-                            )
-                        }
+                if (leaderboardPreferences.isNicknameConfigured()) {
+                    submitScore(
+                        nickname = leaderboardPreferences.loadNickname(default = DEFAULT_NICKNAME),
+                        dialog = dialog,
+                    )
+                } else {
+                    _leaderboardDialog.value = dialog
+                    launch {
+                        leaderboardRepository.fetchBestSpeedEntry(boardKey)
+                            .onSuccess { bestEntry ->
+                                val currentDialog: LeaderboardSubmitDialogState = _leaderboardDialog.value ?: return@onSuccess
+                                _leaderboardDialog.value = currentDialog.copy(
+                                    speedComparison = LeaderboardSpeedComparisonCalculator.compare(
+                                        elapsedSeconds = elapsedSeconds,
+                                        mistakes = mistakes,
+                                        bestEntry = bestEntry,
+                                    ),
+                                )
+                            }
+                    }
                 }
             }
         }
@@ -89,6 +97,12 @@ interface ResultComponent {
                 _leaderboardDialog.value = dialog.copy(submitError = LeaderboardSubmitDialogState.SubmitError.EmptyNickname)
                 return
             }
+            submitScore(nickname = trimmed, dialog = dialog)
+        }
+
+        private fun submitScore(nickname: String, dialog: LeaderboardSubmitDialogState) {
+            val trimmed: String = nickname.trim()
+            if (trimmed.isEmpty()) return
             _leaderboardDialog.value = dialog.copy(submitted = true, submitError = null)
             if (leaderboardPreferences.loadNickname(default = DEFAULT_NICKNAME) != trimmed) {
                 leaderboardPreferences.saveNickname(trimmed)

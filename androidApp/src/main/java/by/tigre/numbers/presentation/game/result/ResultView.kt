@@ -111,7 +111,7 @@ class ResultView(
         var nickname by remember(dialogState.defaultNickname) { mutableStateOf(dialogState.defaultNickname) }
         AlertDialog(
             onDismissRequest = component::onSkipLeaderboardSubmit,
-            title = { Text(stringResource(R.string.screen_leaderboard_submit_title)) },
+            title = { Text(stringResource(R.string.screen_leaderboard_submit_nickname_title)) },
             text = {
                 Column {
                     Text(dialogState.settings.toLeaderboardBoardLabel())

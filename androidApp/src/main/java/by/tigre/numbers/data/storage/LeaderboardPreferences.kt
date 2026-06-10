@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 interface LeaderboardPreferences {
     fun loadNickname(default: String): String
     fun saveNickname(value: String)
+    fun isNicknameConfigured(): Boolean
     fun getOrCreateUserId(): String
     fun isBackfillDone(): Boolean
     fun markBackfillDone()
@@ -25,7 +26,21 @@ class LeaderboardPreferencesImpl(
     }
 
     override fun saveNickname(value: String) {
-        preferences.saveString(KEY_NICKNAME, value.trim())
+        val trimmed: String = value.trim()
+        preferences.saveString(KEY_NICKNAME, trimmed)
+        if (trimmed.isNotEmpty()) {
+            preferences.saveBoolean(KEY_NICKNAME_CONFIGURED, value = true)
+        }
+    }
+
+    override fun isNicknameConfigured(): Boolean {
+        if (preferences.loadBoolean(KEY_NICKNAME_CONFIGURED, default = false)) return true
+        val saved: String = preferences.loadString(KEY_NICKNAME, default = "").trim()
+        if (saved.isNotEmpty()) {
+            preferences.saveBoolean(KEY_NICKNAME_CONFIGURED, value = true)
+            return true
+        }
+        return false
     }
 
     override fun getOrCreateUserId(): String {
@@ -65,6 +80,7 @@ class LeaderboardPreferencesImpl(
     private companion object {
         val settingsJson: Json = Json { ignoreUnknownKeys = true }
         const val KEY_NICKNAME: String = "leaderboard_nickname"
+        const val KEY_NICKNAME_CONFIGURED: String = "leaderboard_nickname_configured"
         const val KEY_USER_ID: String = "leaderboard_user_id"
         const val KEY_BACKFILL_DONE: String = "leaderboard_user_id_backfill_done"
         const val KEY_LAST_BOARD_KEY: String = "leaderboard_last_board_key"

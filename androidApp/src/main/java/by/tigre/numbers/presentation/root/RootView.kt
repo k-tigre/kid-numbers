@@ -23,6 +23,7 @@ import by.tigre.numbers.presentation.game.RootGameView
 import by.tigre.numbers.presentation.history.HistoryView
 import by.tigre.numbers.presentation.leaderboard.LeaderboardView
 import by.tigre.numbers.presentation.menu.MenuView
+import by.tigre.numbers.presentation.settings.SettingsView
 import by.tigre.numbers.presentation.statistic.StatisticView
 import by.tigre.tools.tools.platform.compose.ComposableView
 import com.arkivanov.decompose.extensions.compose.stack.Children
@@ -60,6 +61,7 @@ class RootView(
                 is RootComponent.PageChild.History -> HistoryView(child.component)
                 is RootComponent.PageChild.Statistic -> StatisticView(child.component)
                 is RootComponent.PageChild.Leaderboard -> LeaderboardView(child.component)
+                is RootComponent.PageChild.Settings -> SettingsView(child.component)
                 is RootComponent.PageChild.Challenge -> RootChallengeView(child.component)
                 is RootComponent.PageChild.GameChallenge -> RootChallengeGameView(child.component)
             }.Draw(

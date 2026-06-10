@@ -16,6 +16,7 @@ import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
 import by.tigre.numbers.presentation.leaderboard.LeaderboardComponentImpl
 import by.tigre.numbers.presentation.menu.MenuComponent
+import by.tigre.numbers.presentation.settings.SettingsComponentImpl
 import by.tigre.numbers.presentation.statistic.StatisticComponent
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildSlot
@@ -50,6 +51,7 @@ interface RootComponent {
         class History(val component: HistoryComponent) : PageChild
         class Statistic(val component: StatisticComponent) : PageChild
         class Leaderboard(val component: by.tigre.numbers.presentation.leaderboard.LeaderboardComponent) : PageChild
+        class Settings(val component: by.tigre.numbers.presentation.settings.SettingsComponent) : PageChild
         class Game(val component: RootGameComponent) : PageChild
         class Challenge(val component: RootChallengeComponent) : PageChild
         class GameChallenge(val component: RootChallengeGameComponent) : PageChild
@@ -95,6 +97,10 @@ interface RootComponent {
 
             override fun showLeaderboard() {
                 pagesNavigation.pushNew(MenuPagesConfig.Leaderboard)
+            }
+
+            override fun showSettings() {
+                pagesNavigation.pushNew(MenuPagesConfig.Settings)
             }
         }
 
@@ -157,6 +163,14 @@ interface RootComponent {
                         )
                     )
 
+                    MenuPagesConfig.Settings -> PageChild.Settings(
+                        SettingsComponentImpl(
+                            context = componentContext,
+                            leaderboardPreferences = gameDependencies.leaderboardPreferences,
+                            onClose = { pagesNavigation.pop() },
+                        )
+                    )
+
                     MenuPagesConfig.Challenge -> PageChild.Challenge(
                         RootChallengeComponent.Impl(
                             context = componentContext,
@@ -200,6 +214,7 @@ interface RootComponent {
                         MenuPagesConfig.History -> Event.Screen.History
                         MenuPagesConfig.Statistic -> Event.Screen.Statistic
                         MenuPagesConfig.Leaderboard -> Event.Screen.Leaderboard
+                        MenuPagesConfig.Settings -> Event.Screen.Settings
                         MenuPagesConfig.Challenge -> Event.Screen.RootChallenge
                         is MenuPagesConfig.ChallengeGame -> Event.Screen.RootGameChallenge
                         is MenuPagesConfig.Game -> Event.Screen.RootGame
@@ -272,6 +287,10 @@ interface RootComponent {
             @Serializable
             @SerialName("MenuPagesConfig_Leaderboard")
             data object Leaderboard : MenuPagesConfig
+
+            @Serializable
+            @SerialName("MenuPagesConfig_Settings")
+            data object Settings : MenuPagesConfig
 
             @Serializable
             @SerialName("MenuPagesConfig_Challenge")

@@ -23,8 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.presentation.utils.toLabel
+import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.ComposableView
 
 class LeaderboardView(
@@ -57,13 +56,16 @@ class LeaderboardView(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Difficult.entries.forEach { difficult ->
-                    FilterChip(
-                        selected = state.selectedDifficult == difficult,
-                        onClick = { component.onDifficultSelected(difficult) },
-                        label = { Text(difficult.toLabel()) },
-                    )
-                }
+                FilterChip(
+                    selected = state.selectedTab == LeaderboardTab.Speed,
+                    onClick = { component.onTabSelected(LeaderboardTab.Speed) },
+                    label = { Text(stringResource(R.string.screen_leaderboard_tab_speed)) },
+                )
+                FilterChip(
+                    selected = state.selectedTab == LeaderboardTab.Total,
+                    onClick = { component.onTabSelected(LeaderboardTab.Total) },
+                    label = { Text(stringResource(R.string.screen_leaderboard_tab_total)) },
+                )
             }
             state.backfillSubmittedCount?.let { count ->
                 Text(
@@ -72,6 +74,17 @@ class LeaderboardView(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
+            }
+            when (state.selectedTab) {
+                LeaderboardTab.Speed -> state.speedBoardSettings?.let { settings ->
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        text = settings.toLeaderboardBoardLabel(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                LeaderboardTab.Total -> Unit
             }
             when {
                 state.isLoading -> {
@@ -88,7 +101,19 @@ class LeaderboardView(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-                state.entries.isEmpty() -> {
+                state.selectedTab == LeaderboardTab.Speed && state.speedBoardSettings == null -> {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = stringResource(R.string.screen_leaderboard_speed_no_board),
+                    )
+                }
+                state.selectedTab == LeaderboardTab.Speed && state.speedEntries.isEmpty() -> {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = stringResource(R.string.screen_leaderboard_empty),
+                    )
+                }
+                state.selectedTab == LeaderboardTab.Total && state.totalEntries.isEmpty() -> {
                     Text(
                         modifier = Modifier.padding(16.dp),
                         text = stringResource(R.string.screen_leaderboard_empty),
@@ -99,26 +124,52 @@ class LeaderboardView(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        itemsIndexed(state.entries) { index, entry ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(
-                                    text = stringResource(
-                                        R.string.screen_leaderboard_item,
-                                        index + 1,
-                                        entry.nickname,
-                                        entry.totalScore,
-                                    ),
-                                    modifier = Modifier.weight(1f),
-                                )
-                                Text(
-                                    text = stringResource(R.string.screen_leaderboard_item_games, entry.gamesCount),
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                        when (state.selectedTab) {
+                            LeaderboardTab.Speed -> itemsIndexed(state.speedEntries) { index, entry ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_leaderboard_speed_item,
+                                            index + 1,
+                                            entry.nickname,
+                                            TIME_FORMAT.format(entry.bestTimeSeconds * 1000L),
+                                        ),
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (entry.mistakes > 0) {
+                                        Text(
+                                            text = stringResource(R.string.screen_leaderboard_speed_item_mistakes, entry.mistakes),
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    }
+                                }
+                            }
+                            LeaderboardTab.Total -> itemsIndexed(state.totalEntries) { index, entry ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.screen_leaderboard_item,
+                                            index + 1,
+                                            entry.nickname,
+                                            entry.totalScore,
+                                        ),
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.screen_leaderboard_item_games, entry.gamesCount),
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                }
                             }
                         }
                     }

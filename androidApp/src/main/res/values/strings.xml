@@ -147,4 +147,25 @@
     <string name="screen_leaderboard_submit_skip">Skip</string>
     <string name="screen_leaderboard_submit_error_empty_nickname">Enter a nickname</string>
     <string name="screen_leaderboard_submit_error_generic">Failed to submit. Try again later.</string>
+    <string name="screen_leaderboard_tab_speed">Speed</string>
+    <string name="screen_leaderboard_tab_total">Total score</string>
+    <string name="screen_leaderboard_speed_no_board">Play a perfect training run to see speed records for your settings.</string>
+    <string name="screen_leaderboard_speed_item">%1$d. %2$s — %3$s</string>
+    <string name="screen_leaderboard_speed_item_mistakes">%d mistakes</string>
+    <string name="screen_leaderboard_submit_speed_first">First record on this board!</string>
+    <string name="screen_leaderboard_submit_speed_faster">You are %1$.1f s faster than the best</string>
+    <string name="screen_leaderboard_submit_speed_behind">%1$.1f s to beat the record</string>
+    <string name="screen_leaderboard_submit_speed_matched">You matched the record!</string>
+    <string name="screen_leaderboard_board_mult">× table %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_div">÷ table %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_add">Addition up to %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_sub">Subtraction up to %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_eq">Equations %1$s, %2$s, %3$s (%4$s)</string>
+    <string name="screen_leaderboard_board_range_positive">%d</string>
+    <string name="screen_leaderboard_board_range_signed">±%d</string>
+    <string name="screen_leaderboard_board_eq_type_add">addition</string>
+    <string name="screen_leaderboard_board_eq_type_mult">multiplication</string>
+    <string name="screen_leaderboard_board_eq_type_both">mixed</string>
+    <string name="screen_leaderboard_board_eq_dim_single">one unknown</string>
+    <string name="screen_leaderboard_board_eq_dim_double">two unknowns</string>
 </resources>

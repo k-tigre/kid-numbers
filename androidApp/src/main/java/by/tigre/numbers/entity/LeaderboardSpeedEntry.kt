@@ -1,8 +1,8 @@
 package by.tigre.numbers.entity
 
-data class LeaderboardEntry(
+data class LeaderboardSpeedEntry(
     val nickname: String,
-    val totalScore: Int,
-    val gamesCount: Int,
+    val bestTimeSeconds: Long,
+    val mistakes: Int,
     val timestampMillis: Long,
 )

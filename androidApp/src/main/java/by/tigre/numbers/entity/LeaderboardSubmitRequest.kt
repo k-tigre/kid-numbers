@@ -8,6 +8,6 @@ data class LeaderboardSubmitRequest(
     val solveTimeSeconds: Long,
     val hintsUsed: Int,
     val mistakes: Int,
-    val difficult: Difficult,
+    val timeCapSeconds: Int,
     val timestampMillis: Long,
 )

@@ -152,6 +152,7 @@ interface RootComponent {
                             context = componentContext,
                             leaderboardRepository = gameDependencies.leaderboardRepository,
                             leaderboardHistoryBackfill = gameDependencies.leaderboardHistoryBackfill,
+                            leaderboardPreferences = gameDependencies.leaderboardPreferences,
                             navigateBack = { pagesNavigation.pop() },
                         )
                     )

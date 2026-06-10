@@ -44,7 +44,7 @@ interface GameComponent {
     @OptIn(FlowPreview::class)
     class Impl(
         context: BaseComponentContext,
-        settings: GameSettings,
+        private val settings: GameSettings,
         provider: GameProvider,
         private val reminderController: ReminderController,
         private val analytics: EventAnalytics,
@@ -166,7 +166,8 @@ interface GameComponent {
                     results = resultQuestions,
                     time = time.value.coerceAtMost(gameOption.duration),
                     difficult = gameOption.difficult,
-                    type = gameOption.type
+                    type = gameOption.type,
+                    settings = settings,
                 )
             )
 

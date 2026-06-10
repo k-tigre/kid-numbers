@@ -38,6 +38,8 @@ import by.tigre.numbers.entity.GameOptions.Question.Equation
 import by.tigre.numbers.entity.GameOptions.Question.Operation
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.entity.LeaderboardSpeedComparison
+import by.tigre.numbers.presentation.leaderboard.toLeaderboardBoardLabel
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
@@ -112,7 +114,14 @@ class ResultView(
             title = { Text(stringResource(R.string.screen_leaderboard_submit_title)) },
             text = {
                 Column {
+                    Text(dialogState.settings.toLeaderboardBoardLabel())
                     Text(stringResource(R.string.screen_leaderboard_submit_rating, dialogState.gameScore))
+                    dialogState.speedComparison?.let { comparison ->
+                        Text(
+                            text = comparison.toMessage(),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                     OutlinedTextField(
                         value = nickname,
                         onValueChange = { nickname = it.take(24) },
@@ -141,6 +150,14 @@ class ResultView(
                 }
             },
         )
+    }
+
+    @Composable
+    private fun LeaderboardSpeedComparison.toMessage(): String = when (this) {
+        LeaderboardSpeedComparison.FirstOnBoard -> stringResource(R.string.screen_leaderboard_submit_speed_first)
+        is LeaderboardSpeedComparison.FasterThanBest -> stringResource(R.string.screen_leaderboard_submit_speed_faster, seconds)
+        is LeaderboardSpeedComparison.BehindBest -> stringResource(R.string.screen_leaderboard_submit_speed_behind, seconds)
+        LeaderboardSpeedComparison.MatchedBest -> stringResource(R.string.screen_leaderboard_submit_speed_matched)
     }
 
     @Composable

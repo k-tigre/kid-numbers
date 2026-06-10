@@ -10,10 +10,14 @@ data class LeaderboardRatingConfig(
     val mistakePenalty: Int = DEFAULT.mistakePenalty,
     val minRating: Int = DEFAULT.minRating,
 ) {
-    fun calculate(difficult: Difficult, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int {
-        val timeCapSeconds: Int = (difficult.time / 1000L).toInt()
+    fun calculate(timeCapSeconds: Int, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int {
         val raw: Int = timeCapSeconds - elapsedSeconds.toInt() - hintsUsed * hintPenalty - mistakes * mistakePenalty
         return raw.coerceAtLeast(minRating)
+    }
+
+    fun calculate(difficult: Difficult, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int {
+        val timeCapSeconds: Int = (difficult.time / 1000L).toInt()
+        return calculate(timeCapSeconds, elapsedSeconds, hintsUsed, mistakes)
     }
 
     companion object {

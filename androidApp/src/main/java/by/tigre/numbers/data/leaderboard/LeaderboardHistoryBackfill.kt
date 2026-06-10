@@ -36,7 +36,8 @@ class LeaderboardHistoryBackfill(
                 hintsUsed = 0,
                 mistakes = mistakes,
             )
-            leaderboardRepository.addGameScore(
+            val timeCapSeconds: Int = (entry.difficult.time / 1000L).toInt()
+            leaderboardRepository.addTotalScore(
                 LeaderboardSubmitRequest(
                     userId = userId,
                     nickname = nickname,
@@ -44,7 +45,7 @@ class LeaderboardHistoryBackfill(
                     solveTimeSeconds = elapsedSeconds,
                     hintsUsed = 0,
                     mistakes = mistakes,
-                    difficult = entry.difficult,
+                    timeCapSeconds = timeCapSeconds,
                     timestampMillis = entry.date,
                 )
             ).onSuccess { submittedCount += 1 }

@@ -1,0 +1,22 @@
+{
+  "parameters": {
+    "leaderboard_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Show leaderboard UI and submit scores to Firestore"
+    },
+    "leaderboard_rating_json": {
+      "defaultValue": {
+        "value": "{\"hintPenalty\":0,\"mistakePenalty\":10,\"minRating\":1}"
+      },
+      "description": "Cumulative score formula coefficients"
+    },
+    "purchases_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Enable in-app purchases"
+    }
+  }
+}

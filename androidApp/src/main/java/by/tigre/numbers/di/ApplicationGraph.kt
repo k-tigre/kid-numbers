@@ -44,7 +44,10 @@ class ApplicationGraph(
             val gameModule = GameModule.Impl(
                 analyticsModule = analyticsModule
             )
-            val leaderboardModule: LeaderboardModule = LeaderboardModule.Impl(storeModule = storeModule)
+            val leaderboardModule: LeaderboardModule = LeaderboardModule.Impl(
+                storeModule = storeModule,
+                gameDurationProvider = gameModule.getDurationProvider(),
+            )
             val reminderModule = ReminderModule.Impl(
                 context = context,
                 storeModule = storeModule,

@@ -1,6 +1,8 @@
 package by.tigre.numbers.data.storage
 
+import by.tigre.numbers.entity.GameSettings
 import java.util.UUID
+import kotlinx.serialization.json.Json
 
 interface LeaderboardPreferences {
     fun loadNickname(default: String): String
@@ -8,6 +10,10 @@ interface LeaderboardPreferences {
     fun getOrCreateUserId(): String
     fun isBackfillDone(): Boolean
     fun markBackfillDone()
+    fun loadLastBoardKey(): String?
+    fun saveLastBoardKey(boardKey: String)
+    fun loadLastBoardSettings(): GameSettings?
+    fun saveLastBoardSettings(settings: GameSettings)
 }
 
 class LeaderboardPreferencesImpl(
@@ -36,9 +42,32 @@ class LeaderboardPreferencesImpl(
         preferences.saveBoolean(KEY_BACKFILL_DONE, value = true)
     }
 
+    override fun loadLastBoardKey(): String? {
+        return preferences.loadString(KEY_LAST_BOARD_KEY, default = "").trim().ifBlank { null }
+    }
+
+    override fun saveLastBoardKey(boardKey: String) {
+        preferences.saveString(KEY_LAST_BOARD_KEY, boardKey)
+    }
+
+    override fun loadLastBoardSettings(): GameSettings? {
+        val raw: String = preferences.loadString(KEY_LAST_BOARD_SETTINGS, default = "").trim()
+        if (raw.isEmpty()) return null
+        return runCatching {
+            settingsJson.decodeFromString(GameSettings.serializer(), raw)
+        }.getOrNull()
+    }
+
+    override fun saveLastBoardSettings(settings: GameSettings) {
+        preferences.saveString(KEY_LAST_BOARD_SETTINGS, settingsJson.encodeToString(GameSettings.serializer(), settings))
+    }
+
     private companion object {
+        val settingsJson: Json = Json { ignoreUnknownKeys = true }
         const val KEY_NICKNAME: String = "leaderboard_nickname"
         const val KEY_USER_ID: String = "leaderboard_user_id"
         const val KEY_BACKFILL_DONE: String = "leaderboard_user_id_backfill_done"
+        const val KEY_LAST_BOARD_KEY: String = "leaderboard_last_board_key"
+        const val KEY_LAST_BOARD_SETTINGS: String = "leaderboard_last_board_settings"
     }
 }

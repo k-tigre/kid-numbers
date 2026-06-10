@@ -12,7 +12,9 @@ data class GameResult(
     @SerialName("game_type")
     val type: GameType,
     @SerialName("difficult")
-    val difficult: Difficult
+    val difficult: Difficult,
+    @SerialName("settings")
+    val settings: GameSettings? = null,
 ) {
     val correctCount by lazy { results.count { it.isCorrect } }
     val inCorrectCount by lazy { results.count { it.isCorrect.not() } }

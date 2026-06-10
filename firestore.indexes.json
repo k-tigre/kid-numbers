@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "leaderboard_speed",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "boardKey", "order": "ASCENDING" },
+        { "fieldPath": "bestTimeSeconds", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

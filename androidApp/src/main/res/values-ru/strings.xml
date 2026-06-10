@@ -148,4 +148,25 @@
     <string name="screen_leaderboard_submit_skip">Пропустить</string>
     <string name="screen_leaderboard_submit_error_empty_nickname">Введите ник</string>
     <string name="screen_leaderboard_submit_error_generic">Не удалось отправить. Попробуйте позже.</string>
+    <string name="screen_leaderboard_tab_speed">Скорость</string>
+    <string name="screen_leaderboard_tab_total">Общий счёт</string>
+    <string name="screen_leaderboard_speed_no_board">Сыграй идеальную тренировку, чтобы увидеть рекорды для этих настроек.</string>
+    <string name="screen_leaderboard_speed_item">%1$d. %2$s — %3$s</string>
+    <string name="screen_leaderboard_speed_item_mistakes">%d ош.</string>
+    <string name="screen_leaderboard_submit_speed_first">Первый рекорд на этой доске!</string>
+    <string name="screen_leaderboard_submit_speed_faster">Ты быстрее лучшего на %1$.1f с</string>
+    <string name="screen_leaderboard_submit_speed_behind">До рекорда осталось %1$.1f с</string>
+    <string name="screen_leaderboard_submit_speed_matched">Ты повторил рекорд!</string>
+    <string name="screen_leaderboard_board_mult">× таблица %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_div">÷ таблица %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_add">Сложение до %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_sub">Вычитание до %1$s (%2$s)</string>
+    <string name="screen_leaderboard_board_eq">Уравнения %1$s, %2$s, %3$s (%4$s)</string>
+    <string name="screen_leaderboard_board_range_positive">%d</string>
+    <string name="screen_leaderboard_board_range_signed">±%d</string>
+    <string name="screen_leaderboard_board_eq_type_add">сложение</string>
+    <string name="screen_leaderboard_board_eq_type_mult">умножение</string>
+    <string name="screen_leaderboard_board_eq_type_both">смешанные</string>
+    <string name="screen_leaderboard_board_eq_dim_single">одно неизвестное</string>
+    <string name="screen_leaderboard_board_eq_dim_double">два неизвестных</string>
 </resources>

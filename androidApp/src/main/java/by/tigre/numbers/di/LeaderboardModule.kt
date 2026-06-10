@@ -1,6 +1,7 @@
 package by.tigre.numbers.di
 
 import by.tigre.numbers.data.leaderboard.FirestoreLeaderboardRepository
+import by.tigre.numbers.domain.GameDurationProvider
 import by.tigre.numbers.data.leaderboard.LeaderboardHistoryBackfill
 import by.tigre.numbers.data.leaderboard.LeaderboardRepository
 import by.tigre.numbers.data.remoteconfig.FeatureFlags
@@ -19,9 +20,13 @@ interface LeaderboardModule {
 
     class Impl(
         storeModule: StoreModule,
+        gameDurationProvider: GameDurationProvider,
     ) : LeaderboardModule {
         private val remoteConfigProvider: RemoteConfigProvider = FirebaseRemoteConfigProvider()
-        override val featureFlags: FeatureFlags = FeatureFlagsImpl(remoteConfigProvider)
+        override val featureFlags: FeatureFlags = FeatureFlagsImpl(
+            provider = remoteConfigProvider,
+            gameDurationProvider = gameDurationProvider,
+        )
         override val leaderboardRepository: LeaderboardRepository = FirestoreLeaderboardRepository()
         override val leaderboardPreferences: LeaderboardPreferences = LeaderboardPreferencesImpl(storeModule.preferences)
         override val leaderboardHistoryBackfill: LeaderboardHistoryBackfill = LeaderboardHistoryBackfill(

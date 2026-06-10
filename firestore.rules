@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidUserId(userId) {
+      return userId is string
+        && userId.size() == 36
+        && userId.matches('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    }
+
+    function gamePoints(data) {
+      let hintPenalty = 0;
+      let mistakePenalty = 10;
+      let raw = data.timeCapSeconds - data.solveTimeSeconds - data.hintsUsed * hintPenalty - data.mistakes * mistakePenalty;
+      return raw >= 1 ? raw : 1;
+    }
+
+    function validSpeedFields(data) {
+      return data.keys().hasOnly([
+            'userId', 'nickname', 'boardKey', 'gameType', 'difficulty', 'taskCount',
+            'solveTimeSeconds', 'bestTimeSeconds', 'mistakes', 'timestamp'
+          ])
+          && isValidUserId(data.userId)
+          && data.nickname is string
+          && data.nickname.size() >= 1
+          && data.nickname.size() <= 24
+          && data.boardKey is string
+          && data.boardKey.size() >= 3
+          && data.boardKey.size() <= 120
+          && data.gameType in ['Additional', 'Subtraction', 'Multiplication', 'Division', 'Equations']
+          && data.difficulty in ['Easy', 'Medium', 'Hard']
+          && data.taskCount is int
+          && data.taskCount >= 1
+          && data.taskCount <= 1000
+          && data.solveTimeSeconds is int
+          && data.solveTimeSeconds >= 0
+          && data.solveTimeSeconds <= 86400
+          && data.bestTimeSeconds is int
+          && data.bestTimeSeconds >= 0
+          && data.bestTimeSeconds <= 86400
+          && data.bestTimeSeconds == data.solveTimeSeconds
+          && data.mistakes is int
+          && data.mistakes >= 0
+          && data.mistakes <= 100
+          && data.timestamp is int
+          && data.timestamp <= request.time.toMillis() + 60000;
+    }
+
+    function validTotalFields(data) {
+      return data.keys().hasOnly([
+            'userId', 'nickname', 'score', 'gamesCount', 'solveTimeSeconds', 'hintsUsed', 'mistakes', 'timeCapSeconds', 'timestamp'
+          ])
+          && isValidUserId(data.userId)
+          && data.nickname is string
+          && data.nickname.size() >= 1
+          && data.nickname.size() <= 24
+          && data.score is int
+          && data.score >= 1
+          && data.gamesCount is int
+          && data.gamesCount >= 1
+          && data.solveTimeSeconds is int
+          && data.solveTimeSeconds >= 0
+          && data.solveTimeSeconds <= 86400
+          && data.timeCapSeconds is int
+          && data.timeCapSeconds >= 1
+          && data.timeCapSeconds <= 86400
+          && data.hintsUsed is int
+          && data.hintsUsed >= 0
+          && data.hintsUsed <= 100
+          && data.mistakes is int
+          && data.mistakes >= 0
+          && data.mistakes <= 100
+          && data.timestamp is int
+          && data.timestamp <= request.time.toMillis() + 60000;
+    }
+
+    function expectedSpeedEntryId(data) {
+      return data.boardKey + '_' + data.userId;
+    }
+
+    match /leaderboard_speed/{entryId} {
+      allow read: if true;
+
+      allow create: if validSpeedFields(request.resource.data)
+          && entryId == expectedSpeedEntryId(request.resource.data);
+
+      allow update: if validSpeedFields(request.resource.data)
+          && entryId == expectedSpeedEntryId(request.resource.data)
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.boardKey == resource.data.boardKey
+          && (
+            request.resource.data.bestTimeSeconds < resource.data.bestTimeSeconds
+            || (
+              request.resource.data.bestTimeSeconds == resource.data.bestTimeSeconds
+              && request.resource.data.mistakes < resource.data.mistakes
+            )
+          );
+
+      allow delete: if false;
+    }
+
+    match /leaderboard_total/{entryId} {
+      allow read: if true;
+
+      allow create: if validTotalFields(request.resource.data)
+          && entryId == request.resource.data.userId
+          && request.resource.data.score == gamePoints(request.resource.data)
+          && request.resource.data.gamesCount == 1;
+
+      allow update: if validTotalFields(request.resource.data)
+          && entryId == request.resource.data.userId
+          && request.resource.data.userId == resource.data.userId
+          && request.resource.data.score == resource.data.score + gamePoints(request.resource.data)
+          && request.resource.data.gamesCount == resource.data.gamesCount + 1
+          && request.resource.data.timestamp >= resource.data.timestamp;
+
+      allow delete: if false;
+    }
+  }
+}

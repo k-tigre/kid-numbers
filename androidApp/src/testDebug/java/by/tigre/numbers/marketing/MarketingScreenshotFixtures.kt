@@ -4,12 +4,15 @@ import by.tigre.numbers.entity.Challenge
 import by.tigre.numbers.entity.ChallengeWithCount
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameType
+import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.LeaderboardEntry
+import by.tigre.numbers.entity.LeaderboardSpeedEntry
 import by.tigre.numbers.entity.StatisticData
 import by.tigre.numbers.presentation.challenge.list.ListComponent
 import by.tigre.numbers.presentation.challenge.list.ListComponent.ChallengeItem
 import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsComponent
 import by.tigre.numbers.presentation.leaderboard.LeaderboardComponent
+import by.tigre.numbers.presentation.leaderboard.LeaderboardTab
 import by.tigre.numbers.presentation.leaderboard.LeaderboardUiState
 import by.tigre.numbers.presentation.menu.MenuComponent
 import by.tigre.numbers.presentation.statistic.StatisticComponent
@@ -36,33 +39,56 @@ object MarketingScreenshotFixtures {
     }
     fun leaderboardComponent(locale: MarketingScreenshotLocale): LeaderboardComponent = object : LeaderboardComponent {
         private val now: Long = 1_700_000_000_000L
-        private val entries: List<LeaderboardEntry> = when (locale) {
+        private val speedSettings: GameSettings.Multiplication = GameSettings.Multiplication(
+            selectedNumbers = listOf(2, 5, 10),
+            difficult = Difficult.Easy,
+            isPositive = true,
+        )
+        private val speedEntries: List<LeaderboardSpeedEntry> = when (locale) {
             MarketingScreenshotLocale.Ru -> listOf(
-                LeaderboardEntry("Аня", 1240, 18, Difficult.Easy, now - 3_600_000),
-                LeaderboardEntry("Максим", 1180, 15, Difficult.Easy, now - 7_200_000),
-                LeaderboardEntry("София", 1050, 12, Difficult.Easy, now - 10_800_000),
-                LeaderboardEntry("Илья", 980, 11, Difficult.Easy, now - 14_400_000),
-                LeaderboardEntry("Player", 920, 9, Difficult.Easy, now - 18_000_000),
+                LeaderboardSpeedEntry("Аня", 42, 0, now - 3_600_000),
+                LeaderboardSpeedEntry("Максим", 48, 0, now - 7_200_000),
+                LeaderboardSpeedEntry("София", 51, 0, now - 10_800_000),
+                LeaderboardSpeedEntry("Илья", 55, 0, now - 14_400_000),
+                LeaderboardSpeedEntry("Player", 58, 0, now - 18_000_000),
             )
             MarketingScreenshotLocale.En -> listOf(
-                LeaderboardEntry("Anna", 1240, 18, Difficult.Easy, now - 3_600_000),
-                LeaderboardEntry("Max", 1180, 15, Difficult.Easy, now - 7_200_000),
-                LeaderboardEntry("Sophia", 1050, 12, Difficult.Easy, now - 10_800_000),
-                LeaderboardEntry("Leo", 980, 11, Difficult.Easy, now - 14_400_000),
-                LeaderboardEntry("Player", 920, 9, Difficult.Easy, now - 18_000_000),
+                LeaderboardSpeedEntry("Anna", 42, 0, now - 3_600_000),
+                LeaderboardSpeedEntry("Max", 48, 0, now - 7_200_000),
+                LeaderboardSpeedEntry("Sophia", 51, 0, now - 10_800_000),
+                LeaderboardSpeedEntry("Leo", 55, 0, now - 14_400_000),
+                LeaderboardSpeedEntry("Player", 58, 0, now - 18_000_000),
+            )
+        }
+        private val totalEntries: List<LeaderboardEntry> = when (locale) {
+            MarketingScreenshotLocale.Ru -> listOf(
+                LeaderboardEntry("Аня", 1240, 18, now - 3_600_000),
+                LeaderboardEntry("Максим", 1180, 15, now - 7_200_000),
+                LeaderboardEntry("София", 1050, 12, now - 10_800_000),
+                LeaderboardEntry("Илья", 980, 11, now - 14_400_000),
+                LeaderboardEntry("Player", 920, 9, now - 18_000_000),
+            )
+            MarketingScreenshotLocale.En -> listOf(
+                LeaderboardEntry("Anna", 1240, 18, now - 3_600_000),
+                LeaderboardEntry("Max", 1180, 15, now - 7_200_000),
+                LeaderboardEntry("Sophia", 1050, 12, now - 10_800_000),
+                LeaderboardEntry("Leo", 980, 11, now - 14_400_000),
+                LeaderboardEntry("Player", 920, 9, now - 18_000_000),
             )
         }
         override val uiState: StateFlow<LeaderboardUiState> = MutableStateFlow(
             LeaderboardUiState(
-                selectedDifficult = Difficult.Easy,
-                entries = entries,
+                selectedTab = LeaderboardTab.Speed,
+                speedBoardSettings = speedSettings,
+                speedEntries = speedEntries,
+                totalEntries = totalEntries,
                 isLoading = false,
                 errorMessage = null,
             )
         )
         override fun onBack() = Unit
         override fun onRefresh() = Unit
-        override fun onDifficultSelected(difficult: Difficult) = Unit
+        override fun onTabSelected(tab: LeaderboardTab) = Unit
     }
     fun statisticComponent(): StatisticComponent = object : StatisticComponent {
         override val screenState: StateFlow<StatisticComponent.ScreenState> = MutableStateFlow(

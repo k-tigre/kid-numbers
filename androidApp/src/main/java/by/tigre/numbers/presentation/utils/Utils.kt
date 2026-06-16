@@ -57,6 +57,14 @@ fun Equations.Type.toLabel(): String = stringResource(
 )
 
 @Composable
+fun Equations.Dimension.toLabel(): String = stringResource(
+    when (this) {
+        Equations.Dimension.Single -> R.string.screen_leaderboard_board_eq_dim_single
+        Equations.Dimension.Double -> R.string.screen_leaderboard_board_eq_dim_double
+    }
+)
+
+@Composable
 fun SelectableButton(
     isSelected: Boolean,
     onClick: () -> Unit,

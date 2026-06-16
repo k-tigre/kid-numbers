@@ -142,27 +142,54 @@ class GameView(
 
     @Composable
     private fun ColumnScope.DrawAnswer() {
-        val focusRequester = remember { FocusRequester() }
+        val question = component.question.collectAsState().value
+        val isDoubleEquation = question is GameOptions.Question.Equation.Double
+        val focusRequesterX = remember { FocusRequester() }
+        val focusRequesterY = remember { FocusRequester() }
         val keyboard = LocalSoftwareKeyboardController.current
 
-        val answer = component.answerX.collectAsState()
+        val answerX = component.answerX.collectAsState()
         TextField(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 32.dp, vertical = 8.dp)
-                .focusRequester(focusRequester),
-            value = answer.value,
+                .focusRequester(focusRequesterX),
+            value = answerX.value,
             onValueChange = component::onAnswerChanged,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
-                onDone = { component.onDoneClicked() },
+                onNext = { if (isDoubleEquation) focusRequesterY.requestFocus() else component.onDoneClicked() },
             ),
-            label = { Text(stringResource(R.string.screen_game_field_answer_hint)) }
+            label = {
+                Text(
+                    stringResource(
+                        if (isDoubleEquation) R.string.screen_game_field_answer_x_hint
+                        else R.string.screen_game_field_answer_hint
+                    )
+                )
+            }
         )
 
-        LaunchedEffect(focusRequester) {
+        if (isDoubleEquation) {
+            val answerY = component.answerY.collectAsState()
+            TextField(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 32.dp, vertical = 8.dp)
+                    .focusRequester(focusRequesterY),
+                value = answerY.value,
+                onValueChange = component::onAnswerYChanged,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { component.onDoneClicked() },
+                ),
+                label = { Text(stringResource(R.string.screen_game_field_answer_y_hint)) }
+            )
+        }
+
+        LaunchedEffect(focusRequesterX, isDoubleEquation) {
             awaitFrame()
-            focusRequester.requestFocus()
+            focusRequesterX.requestFocus()
             keyboard?.show()
         }
     }
@@ -236,6 +263,7 @@ private fun Preview() {
         override val timeState: StateFlow<TimeState> = MutableStateFlow(TimeState("19:19", true))
 
         override fun onAnswerChanged(answer: String) = Unit
+        override fun onAnswerYChanged(answer: String) = Unit
         override fun onEnterClicked() = Unit
         override fun onNextClicked() = Unit
         override fun onDoneClicked() = Unit

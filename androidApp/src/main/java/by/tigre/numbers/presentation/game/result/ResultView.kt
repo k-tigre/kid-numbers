@@ -176,7 +176,7 @@ class ResultView(
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
                 text = when (result.question) {
-                    is Equation.Double -> TODO("Add Double")
+                    is Equation.Double -> result.question.title
                     is Equation.Single -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
                     is Operation -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
                 },
@@ -186,7 +186,14 @@ class ResultView(
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.titleSmall,
-                text = stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: "-"),
+                text = when (result.question) {
+                    is Equation.Double -> stringResource(
+                        R.string.screen_game_result_item_user_answer_xy,
+                        result.answer?.toString() ?: "-",
+                        result.answerY?.toString() ?: "-",
+                    )
+                    else -> stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: "-")
+                },
                 color = colors.onColorContainer
             )
         }

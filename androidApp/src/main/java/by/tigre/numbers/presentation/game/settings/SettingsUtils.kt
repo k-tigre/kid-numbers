@@ -176,6 +176,39 @@ object SettingsUtils {
         }
     }
 
+    fun LazyGridScope.drawDimensionSectionItems(
+        section: DimensionSection,
+        selectedIndex: Int,
+        onDimensionSelected: (Equations.Dimension) -> Unit
+    ) {
+        item(key = "dimension", span = { GridItemSpan(6) }) {
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+            val scale = getTitleScale(selectedIndex, section.index)
+            Text(
+                modifier = Modifier
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        transformOrigin = TransformOrigin.Center
+                    }
+                    .padding(top = 16.dp),
+                text = stringResource(R.string.screen_game_settings_select_equations_dimension),
+                color = getTitleColor(selectedIndex, section.index)
+            )
+        }
+
+        section.values.forEach { dimension ->
+            item(key = dimension, span = { GridItemSpan(6) }) {
+                SelectableButton(
+                    isSelected = dimension == section.current,
+                    onClick = { onDimensionSelected(dimension) }
+                ) {
+                    Text(text = dimension.toLabel())
+                }
+            }
+        }
+    }
+
     @Composable
     private fun getTitleColor(selectedIndex: Int, target: Int): Color {
         val color by animateColorAsState(

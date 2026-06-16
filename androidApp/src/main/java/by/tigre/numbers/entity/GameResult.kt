@@ -21,5 +21,10 @@ data class GameResult(
     val totalCount by lazy { results.size }
 
     @Serializable
-    data class Result(val isCorrect: Boolean, val question: GameOptions.Question, val answer: Int?)
+    data class Result(
+        val isCorrect: Boolean,
+        val question: GameOptions.Question,
+        val answer: Int?,
+        val answerY: Int? = null,
+    )
 }

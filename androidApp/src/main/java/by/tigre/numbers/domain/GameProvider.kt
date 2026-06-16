@@ -224,12 +224,219 @@ interface GameProvider {
             ranges: GameSettings.Range,
             count: Int,
             type: Equations.Type
-        ): List<GameOptions.Question.Equation.Single> {
+        ): List<GameOptions.Question.Equation.Double> {
             // a1 + b1 * X + c1 * Y = d1
             // a2 + b2 * X + c2 * Y = d2
+            val min = ranges.min
+            val max = ranges.max
 
-            // TODO
-            return emptyList()
+            val questions = (1..count).map {
+                val system = generateDoubleEquationSystem(type, min, max, ranges.withNegative)
+                GameOptions.Question.Equation.Double(
+                    x = system.x,
+                    y = system.y,
+                    title = "${formatDoubleEquation(system.eq1.a, system.eq1.b, system.eq1.c, system.d1)}\n" +
+                            formatDoubleEquation(system.eq2.a, system.eq2.b, system.eq2.c, system.d2)
+                )
+            }
+
+            return questions.shuffled()
+        }
+
+        private data class LinearEquation(val a: Int, val b: Int, val c: Int)
+
+        private data class DoubleEquationSystem(
+            val x: Int,
+            val y: Int,
+            val eq1: LinearEquation,
+            val eq2: LinearEquation,
+            val d1: Int,
+            val d2: Int,
+        )
+
+        private fun generateDoubleEquationSystem(
+            type: Equations.Type,
+            min: Int,
+            max: Int,
+            withNegative: Boolean,
+        ): DoubleEquationSystem {
+            repeat(50) {
+                val x = pickSolutionValue(min, max)
+                val y = pickSolutionValue(min, max)
+                if (x == 0 && y == 0) return@repeat
+
+                val equations = pickEquationPair(type, min, max, withNegative, x, y) ?: return@repeat
+                return DoubleEquationSystem(
+                    x = x,
+                    y = y,
+                    eq1 = equations.first.equation,
+                    eq2 = equations.second.equation,
+                    d1 = equations.first.d,
+                    d2 = equations.second.d,
+                )
+            }
+
+            return fallbackDoubleEquationSystem(min, max, type)
+        }
+
+        private fun pickSolutionValue(min: Int, max: Int): Int {
+            val value = randomNonSame(min, max, 0, 1)
+            return if (value == 0 || value == 1) randomNonSame(min, max, 0, 2) else value
+        }
+
+        private data class GeneratedEquation(val equation: LinearEquation, val d: Int)
+
+        private fun pickEquationPair(
+            type: Equations.Type,
+            min: Int,
+            max: Int,
+            withNegative: Boolean,
+            x: Int,
+            y: Int,
+        ): Pair<GeneratedEquation, GeneratedEquation>? {
+            repeat(20) {
+                val eq1 = tryRandomLinearEquation(type, min, max, withNegative, x, y) ?: return@repeat
+                val eq2 = tryRandomLinearEquation(type, min, max, withNegative, x, y) ?: return@repeat
+                if (eq1.equation == eq2.equation) return@repeat
+                if (type == Equations.Type.Additional && !hasBothUnknowns(eq1.equation, eq2.equation)) return@repeat
+                val det = eq1.equation.b * eq2.equation.c - eq2.equation.b * eq1.equation.c
+                if (det != 0) return eq1 to eq2
+            }
+            return null
+        }
+
+        private fun hasBothUnknowns(vararg equations: LinearEquation): Boolean =
+            equations.all { it.b != 0 && it.c != 0 }
+
+        private fun tryRandomLinearEquation(
+            type: Equations.Type,
+            min: Int,
+            max: Int,
+            withNegative: Boolean,
+            x: Int,
+            y: Int,
+        ): GeneratedEquation? {
+            return when (type) {
+                Equations.Type.Additional -> {
+                    val b = listOf(-1, 1).random()
+                    val c = listOf(-1, 1).random()
+                    val d = randomNonSame(min, max, 0, if (withNegative) 2 else 5)
+                    val a = d - b * x - c * y
+                    val aMax = if (withNegative) max else max / 2
+                    if (!inRange(a, min, aMax) || (!withNegative && d < 0)) null
+                    else GeneratedEquation(LinearEquation(a, b, c), d)
+                }
+
+                Equations.Type.Multiplication -> {
+                    val limit = maxUniformCoefficient(max, x, y)
+                    if (limit < 1) return null
+                    repeat(12) {
+                        val b = randomNonZeroCoeff(limit, withNegative)
+                        val c = randomNonZeroCoeff(limit, withNegative)
+                        val d = b * x + c * y
+                        if (inRange(d, min, max)) return GeneratedEquation(LinearEquation(0, b, c), d)
+                    }
+                    null
+                }
+
+                Equations.Type.Both -> {
+                    val limit = maxUniformCoefficient(max, x, y).coerceAtMost(max / 2)
+                    if (limit < 1) return null
+                    repeat(12) {
+                        val b = randomNonZeroCoeff(limit, withNegative)
+                        val c = randomNonZeroCoeff(limit, withNegative)
+                        val d = randomNonSame(min, max, 0, if (withNegative) 2 else 5)
+                        val a = d - b * x - c * y
+                        if (inRange(a, min, max) && inRange(d, min, max)) {
+                            return GeneratedEquation(LinearEquation(a, b, c), d)
+                        }
+                    }
+                    null
+                }
+            }
+        }
+
+        private fun fallbackDoubleEquationSystem(
+            min: Int,
+            max: Int,
+            type: Equations.Type,
+        ): DoubleEquationSystem {
+            repeat(30) {
+                val x = pickSolutionValue(min, max)
+                val yUpper = (max - x).coerceAtMost(max)
+                if (yUpper < min) return@repeat
+                val y = randomNonSame(min, yUpper, 0, 2)
+                val d1 = x + y
+                val d2 = x - y
+                if (!inRange(d1, min, max) || !inRange(d2, min, max)) return@repeat
+                val eq1 = LinearEquation(a = 0, b = 1, c = 1)
+                val eq2 = LinearEquation(a = 0, b = 1, c = -1)
+                if (type == Equations.Type.Multiplication || type == Equations.Type.Both) {
+                    val limit = maxUniformCoefficient(max, x, y)
+                    if (limit < 1) return@repeat
+                }
+                return DoubleEquationSystem(x, y, eq1, eq2, d1, d2)
+            }
+
+            return DoubleEquationSystem(
+                x = 5,
+                y = 3,
+                eq1 = LinearEquation(0, 1, 1),
+                eq2 = LinearEquation(0, 1, -1),
+                d1 = 8,
+                d2 = 2,
+            )
+        }
+
+        private fun inRange(value: Int, min: Int, max: Int): Boolean = value in min..max
+
+        private fun maxUniformCoefficient(max: Int, x: Int, y: Int): Int {
+            val sum = abs(x) + abs(y)
+            if (sum == 0) return 0
+            return max / sum
+        }
+
+        private fun randomNonZeroCoeff(limit: Int, withNegative: Boolean): Int {
+            repeat(10) {
+                val absValue = randomNonSame(1, limit.coerceAtLeast(1), 0, 3)
+                if (absValue == 0) return@repeat
+                return if (withNegative && Random.nextBoolean()) -absValue else absValue
+            }
+            return 1
+        }
+
+        private fun formatDoubleEquation(a: Int, b: Int, c: Int, d: Int): String {
+            val parts = mutableListOf<String>()
+            if (a != 0) parts.add(a.toString())
+
+            if (b != 0) {
+                val bPart = if (parts.isEmpty()) {
+                    when (b) {
+                        1 -> "X"
+                        -1 -> "-X"
+                        else -> "$b * X"
+                    }
+                } else {
+                    "${if (b > 0) "+" else "-"} ${abs(b).let { coeff -> if (coeff == 1) "X" else "$coeff * X" }}"
+                }
+                parts.add(bPart)
+            }
+
+            if (c != 0) {
+                val cPart = if (parts.isEmpty()) {
+                    when (c) {
+                        1 -> "Y"
+                        -1 -> "-Y"
+                        else -> "$c * Y"
+                    }
+                } else {
+                    "${if (c > 0) "+" else "-"} ${abs(c).let { coeff -> if (coeff == 1) "Y" else "$coeff * Y" }}"
+                }
+                parts.add(cPart)
+            }
+
+            val left = parts.ifEmpty { listOf("0") }.joinToString(" ")
+            return "$left = $d"
         }
 
         private fun randomNonSame(min: Int, max: Int, target: Int, fraction: Int): Int {

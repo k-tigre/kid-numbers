@@ -24,19 +24,32 @@ interface GameDurationProvider {
                 is GameSettings.Multiplication -> settings.selectedNumbers.size * settings.difficult.time
                 is Equations -> {
                     val rangeSize = abs(settings.range.max - settings.range.min)
+                    val isSmallRange = rangeSize < 101
 
-                    val rangeMultiplication = when {
-                        rangeSize < 101 -> 1f
-                        rangeSize < 501 -> 1.5f
-                        rangeSize < 1001 -> 2f
-                        else -> 3f
+                    when (settings.dimension) {
+                        Equations.Dimension.Double -> {
+                            val rangeMultiplication = if (isSmallRange) 2f else 3f
+                            val typeMultiplication = when (settings.type) {
+                                Equations.Type.Both -> 2f
+                                Equations.Type.Additional, Equations.Type.Multiplication -> 1f
+                            }
+                            (settings.difficult.time * rangeMultiplication * typeMultiplication).toLong()
+                        }
+
+                        Equations.Dimension.Single -> {
+                            val rangeMultiplication = when {
+                                rangeSize < 101 -> 1.5f
+                                rangeSize < 501 -> 2f
+                                rangeSize < 1001 -> 2.5f
+                                else -> 3f
+                            }
+                            val typeMultiplication = when (settings.type) {
+                                Equations.Type.Additional, Equations.Type.Multiplication -> 1f
+                                Equations.Type.Both -> 1.5f
+                            }
+                            (settings.difficult.time * rangeMultiplication * typeMultiplication).toLong()
+                        }
                     }
-                    val typeMultiplication = when (settings.type) {
-                        Equations.Type.Additional -> 1f
-                        Equations.Type.Multiplication -> 1f
-                        Equations.Type.Both -> 1.5f
-                    }
-                    (settings.difficult.time * rangeMultiplication * typeMultiplication).toLong()
                 }
             }
         }

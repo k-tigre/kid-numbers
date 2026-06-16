@@ -33,6 +33,7 @@ import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
 import by.tigre.numbers.presentation.game.settings.EquationsSettingsComponent.Settings
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.drawDifficultSectionItems
+import by.tigre.numbers.presentation.game.settings.SettingsUtils.drawDimensionSectionItems
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.drawRangeSectionItems
 import by.tigre.numbers.presentation.game.settings.SettingsUtils.drawTypeSectionItems
 import by.tigre.tools.tools.platform.compose.AppTheme
@@ -107,26 +108,11 @@ class EquationsSettingsView(
                     onTypeSelected = component::onTypeSelected
                 )
 
-                // TODO add dimension
-//                item(key = "dimension", span = { GridItemSpan(6) }) {
-//                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-//                    Text(
-//                        modifier = Modifier
-//                            .padding(top = 16.dp),
-//                        text = "Количество неизвестных в уравнениях"
-//                    )
-//                }
-//
-//                settings.dimension.values.forEach { dimension ->
-//                    item(key = dimension, span = { GridItemSpan(3) }) {
-//                        SelectableButton(
-//                            isSelected = dimension == settings.dimension.current,
-//                            onClick = { component.onDimensionSelected(dimension) }
-//                        ) {
-//                            Text(text = "$dimension")
-//                        }
-//                    }
-//                }
+                drawDimensionSectionItems(
+                    section = settings.dimension,
+                    selectedIndex = selectedIndex,
+                    onDimensionSelected = component::onDimensionSelected
+                )
             }
 
             Button(

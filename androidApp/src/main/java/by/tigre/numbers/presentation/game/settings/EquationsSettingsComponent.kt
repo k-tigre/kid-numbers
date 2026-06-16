@@ -74,7 +74,7 @@ interface EquationsSettingsComponent {
                     )
 
                     val dimension = DimensionSection(
-                        current = Equations.Dimension.Single, // TODO null
+                        current = null,
                         values = DIMENSIONS,
                         index = type.index + 1 + type.values.size
                     )

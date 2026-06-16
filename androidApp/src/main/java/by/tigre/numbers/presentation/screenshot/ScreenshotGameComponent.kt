@@ -28,9 +28,13 @@ class ScreenshotGameComponent(
     override val timeState: StateFlow<GameComponent.TimeState> = MutableStateFlow(
         GameComponent.TimeState(value = if (mode == ScreenshotGameMode.Feedback) "02:45" else "01:30", isEnding = false)
     )
+    override val timeUpDialog: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isPracticeMode: StateFlow<Boolean> = MutableStateFlow(false)
     override fun onAnswerChanged(answer: String) = Unit
     override fun onAnswerYChanged(answer: String) = Unit
     override fun onEnterClicked() = Unit
     override fun onDoneClicked() = Unit
     override fun onNextClicked() = Unit
+    override fun onTimeUpFinish() = Unit
+    override fun onTimeUpContinue() = Unit
 }

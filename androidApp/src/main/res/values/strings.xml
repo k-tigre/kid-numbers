@@ -50,6 +50,13 @@
     <string name="screen_game_next_question">Next question</string>
     <string name="screen_game_result_wrong">Wrong, try again next time</string>
     <string name="screen_game_result_correct">Well done, that\'s right!</string>
+    <string name="screen_game_time_up_title">Time\'s up!</string>
+    <string name="screen_game_time_up_message">Scored time is over. You can see your results now or keep solving — extra answers won\'t count toward your score.</string>
+    <string name="screen_game_time_up_finish">See results</string>
+    <string name="screen_game_time_up_continue">Keep solving</string>
+    <string name="screen_game_practice_mode">Answers don\'t count</string>
+    <string name="screen_game_result_practice_correct">Right answer, but it doesn\'t count</string>
+    <string name="screen_game_result_practice_wrong">Wrong answer, but it doesn\'t count</string>
 
     <string name="screen_game_difficult_easy">Easy</string>
     <string name="screen_game_difficult_medium">Medium</string>

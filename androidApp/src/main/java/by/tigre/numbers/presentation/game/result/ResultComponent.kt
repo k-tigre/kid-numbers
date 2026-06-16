@@ -42,7 +42,7 @@ interface ResultComponent {
             if (
                 settings != null &&
                 featureFlags.isLeaderboardEnabled.value &&
-                result.correctCount == result.totalCount &&
+                result.isPerfectRun &&
                 result.totalCount > 0
             ) {
                 val elapsedSeconds: Long = result.time / 1000L

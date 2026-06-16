@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +60,7 @@ class GameView(
 
     @Composable
     override fun Draw(modifier: Modifier) {
+        DrawTimeUpDialog()
         Column(modifier) {
             Spacer(Modifier.weight(1f))
             DrawTime()
@@ -74,8 +77,30 @@ class GameView(
     }
 
     @Composable
+    private fun DrawTimeUpDialog() {
+        val showDialog = component.timeUpDialog.collectAsState().value
+        if (!showDialog) return
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text(stringResource(R.string.screen_game_time_up_title)) },
+            text = { Text(stringResource(R.string.screen_game_time_up_message)) },
+            confirmButton = {
+                TextButton(onClick = component::onTimeUpContinue) {
+                    Text(stringResource(R.string.screen_game_time_up_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = component::onTimeUpFinish) {
+                    Text(stringResource(R.string.screen_game_time_up_finish))
+                }
+            },
+        )
+    }
+
+    @Composable
     private fun ColumnScope.DrawTime() {
         val state = component.timeState.collectAsState().value
+        val isPracticeMode = component.isPracticeMode.collectAsState().value
 
         val color by animateColorAsState(
             if (state.isEnding) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
@@ -96,7 +121,11 @@ class GameView(
                     transformOrigin = TransformOrigin.Center
                 }
                 .padding(horizontal = 32.dp, vertical = 8.dp),
-            text = stringResource(R.string.screen_game_time_left, state.value),
+            text = if (isPracticeMode) {
+                stringResource(R.string.screen_game_practice_mode)
+            } else {
+                stringResource(R.string.screen_game_time_left, state.value)
+            },
             color = color,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.End
@@ -197,6 +226,7 @@ class GameView(
     @Composable
     private fun ColumnScope.DrawButtons() {
         val resultState = component.answerResult.collectAsState()
+        val isPracticeMode = component.isPracticeMode.collectAsState().value
         AnimatedContent(
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,15 +251,22 @@ class GameView(
                 }
             } else {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    val feedbackColor = when {
+                        isPracticeMode -> MaterialTheme.colorScheme.onSurfaceVariant
+                        result -> LocalGameColorsPalette.current.gameSuccess.color
+                        else -> LocalGameColorsPalette.current.gameFailed.color
+                    }
+                    val feedbackText = when {
+                        isPracticeMode && result -> R.string.screen_game_result_practice_correct
+                        isPracticeMode -> R.string.screen_game_result_practice_wrong
+                        result -> R.string.screen_game_result_correct
+                        else -> R.string.screen_game_result_wrong
+                    }
                     Text(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally),
-                        text = stringResource(if (result) R.string.screen_game_result_correct else R.string.screen_game_result_wrong),
-                        color = if (result) {
-                            LocalGameColorsPalette.current.gameSuccess.color
-                        } else {
-                            LocalGameColorsPalette.current.gameFailed.color
-                        },
+                        text = stringResource(feedbackText),
+                        color = feedbackColor,
                         style = MaterialTheme.typography.titleLarge,
                     )
 
@@ -261,12 +298,16 @@ private fun Preview() {
         override val answerY: StateFlow<String> = MutableStateFlow("12")
         override val answerResult: StateFlow<Boolean?> = MutableStateFlow(false)
         override val timeState: StateFlow<TimeState> = MutableStateFlow(TimeState("19:19", true))
+        override val timeUpDialog: StateFlow<Boolean> = MutableStateFlow(false)
+        override val isPracticeMode: StateFlow<Boolean> = MutableStateFlow(false)
 
         override fun onAnswerChanged(answer: String) = Unit
         override fun onAnswerYChanged(answer: String) = Unit
         override fun onEnterClicked() = Unit
         override fun onNextClicked() = Unit
         override fun onDoneClicked() = Unit
+        override fun onTimeUpFinish() = Unit
+        override fun onTimeUpContinue() = Unit
     }
 
     AppTheme {

@@ -32,12 +32,16 @@ interface GameComponent {
     val answerY: StateFlow<String>
     val answerResult: StateFlow<Boolean?>
     val timeState: StateFlow<TimeState>
+    val timeUpDialog: StateFlow<Boolean>
+    val isPracticeMode: StateFlow<Boolean>
 
     fun onAnswerChanged(answer: String)
     fun onAnswerYChanged(answer: String)
     fun onEnterClicked()
     fun onDoneClicked()
     fun onNextClicked()
+    fun onTimeUpFinish()
+    fun onTimeUpContinue()
 
     data class QuestionsState(val current: Int, val total: Int, val correctCount: Int)
     data class TimeState(val value: String, val isEnding: Boolean)
@@ -63,8 +67,11 @@ interface GameComponent {
             .stateIn(this, SharingStarted.WhileSubscribed(), 0)
 
         override val answerResult = MutableStateFlow<Boolean?>(null)
+        override val timeUpDialog = MutableStateFlow(false)
+        override val isPracticeMode = MutableStateFlow(false)
         override val answerX = MutableStateFlow("")
         override val answerY = MutableStateFlow("")
+        private var scoringEnabled = true
         override val questionsState = MutableStateFlow(QuestionsState(current = 1, total = allQuestions.size, correctCount = 0))
         override val question: StateFlow<GameOptions.Question> = questionsState
             .map { (current, _) -> allQuestions[current - 1] }
@@ -104,8 +111,7 @@ interface GameComponent {
                     }
                     .take(1)
                     .collect {
-                        completeQuestions()
-                        finishGame()
+                        timeUpDialog.value = true
                     }
             }
 
@@ -130,7 +136,7 @@ interface GameComponent {
                             questionsState.emit(
                                 state.copy(
                                     current = state.current + 1,
-                                    correctCount = state.correctCount + if (answerResult.value == true) 1 else 0
+                                    correctCount = state.correctCount + if (answerResult.value == true && scoringEnabled) 1 else 0
                                 )
                             )
                             answerX.emit("")
@@ -140,16 +146,32 @@ interface GameComponent {
             }
         }
 
-        private fun completeQuestions() {
-            val state = questionsState.value
+        override fun onTimeUpFinish() {
+            if (!timeUpDialog.value) return
+            timeUpDialog.value = false
+            completeUnansweredQuestions(countsForScore = false)
+            finishGame()
+        }
+
+        override fun onTimeUpContinue() {
+            if (!timeUpDialog.value) return
+            timeUpDialog.value = false
+            scoringEnabled = false
+            isPracticeMode.value = true
+        }
+
+        private fun completeUnansweredQuestions(countsForScore: Boolean) {
+            val answeredCount = resultQuestions.size
             allQuestions.forEachIndexed { index, question ->
-                if (index >= state.current - 1) {
-                    val result = GameResult.Result(
-                        isCorrect = false,
-                        question = question,
-                        answer = null
+                if (index >= answeredCount) {
+                    resultQuestions.add(
+                        GameResult.Result(
+                            isCorrect = false,
+                            question = question,
+                            answer = null,
+                            countsForScore = countsForScore,
+                        )
                     )
-                    resultQuestions.add(result)
                 }
             }
         }
@@ -206,6 +228,7 @@ interface GameComponent {
                 question = question,
                 answer = answerX,
                 answerY = if (question is GameOptions.Question.Equation.Double) answerY else null,
+                countsForScore = scoringEnabled,
             )
             resultQuestions.add(result)
             answerResult.tryEmit(isCorrect)

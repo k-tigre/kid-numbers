@@ -42,6 +42,7 @@ import by.tigre.numbers.entity.LeaderboardSpeedComparison
 import by.tigre.numbers.presentation.leaderboard.toLeaderboardBoardLabel
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
+import by.tigre.tools.tools.platform.compose.ColorFamily
 import by.tigre.tools.tools.platform.compose.ComposableView
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -162,10 +163,15 @@ class ResultView(
 
     @Composable
     private fun DrawItem(result: GameResult.Result) {
-        val colors = if (result.isCorrect) {
-            LocalGameColorsPalette.current.gameSuccess
-        } else {
-            LocalGameColorsPalette.current.gameFailed
+        val colors = when {
+            !result.countsForScore -> ColorFamily(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                onColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                colorContainer = MaterialTheme.colorScheme.surfaceVariant,
+                onColorContainer = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            result.isCorrect -> LocalGameColorsPalette.current.gameSuccess
+            else -> LocalGameColorsPalette.current.gameFailed
         }
         Card(
             modifier = Modifier,

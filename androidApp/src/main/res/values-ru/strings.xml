@@ -50,6 +50,13 @@
     <string name="screen_game_next_question">Следующий вопрос</string>
     <string name="screen_game_result_wrong">Неправильно, попробуй еще в следующий раз</string>
     <string name="screen_game_result_correct">Молодец, правильно!</string>
+    <string name="screen_game_time_up_title">Время вышло!</string>
+    <string name="screen_game_time_up_message">Время на зачётные ответы закончилось. Можно посмотреть результат или продолжить решать — лишние ответы в счёт не пойдут.</string>
+    <string name="screen_game_time_up_finish">К результатам</string>
+    <string name="screen_game_time_up_continue">Продолжить решать</string>
+    <string name="screen_game_practice_mode">Ответы не идут в зачёт</string>
+    <string name="screen_game_result_practice_correct">Правильно, но не в зачёт</string>
+    <string name="screen_game_result_practice_wrong">Неправильно, но не в зачёт</string>
 
     <string name="screen_game_difficult_easy">Просто</string>
     <string name="screen_game_difficult_medium">Средне</string>

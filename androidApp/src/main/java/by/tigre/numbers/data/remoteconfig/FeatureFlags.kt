@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 interface FeatureFlags {
     val isLeaderboardEnabled: StateFlow<Boolean>
     val isPurchasesEnabled: StateFlow<Boolean>
+    val isEquationsDimensionEnabled: StateFlow<Boolean>
     fun calculateLeaderboardRating(settings: GameSettings, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int
     fun calculateLeaderboardRating(difficult: Difficult, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int
     fun timeCapSeconds(settings: GameSettings): Int
@@ -25,6 +26,8 @@ class FeatureFlagsImpl(
     override val isLeaderboardEnabled: StateFlow<Boolean> = _isLeaderboardEnabled.asStateFlow()
     private val _isPurchasesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(readPurchasesEnabled())
     override val isPurchasesEnabled: StateFlow<Boolean> = _isPurchasesEnabled.asStateFlow()
+    private val _isEquationsDimensionEnabled: MutableStateFlow<Boolean> = MutableStateFlow(readEquationsDimensionEnabled())
+    override val isEquationsDimensionEnabled: StateFlow<Boolean> = _isEquationsDimensionEnabled.asStateFlow()
 
     override fun calculateLeaderboardRating(settings: GameSettings, elapsedSeconds: Long, hintsUsed: Int, mistakes: Int): Int {
         val json: String = provider.getString(RemoteConfigKeys.LEADERBOARD_RATING_JSON, default = "")
@@ -54,6 +57,7 @@ class FeatureFlagsImpl(
     private fun syncFromProvider() {
         _isLeaderboardEnabled.value = readLeaderboardEnabled()
         _isPurchasesEnabled.value = readPurchasesEnabled()
+        _isEquationsDimensionEnabled.value = readEquationsDimensionEnabled()
     }
 
     private fun readLeaderboardEnabled(): Boolean {
@@ -62,5 +66,9 @@ class FeatureFlagsImpl(
 
     private fun readPurchasesEnabled(): Boolean {
         return provider.getBoolean(RemoteConfigKeys.PURCHASES_ENABLED, default = false)
+    }
+
+    private fun readEquationsDimensionEnabled(): Boolean {
+        return provider.getBoolean(RemoteConfigKeys.EQUATIONS_DIMENSION_ENABLED, default = false)
     }
 }

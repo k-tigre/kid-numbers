@@ -3,6 +3,7 @@ package by.tigre.numbers.presentation.game.settings
 import androidx.compose.runtime.Immutable
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
+import by.tigre.numbers.data.remoteconfig.FeatureFlags
 import by.tigre.numbers.entity.Difficult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
@@ -26,6 +27,7 @@ import kotlinx.coroutines.withContext
 interface EquationsSettingsComponent {
     val onScrollPosition: Flow<Int>
     val settings: StateFlow<Settings>
+    val isDimensionSelectionEnabled: StateFlow<Boolean>
 
     fun onDifficultSelected(value: Difficult)
     fun onTypeSelected(value: Equations.Type)
@@ -40,6 +42,24 @@ interface EquationsSettingsComponent {
         val type: TypeSection,
         val dimension: DimensionSection,
     ) {
+        fun withDimensionSelectionEnabled(enabled: Boolean): Settings {
+            val dimensions: List<Equations.Dimension> = if (enabled) {
+                DIMENSIONS
+            } else {
+                listOf(Equations.Dimension.Single)
+            }
+            return copy(
+                dimension = dimension.copy(
+                    current = when {
+                        !enabled -> Equations.Dimension.Single
+                        dimension.current in dimensions -> dimension.current
+                        else -> null
+                    },
+                    values = dimensions,
+                ),
+            )
+        }
+
         companion object {
             private val DIFFICULT = Difficult.entries
             private val RANGES = listOf(
@@ -54,7 +74,9 @@ interface EquationsSettingsComponent {
             private val DIMENSIONS = Equations.Dimension.entries
 
             val DEFAULTS: Settings
-                get() {
+                get() = defaults(dimensionSelectionEnabled = true)
+
+            fun defaults(dimensionSelectionEnabled: Boolean): Settings {
                     val difficult = DifficultSection(
                         current = Difficult.Medium,
                         values = DIFFICULT,
@@ -83,8 +105,8 @@ interface EquationsSettingsComponent {
                         difficult = difficult,
                         range = range,
                         type = type,
-                        dimension = dimension
-                    )
+                        dimension = dimension,
+                    ).withDimensionSelectionEnabled(dimensionSelectionEnabled)
                 }
         }
     }
@@ -93,12 +115,24 @@ interface EquationsSettingsComponent {
     class Impl(
         context: BaseComponentContext,
         analytics: EventAnalytics,
+        featureFlags: FeatureFlags,
         private val dispatchers: CoreDispatchers,
         private val onStartGame: (GameSettings) -> Unit,
         private val onClose: () -> Unit
     ) : EquationsSettingsComponent, BaseComponentContext by context {
         private val onScrollPositionInternal = MutableSharedFlow<Int>()
-        override val settings = MutableStateFlow(Settings.DEFAULTS)
+        override val isDimensionSelectionEnabled: StateFlow<Boolean> = featureFlags.isEquationsDimensionEnabled
+        override val settings = MutableStateFlow(
+            Settings.defaults(dimensionSelectionEnabled = featureFlags.isEquationsDimensionEnabled.value),
+        )
+
+        init {
+            launch {
+                featureFlags.isEquationsDimensionEnabled.collect { enabled ->
+                    settings.emit(settings.value.withDimensionSelectionEnabled(enabled))
+                }
+            }
+        }
 
         override val onScrollPosition = onScrollPositionInternal
             .onEach { analytics.trackEvent(Event.Action.UI.SettingScroll(GameType.Equations)) }
@@ -135,21 +169,24 @@ interface EquationsSettingsComponent {
         override fun onConfirmClicked() {
             launch {
                 val settings = settings.value
+                val dimensionSelectionEnabled = isDimensionSelectionEnabled.value
 
                 when {
                     settings.difficult.current == null -> onScrollPositionInternal.emit(settings.difficult.index)
                     settings.range.current == null -> onScrollPositionInternal.emit(settings.range.index)
                     settings.type.current == null -> onScrollPositionInternal.emit(settings.type.index)
-                    settings.dimension.current == null -> onScrollPositionInternal.emit(settings.dimension.index)
+                    dimensionSelectionEnabled && settings.dimension.current == null ->
+                        onScrollPositionInternal.emit(settings.dimension.index)
                     else -> {
+                        val dimension = settings.dimension.current ?: Equations.Dimension.Single
                         withContext(dispatchers.main) {
                             onStartGame(
                                 Equations(
-                                    range = settings.range.current,
-                                    difficult = settings.difficult.current,
-                                    type = settings.type.current,
-                                    dimension = settings.dimension.current
-                                )
+                                    range = settings.range.current!!,
+                                    difficult = settings.difficult.current!!,
+                                    type = settings.type.current!!,
+                                    dimension = dimension,
+                                ),
                             )
                         }
                     }

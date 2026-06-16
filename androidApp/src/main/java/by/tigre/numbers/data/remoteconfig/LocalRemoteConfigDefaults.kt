@@ -5,5 +5,6 @@ object LocalRemoteConfigDefaults {
         RemoteConfigKeys.LEADERBOARD_RATING_JSON to LeaderboardRatingConfig.DEFAULT_JSON,
         RemoteConfigKeys.LEADERBOARD_ENABLED to false,
         RemoteConfigKeys.PURCHASES_ENABLED to false,
+        RemoteConfigKeys.EQUATIONS_DIMENSION_ENABLED to false,
     )
 }

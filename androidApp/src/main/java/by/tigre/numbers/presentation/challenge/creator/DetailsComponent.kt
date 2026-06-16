@@ -93,7 +93,8 @@ interface DetailsComponent {
             analytics = analytics,
             onClose = onClose,
             onConfirmSettings = ::onConfirmSettings,
-            dispatchers = dependencies.dispatchers
+            dispatchers = dependencies.dispatchers,
+            featureFlags = dependencies.featureFlags,
         )
 
         private fun onConfirmSettings(settings: GameSettings) {

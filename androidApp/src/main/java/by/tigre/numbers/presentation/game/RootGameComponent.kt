@@ -52,7 +52,8 @@ interface RootGameComponent {
             analytics = analytics,
             onClose = onClose,
             onConfirmSettings = ::startGame,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            featureFlags = dependencies.featureFlags,
         )
 
         private val initialSettings = when (gameType) {

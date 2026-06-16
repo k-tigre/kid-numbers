@@ -1,6 +1,7 @@
 package by.tigre.numbers.presentation.game.settings
 
 import by.tigre.numbers.analytics.EventAnalytics
+import by.tigre.numbers.data.remoteconfig.FeatureFlags
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.tools.coroutines.CoreDispatchers
@@ -13,6 +14,7 @@ interface GameSettingsComponentProvider {
     class Impl(
         private val dispatchers: CoreDispatchers,
         private val analytics: EventAnalytics,
+        private val featureFlags: FeatureFlags,
         private val onClose: () -> Unit,
         private val onConfirmSettings: (GameSettings) -> Unit
     ) : GameSettingsComponentProvider {
@@ -41,6 +43,7 @@ interface GameSettingsComponentProvider {
                 onStartGame = onConfirmSettings,
                 onClose = onClose,
                 analytics = analytics,
+                featureFlags = featureFlags,
                 dispatchers = dispatchers
             )
     }

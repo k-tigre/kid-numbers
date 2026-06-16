@@ -59,6 +59,7 @@ class EquationsSettingsView(
         Column(Modifier.padding(innerPadding)) {
             val gridState: LazyGridState = rememberLazyGridState()
             val settings = component.settings.collectAsState().value
+            val dimensionSelectionEnabled = component.isDimensionSelectionEnabled.collectAsState().value
             var selectedIndex by remember {
                 mutableIntStateOf(-1)
             }
@@ -108,11 +109,13 @@ class EquationsSettingsView(
                     onTypeSelected = component::onTypeSelected
                 )
 
-                drawDimensionSectionItems(
-                    section = settings.dimension,
-                    selectedIndex = selectedIndex,
-                    onDimensionSelected = component::onDimensionSelected
-                )
+                if (dimensionSelectionEnabled) {
+                    drawDimensionSectionItems(
+                        section = settings.dimension,
+                        selectedIndex = selectedIndex,
+                        onDimensionSelected = component::onDimensionSelected
+                    )
+                }
             }
 
             Button(
@@ -134,6 +137,7 @@ private fun Preview() {
     val component = object : EquationsSettingsComponent {
         override val onScrollPosition: Flow<Int> = emptyFlow()
         override val settings: StateFlow<Settings> = MutableStateFlow(Settings.DEFAULTS)
+        override val isDimensionSelectionEnabled: StateFlow<Boolean> = MutableStateFlow(true)
 
         override fun onDifficultSelected(value: Difficult) = Unit
         override fun onTypeSelected(value: Equations.Type) = Unit

@@ -5,6 +5,16 @@ import textwrap
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+MARKETING_SCREEN_CROP: tuple[int, int, int, int] = (106, 296, 974, 1844)
+
+UAC_LAYOUT = {
+    "text_left": 60,
+    "text_max_width": 580,
+    "phone_outer": (700, 80, 1120, 548),
+    "phone_screen": (720, 100, 1100, 528),
+}
+
+
 PHONE = {
     "x": 90,
     "y": 280,
@@ -250,32 +260,83 @@ def draw_centered_text(
     draw.text((center_x - text_width // 2, y), text, font=font, fill=fill)
 
 
+def text_width(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont | ImageFont.ImageFont) -> int:
+    bbox: tuple[int, int, int, int] = draw.textbbox((0, 0), text, font=font)
+    return bbox[2] - bbox[0]
+
+
+def fit_font(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    max_width: int,
+    start_size: int,
+    min_size: int,
+    bold: bool = False,
+) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    for size in range(start_size, min_size - 1, -2):
+        font: ImageFont.FreeTypeFont | ImageFont.ImageFont = load_font(size, bold)
+        if text_width(draw, text, font) <= max_width:
+            return font
+    return load_font(min_size, bold)
+
+
+def crop_marketing_screenshot(image_path: Path) -> Image.Image:
+    image: Image.Image = Image.open(image_path).convert("RGBA")
+    left, top, right, bottom = MARKETING_SCREEN_CROP
+    return image.crop((left, top, right, bottom))
+
+
+def resolve_uac_screenshot(
+    screenshots_dir: Path,
+    output_dir: Path,
+    locale: str,
+    screenshot_file: str,
+) -> Image.Image | None:
+    raw_path: Path = screenshots_dir / locale / screenshot_file
+    if raw_path.exists():
+        return Image.open(raw_path).convert("RGBA")
+    marketing_path: Path = output_dir / "screenshots" / locale / screenshot_file
+    if marketing_path.exists():
+        return crop_marketing_screenshot(marketing_path)
+    return None
+
+
+def paste_screenshot_image(
+    canvas: Image.Image,
+    screenshot: Image.Image,
+    screen_box: tuple[int, int, int, int],
+    radius: int,
+) -> None:
+    screen_w: int = screen_box[2] - screen_box[0]
+    screen_h: int = screen_box[3] - screen_box[1]
+    screenshot_ratio: float = screenshot.width / screenshot.height
+    target_ratio: float = screen_w / screen_h
+    cropped: Image.Image = screenshot
+    if screenshot_ratio > target_ratio:
+        new_height: int = screenshot.height
+        new_width: int = int(new_height * target_ratio)
+        left: int = (screenshot.width - new_width) // 2
+        cropped = screenshot.crop((left, 0, left + new_width, new_height))
+    else:
+        new_width = screenshot.width
+        new_height = int(new_width / target_ratio)
+        top: int = (screenshot.height - new_height) // 2
+        cropped = screenshot.crop((0, top, new_width, top + new_height))
+    resized: Image.Image = cropped.resize((screen_w, screen_h), Image.Resampling.LANCZOS)
+    mask: Image.Image = Image.new("L", (screen_w, screen_h), 0)
+    mask_draw: ImageDraw.ImageDraw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle((0, 0, screen_w, screen_h), radius=radius, fill=255)
+    canvas.paste(resized, (screen_box[0], screen_box[1]), mask)
+
+
 def paste_screenshot(
     canvas: Image.Image,
     screenshot_path: Path,
     screen_box: tuple[int, int, int, int],
     radius: int,
 ) -> None:
-    screen_w: int = screen_box[2] - screen_box[0]
-    screen_h: int = screen_box[3] - screen_box[1]
     screenshot: Image.Image = Image.open(screenshot_path).convert("RGBA")
-    screenshot_ratio: float = screenshot.width / screenshot.height
-    target_ratio: float = screen_w / screen_h
-    if screenshot_ratio > target_ratio:
-        new_height: int = screenshot.height
-        new_width: int = int(new_height * target_ratio)
-        left: int = (screenshot.width - new_width) // 2
-        screenshot = screenshot.crop((left, 0, left + new_width, new_height))
-    else:
-        new_width = screenshot.width
-        new_height = int(new_width / target_ratio)
-        top: int = (screenshot.height - new_height) // 2
-        screenshot = screenshot.crop((0, top, new_width, top + new_height))
-    screenshot = screenshot.resize((screen_w, screen_h), Image.Resampling.LANCZOS)
-    mask: Image.Image = Image.new("L", (screen_w, screen_h), 0)
-    mask_draw: ImageDraw.ImageDraw = ImageDraw.Draw(mask)
-    mask_draw.rounded_rectangle((0, 0, screen_w, screen_h), radius=radius, fill=255)
-    canvas.paste(screenshot, (screen_box[0], screen_box[1]), mask)
+    paste_screenshot_image(canvas, screenshot, screen_box, radius)
 
 
 def draw_placeholder(
@@ -410,6 +471,14 @@ def render_feature_graphic_png(
     canvas.save(output_path, "PNG")
 
 
+def uac_game_screenshot_path(screenshots_dir: Path, locale: str) -> Path | None:
+    for name in ("02-game-timer.png", "03-feedback.png", "01-main-menu.png"):
+        candidate: Path = screenshots_dir / locale / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def render_uac_banner_png(
     headline: str,
     subtitle: str,
@@ -417,7 +486,12 @@ def render_uac_banner_png(
     brand: dict,
     icon_path: Path,
     output_path: Path,
+    screenshots_dir: Path | None = None,
+    output_dir: Path | None = None,
+    locale: str = "ru",
+    screenshot_file: str = "02-game-timer.png",
 ) -> None:
+    layout: dict = UAC_LAYOUT
     background: tuple[int, int, int] = hex_to_rgb(brand["background"])
     text_color: tuple[int, int, int] = hex_to_rgb(brand["text"])
     accent: tuple[int, int, int] = hex_to_rgb(brand["accent"])
@@ -429,16 +503,39 @@ def render_uac_banner_png(
     if icon_path.exists():
         icon: Image.Image = Image.open(icon_path).convert("RGBA")
         icon = icon.resize((100, 100), Image.Resampling.LANCZOS)
-        canvas.paste(icon, (60, 60), icon)
-    headline_size: int = 96 if len(headline) <= 12 else 64
-    draw.text((60, 170), headline, font=load_font(headline_size, True), fill=text_color)
-    draw.text((60, 280), subtitle, font=load_font(36), fill=text_color)
-    draw.rounded_rectangle((60, 380, 340, 452), radius=36, fill=accent)
-    draw_centered_text(draw, cta, 200, 396, load_font(32, True), accent_dark)
-    rounded_rectangle(draw, (700, 80, 1120, 548), radius=32, fill=frame_color)
-    rounded_rectangle(draw, (720, 100, 1100, 528), radius=24, fill=(255, 255, 255), outline=hex_to_rgb("#C4C7C7"), width=2)
-    draw_centered_text(draw, "скриншот игры", 910, 290, load_font(28), hex_to_rgb("#747878"))
-    draw_centered_text(draw, "(вставить в Figma)", 910, 330, load_font(22), hex_to_rgb("#747878"))
+        canvas.paste(icon, (layout["text_left"], 60), icon)
+    headline_start: int = 96 if len(headline) <= 12 else 64
+    headline_font: ImageFont.FreeTypeFont | ImageFont.ImageFont = fit_font(
+        draw, headline, layout["text_max_width"], headline_start, 40, bold=True
+    )
+    draw.text((layout["text_left"], 170), headline, font=headline_font, fill=text_color)
+    subtitle_font: ImageFont.FreeTypeFont | ImageFont.ImageFont = fit_font(
+        draw, subtitle, layout["text_max_width"], 36, 24
+    )
+    draw.text((layout["text_left"], 270), subtitle, font=subtitle_font, fill=text_color)
+    cta_font: ImageFont.FreeTypeFont | ImageFont.ImageFont = load_font(32, True)
+    cta_width: int = text_width(draw, cta, cta_font) + 64
+    cta_width = max(cta_width, 200)
+    cta_left: int = layout["text_left"]
+    cta_right: int = cta_left + cta_width
+    draw.rounded_rectangle((cta_left, 380, cta_right, 452), radius=36, fill=accent)
+    draw_centered_text(draw, cta, cta_left + cta_width // 2, 396, cta_font, accent_dark)
+    phone_outer: tuple[int, int, int, int] = layout["phone_outer"]
+    rounded_rectangle(draw, phone_outer, radius=32, fill=frame_color)
+    screen_box: tuple[int, int, int, int] = layout["phone_screen"]
+    screenshot_image: Image.Image | None = None
+    if screenshots_dir and output_dir:
+        screenshot_image = resolve_uac_screenshot(screenshots_dir, output_dir, locale, screenshot_file)
+    elif screenshots_dir:
+        raw_path: Path | None = uac_game_screenshot_path(screenshots_dir, locale)
+        if raw_path:
+            screenshot_image = Image.open(raw_path).convert("RGBA")
+    if screenshot_image:
+        paste_screenshot_image(canvas, screenshot_image, screen_box, radius=24)
+    else:
+        rounded_rectangle(draw, screen_box, radius=24, fill=(255, 255, 255), outline=hex_to_rgb("#C4C7C7"), width=2)
+        draw_centered_text(draw, "скриншот игры", 910, 290, load_font(28), hex_to_rgb("#747878"))
+        draw_centered_text(draw, "(вставить в Figma)", 910, 330, load_font(22), hex_to_rgb("#747878"))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(output_path, "PNG")
 
@@ -488,6 +585,7 @@ def render_all_from_config(
         ]:
             headline_key: str = "headline" if "headline" in banner else f"headline{locale.capitalize()}"
             output_path = output_dir / "uac-banners" / f"uac-{index:02d}-{locale}.png"
+            screenshot_file: str = banner.get("screenshot", "02-game-timer.png")
             render_uac_banner_png(
                 headline=banner[headline_key],
                 subtitle=banner[subtitle_key],
@@ -495,6 +593,10 @@ def render_all_from_config(
                 brand=brand,
                 icon_path=icon_path,
                 output_path=output_path,
+                screenshots_dir=screenshots_dir,
+                output_dir=output_dir,
+                locale=locale,
+                screenshot_file=screenshot_file,
             )
             rendered.append(output_path)
     return rendered

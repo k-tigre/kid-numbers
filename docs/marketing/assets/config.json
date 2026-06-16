@@ -74,9 +74,53 @@
     "badgeRu": "Бесплатно · Без рекламы",
     "badgeEn": "Free · No ads"
   },
+  "uacVideo": {
+    "locale": "ru",
+    "fps": 30,
+    "fadeSec": 0.2,
+    "kenBurnsZoom": 1.05,
+    "scenes": [
+      {
+        "screenshot": "01-main-menu.png",
+        "durationSec": 3.2,
+        "subtitleRu": "Numbers — тренажёр арифметики"
+      },
+      {
+        "screenshot": "04-challenges.png",
+        "durationSec": 5.2,
+        "subtitleRu": "Испытания с дедлайном"
+      },
+      {
+        "screenshot": "03-feedback.png",
+        "durationSec": 4.2,
+        "subtitleRu": "Мгновенная обратная связь"
+      },
+      {
+        "screenshot": "08-banner.png",
+        "durationSec": 3,
+        "subtitleRu": "Бесплатно · Без рекламы · Скачай",
+        "showIcon": true
+      }
+    ],
+    "variants": {
+      "landscape": {
+        "output": "uac-video-15s-ru.mp4",
+        "width": 1920,
+        "height": 1080,
+        "orientation": "landscape"
+      },
+      "portrait": {
+        "output": "uac-video-15s-ru-portrait.mp4",
+        "width": 1080,
+        "height": 1920,
+        "orientation": "portrait"
+      }
+    }
+  },
   "uacBanners": [
     {
       "id": "01-math-question",
+      "screenshot": "02-game-timer.png",
       "headline": "7 × 8 = ?",
       "subtitleRu": "Без рекламы. Испытания и рейтинг.",
       "subtitleEn": "No ads. Challenges and leaderboard.",
@@ -85,6 +129,7 @@
     },
     {
       "id": "02-trainer",
+      "screenshot": "03-feedback.png",
       "headlineRu": "Тренажёр арифметики",
       "headlineEn": "Math Trainer for Kids",
       "subtitleRu": "5 типов задач · Испытания · Рейтинг",

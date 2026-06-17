@@ -1,57 +1,55 @@
 package by.tigre.numbers.domain
 
+import by.tigre.numbers.data.remoteconfig.GameDurationConfig
+import by.tigre.numbers.data.remoteconfig.RemoteConfigKeys
+import by.tigre.numbers.data.remoteconfig.RemoteConfigProvider
+import by.tigre.numbers.data.remoteconfig.parseGameDurationConfig
+import by.tigre.numbers.data.remoteconfig.rangeSize
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.GameSettings.Equations
-import kotlin.math.abs
 
 interface GameDurationProvider {
     fun provide(settings: GameSettings): Long
 
-    class Impl : GameDurationProvider {
+    class Impl(
+        private val provider: RemoteConfigProvider,
+    ) : GameDurationProvider {
+
         override fun provide(settings: GameSettings): Long {
+            val config: GameDurationConfig = readConfig()
+            val baseTime: Long = config.baseTimeFor(settings.difficult)
 
             return when (settings) {
                 is GameSettings.Additional -> {
-                    val rangeSize = abs(settings.range.max - settings.range.min)
-                    val rangeMultiplication = when {
-                        rangeSize < 11 -> 0.5f
-                        rangeSize < 101 -> 1f
-                        rangeSize < 1001 -> 2f
-                        else -> 3f
-                    }
-                    (settings.difficult.time * rangeMultiplication).toLong()
+                    val size: Int = rangeSize(settings.range.max, settings.range.min)
+                    (baseTime * config.additionRangeMultiplier(size)).toLong()
                 }
-                is GameSettings.Multiplication -> settings.selectedNumbers.size * settings.difficult.time
+
+                is GameSettings.Multiplication -> settings.selectedNumbers.size * baseTime
+
                 is Equations -> {
-                    val rangeSize = abs(settings.range.max - settings.range.min)
-                    val isSmallRange = rangeSize < 101
+                    val size: Int = rangeSize(settings.range.max, settings.range.min)
 
                     when (settings.dimension) {
                         Equations.Dimension.Double -> {
-                            val rangeMultiplication = if (isSmallRange) 2f else 3f
-                            val typeMultiplication = when (settings.type) {
-                                Equations.Type.Both -> 2f
-                                Equations.Type.Additional, Equations.Type.Multiplication -> 1f
-                            }
-                            (settings.difficult.time * rangeMultiplication * typeMultiplication).toLong()
+                            val rangeMultiplication: Float = config.equationDoubleRangeMultiplier(size)
+                            val typeMultiplication: Float = config.equationDoubleTypeMultiplier(settings.type)
+                            (baseTime * rangeMultiplication * typeMultiplication).toLong()
                         }
 
                         Equations.Dimension.Single -> {
-                            val rangeMultiplication = when {
-                                rangeSize < 101 -> 1.5f
-                                rangeSize < 501 -> 2f
-                                rangeSize < 1001 -> 2.5f
-                                else -> 3f
-                            }
-                            val typeMultiplication = when (settings.type) {
-                                Equations.Type.Additional, Equations.Type.Multiplication -> 1f
-                                Equations.Type.Both -> 1.5f
-                            }
-                            (settings.difficult.time * rangeMultiplication * typeMultiplication).toLong()
+                            val rangeMultiplication: Float = config.equationSingleRangeMultiplier(size)
+                            val typeMultiplication: Float = config.equationSingleTypeMultiplier(settings.type)
+                            (baseTime * rangeMultiplication * typeMultiplication).toLong()
                         }
                     }
                 }
             }
+        }
+
+        private fun readConfig(): GameDurationConfig {
+            val json: String = provider.getString(RemoteConfigKeys.GAME_DURATION_JSON, default = "")
+            return parseGameDurationConfig(json)
         }
     }
 }

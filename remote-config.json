@@ -23,6 +23,12 @@
         "value": "true"
       },
       "description": "Show equation dimension selection (one vs two unknowns)"
+    },
+    "game_duration_json": {
+      "defaultValue": {
+        "value": "{\"baseTimeMs\":120000,\"additionRangeMultipliers\":{\"upTo10\":0.5,\"upTo100\":1,\"upTo1000\":2,\"above1000\":3},\"equationSingleRangeMultipliers\":{\"upTo100\":1.5,\"upTo500\":2,\"upTo1000\":2.5,\"above1000\":3},\"equationSingleTypeMultipliers\":{\"additional\":1,\"multiplication\":1,\"both\":1.5},\"equationDoubleRangeMultipliers\":{\"upTo100\":2,\"above100\":3},\"equationDoubleTypeMultipliers\":{\"additional\":1,\"multiplication\":1,\"both\":2}}"
+      },
+      "description": "Base task time (ms) and per-game multipliers: multiplication uses digit count * base; addition uses base * range bucket; equations use base * range * type"
     }
   }
 }

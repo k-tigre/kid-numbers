@@ -20,7 +20,7 @@ Type settings → RootGameComponent → GameComponent → ResultComponent
 ```
 
 - Question generation: `domain/GameProvider.kt`
-- Time limits: `domain/GameDurationProvider.kt`
+- Time limits: `domain/GameDurationProvider.kt` (base time and multipliers from Remote Config `game_duration_json`)
 - Settings per type: `entity/GameSettings.kt` (sealed classes)
 - Results: `entity/GameResult.kt`
 

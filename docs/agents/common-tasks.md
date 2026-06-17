@@ -5,7 +5,7 @@
 | Game UI | `presentation/game/GameView.kt`, `GameComponent.kt` |
 | Per-type game settings | `presentation/game/settings/` |
 | Question generation | `domain/GameProvider.kt`, `entity/GameSettings.kt` |
-| Game time limits | `domain/GameDurationProvider.kt`, `entity/Difficult.kt` |
+| Game time limits | `domain/GameDurationProvider.kt`, `data/remoteconfig/GameDurationConfig.kt`, `entity/Difficult.kt` |
 | Post-game result screen | `presentation/game/result/` |
 | Main menu | `presentation/menu/` |
 | Challenge list / creator | `presentation/challenge/` |

@@ -6,5 +6,6 @@ object LocalRemoteConfigDefaults {
         RemoteConfigKeys.LEADERBOARD_ENABLED to false,
         RemoteConfigKeys.PURCHASES_ENABLED to false,
         RemoteConfigKeys.EQUATIONS_DIMENSION_ENABLED to false,
+        RemoteConfigKeys.GAME_DURATION_JSON to GameDurationConfig.DEFAULT_JSON,
     )
 }

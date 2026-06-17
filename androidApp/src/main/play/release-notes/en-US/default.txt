@@ -1,3 +1,3 @@
-• Leaderboard nickname is asked once; perfect runs submit automatically afterwards
-• Change your nickname anytime in Settings
-• Main menu layout improved on small screens
+• Equation systems with two unknowns
+• When time runs out, see your results or keep solving without affecting your score
+• Choose the number of unknowns in equation settings

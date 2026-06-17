@@ -9,6 +9,17 @@
 
 ### EN
 
+## [1.5.0] - 2026-06-17
+### RU
+- Системы уравнений с двумя неизвестными
+- Когда время вышло — можно посмотреть результат или продолжить решать без зачёта
+- В настройках уравнений можно выбрать количество неизвестных
+
+### EN
+- Equation systems with two unknowns
+- When time runs out, see your results or keep solving without affecting your score
+- Choose the number of unknowns in equation settings
+
 ## [1.4.2] - 2026-06-10
 ### RU
 - Никнейм для доски почёта спрашивается один раз; идеальные тренировки отправляются автоматически

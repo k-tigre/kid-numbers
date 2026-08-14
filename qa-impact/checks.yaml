@@ -1,0 +1,297 @@
+# Numbers (kid-numbers) QA impact matrix (medium depth).
+# Schema: process/qa-impact (knowledge). Agent runs suggest.py — do not invent lists.
+version: 1
+checks:
+  # --- Menu / shell ---
+  M-MENU:
+    title: Главное меню
+    steps: |
+      Menu: видны Challenges + 5 типов задач + Statistic/History.
+      Тап по типу ведёт в settings; Challenges — в список; крупные кнопки, без краша.
+    must_if:
+      - paths: ["**/presentation/menu/**", "**/MenuView*", "**/MenuComponent*"]
+    should_if:
+      - paths: ["**/RootComponent*", "**/RootView*"]
+        diff_any: ["Menu", "GameType", "onMenu"]
+
+  M-LEADERBOARD-ENTRY:
+    title: Пункты Leaderboard / Settings в меню
+    steps: |
+      При leaderboard_enabled: в меню есть Leaderboard и Settings; при off — скрыты.
+    must_if:
+      - paths: ["**/MenuView*", "**/MenuComponent*"]
+        diff_any: ["leaderboard", "Leaderboard", "Settings", "isLeaderboardEnabled"]
+      - paths: ["**/FeatureFlags*", "**/LocalRemoteConfigDefaults*"]
+        diff_any: ["leaderboard_enabled", "isLeaderboardEnabled"]
+    should_if:
+      - paths: ["**/presentation/settings/**", "**/presentation/leaderboard/**"]
+
+  SH-NAV:
+    title: Навигация Root
+    steps: |
+      Menu → экран → Back возвращает в Menu; стек не ломается; dialogs не блокируют навсегда.
+    must_if:
+      - paths: ["**/presentation/root/**", "**/RootComponent*", "**/RootView*"]
+        diff_any: ["ChildStack", "navigation", "Config", "push", "pop", "bringToFront"]
+    should_if:
+      - paths: ["**/di/**", "**/ApplicationGraph*"]
+
+  SH-REMINDER:
+    title: Reminder dialogs (challenges)
+    steps: |
+      Reminder / ReminderHasChallenge: Start / Show challenges / Later отрабатывают без краша;
+      переход в challenge или список корректен.
+    must_if:
+      - paths: ["**/domain/reminder/**", "**/ReminderController*", "**/ReminderChallengeGenerator*"]
+      - paths: ["**/RootComponent*", "**/RootView*"]
+        diff_any: ["Reminder", "reminder", "onReminder", "DialogChild"]
+    should_if:
+      - paths: ["**/presentation/challenge/**"]
+
+  SH-THEME:
+    title: Тема / палитра
+    steps: |
+      UI открывается с ожидаемой темой; игровые цвета читаемы; без краша на light.
+    must_if:
+      - paths: ["**/tools/platform/compose/Theme*", "**/AppTheme*", "**/LocalGameColorsPalette*"]
+    should_if:
+      - paths: ["**/tools/presentation/compose/**"]
+
+  # --- Game settings ---
+  GS-ADDITIONAL:
+    title: Настройки +/−
+    steps: |
+      Additional и Subtraction: выбрать диапазон и Difficult → Start → игра стартует с верным типом.
+    must_if:
+      - paths: ["**/AdditionalSettings*", "**/presentation/game/settings/Additional*"]
+    should_if:
+      - paths: ["**/GameSettingsComponentProvider*", "**/SettingsUtils*"]
+      - paths: ["**/entity/**"]
+        diff_any: ["Additional", "isPositive", "GameSettings"]
+
+  GS-MULTIPLICATION:
+    title: Настройки ×/÷
+    steps: |
+      Multiplication / Division: выбрать множители и Difficult → Start → вопросы соответствуют таблице.
+    must_if:
+      - paths: ["**/MultiplicationSettings*", "**/presentation/game/settings/Multiplication*"]
+    should_if:
+      - paths: ["**/GameSettingsComponentProvider*", "**/SettingsUtils*"]
+      - paths: ["**/entity/**"]
+        diff_any: ["Multiplication", "isPositive", "GameSettings"]
+
+  GS-EQUATIONS:
+    title: Настройки Equations
+    steps: |
+      Equations: Single (и Double если RC on); тип операций + Difficult → Start.
+      При equations_dimension_enabled=off Double недоступен/скрыт.
+    must_if:
+      - paths: ["**/EquationsSettings*", "**/presentation/game/settings/Equations*"]
+      - paths: ["**/FeatureFlags*", "**/LocalRemoteConfigDefaults*"]
+        diff_any: ["equations_dimension", "equationsDimension"]
+    should_if:
+      - paths: ["**/GameSettingsComponentProvider*"]
+      - paths: ["**/entity/**"]
+        diff_any: ["Equations", "GameSettings"]
+
+  # --- Game play ---
+  G-PLAY:
+    title: Игровой цикл Q&A
+    steps: |
+      Ответить верно и неверно: мгновенный feedback; авто-next ~3 с; прогресс N/M и таймер обновляются.
+    must_if:
+      - paths: ["**/presentation/game/GameView*", "**/presentation/game/GameComponent*"]
+    should_if:
+      - paths: ["**/RootGameComponent*", "**/RootGameView*"]
+      - paths: ["**/domain/GameProvider*"]
+
+  G-INPUT:
+    title: Ввод ответа
+    steps: |
+      Ввод: цифры и ведущий «-»; длина ≤6; Submit/IME отправляет ответ; лишние символы не принимаются.
+    must_if:
+      - paths: ["**/GameView*", "**/GameComponent*"]
+        diff_any: ["answer", "Answer", "TextField", "KeyboardType", "onAnswer", "input"]
+    should_if:
+      - paths: ["**/presentation/utils/Utils*"]
+        diff_any: ["answer", "input", "digit"]
+
+  G-TIMEUP:
+    title: "Time-up: finish / practice"
+    steps: |
+      Дождаться time-up: Finish завершает с результатом; Continue → practice mode (ответы не в score), UI practice виден.
+    must_if:
+      - paths: ["**/GameView*", "**/GameComponent*"]
+        diff_any: ["timeUp", "TimeUp", "practice", "Practice", "onTimeUp"]
+    should_if:
+      - paths: ["**/GameDurationProvider*", "**/GameDurationConfig*"]
+
+  G-EQUATIONS-DOUBLE:
+    title: Double equations (x / y)
+    steps: |
+      При Double: два поля ввода; оба ответа учитываются; Single по-прежнему одно поле.
+    must_if:
+      - paths: ["**/GameView*", "**/GameComponent*", "**/GameProvider*"]
+        diff_any: ["Double", "unknown", "x", "y", "Equations", "second"]
+      - paths: ["**/EquationsSettings*"]
+        diff_any: ["Double", "dimension", "Equations"]
+    should_if:
+      - paths: ["**/entity/**"]
+        diff_any: ["Equations", "Double", "Question"]
+
+  G-DURATION:
+    title: Лимит времени (RC × Difficult)
+    steps: |
+      Старт Easy/Medium/Hard: таймер отражает GameDurationProvider (не «сырой» enum);
+      ending-стиль после ~80% лимита если трогали UI таймера.
+    must_if:
+      - paths: ["**/GameDurationProvider*", "**/GameDurationConfig*"]
+      - paths: ["**/FeatureFlags*", "**/LocalRemoteConfigDefaults*", "**/RemoteConfigKeys*"]
+        diff_any: ["game_duration", "GameDuration", "duration"]
+    should_if:
+      - paths: ["**/GameComponent*"]
+        diff_any: ["TimeState", "duration", "timer", "ending"]
+
+  G-PROVIDER:
+    title: Генерация вопросов
+    steps: |
+      Для затронутого типа: вопросы валидны (операция, диапазон/множители/уравнение); нет краша на Start.
+    must_if:
+      - paths: ["**/domain/GameProvider*"]
+    should_if:
+      - paths: ["**/entity/GameSettings*", "**/entity/GameOptions*", "**/entity/GameType*"]
+
+  # --- Result ---
+  R-RESULT:
+    title: Экран результата
+    steps: |
+      После игры: итог (correct/total, время); назад/ещё раз ведут куда ожидается; результат попадает в History.
+    must_if:
+      - paths: ["**/presentation/game/result/**", "**/ResultView*", "**/ResultComponent*"]
+    should_if:
+      - paths: ["**/data/history/**", "**/ResultStore*"]
+      - paths: ["**/RootGameComponent*"]
+
+  R-LEADERBOARD-SUBMIT:
+    title: Submit в leaderboard с Result
+    steps: |
+      Perfect run + leaderboard on: диалог submit; отправка/отмена; без perfect — submit не предлагается ошибочно.
+    must_if:
+      - paths: ["**/LeaderboardSubmitDialog*", "**/ResultComponent*", "**/ResultView*"]
+        diff_any: ["leaderboard", "Leaderboard", "isPerfect", "submit", "Submit"]
+    should_if:
+      - paths: ["**/data/leaderboard/**", "**/FeatureFlags*"]
+
+  # --- Challenges ---
+  CH-LIST:
+    title: Список challenges
+    steps: |
+      Список: New/Active/Completed; badge active на меню если есть Active; открытие деталей/старта.
+    must_if:
+      - paths: ["**/presentation/challenge/list/**", "**/challenge/list/List*"]
+      - paths: ["**/RootChallengeComponent*", "**/RootChallengeView*"]
+        diff_any: ["List", "challenge", "Challenge"]
+    should_if:
+      - paths: ["**/data/challenges/**", "**/ChallengesStore*"]
+      - paths: ["**/MenuView*", "**/MenuComponent*"]
+        diff_any: ["challenge", "Challenge", "badge", "active"]
+
+  CH-CREATE:
+    title: Создание challenge
+    steps: |
+      Создать набор (длительность TenMinutes…OneWeek, задачи): сохраняется; виден в списке как New/Active.
+    must_if:
+      - paths: ["**/presentation/challenge/creator/**", "**/DetailsComponent*", "**/ChallengeTask*"]
+    should_if:
+      - paths: ["**/data/challenges/**", "**/entity/Challenge*"]
+
+  CH-PLAY:
+    title: Игра challenge
+    steps: |
+      Старт challenge: прохождение задач набора; переход к Challenge Result; статус обновляется.
+    must_if:
+      - paths: ["**/RootChallengeGame*", "**/presentation/game/RootChallengeGame*"]
+    should_if:
+      - paths: ["**/presentation/challenge/**"]
+      - paths: ["**/GameComponent*", "**/GameView*"]
+        diff_any: ["challenge", "Challenge", "RootChallenge"]
+
+  CH-RESULT:
+    title: Результат challenge
+    steps: |
+      Challenge Result: успех/провал и детали; возврат в список; запись в History (challenges).
+    must_if:
+      - paths: ["**/presentation/challenge/result/**", "**/ChallengeResult*"]
+    should_if:
+      - paths: ["**/data/history/**", "**/data/challenges/**"]
+
+  # --- History / Statistic ---
+  H-HISTORY:
+    title: History + фильтры
+    steps: |
+      History: задачи и challenges; фильтры тип/сложность/успех меняют список; пустой список ок.
+    must_if:
+      - paths: ["**/presentation/history/**", "**/HistoryView*", "**/HistoryComponent*"]
+    should_if:
+      - paths: ["**/data/history/**", "**/ResultStore*"]
+
+  H-STATISTIC:
+    title: Statistic 7/30 дней
+    steps: |
+      Statistic: % верных, breakdown по типу, avg correct/total за 7 и 30 дней без краша.
+    must_if:
+      - paths: ["**/presentation/statistic/**", "**/StatisticView*", "**/StatisticComponent*"]
+    should_if:
+      - paths: ["**/data/history/**", "**/ResultStore*"]
+
+  # --- Leaderboard / settings ---
+  LB-BOARDS:
+    title: Leaderboard Speed / Total
+    steps: |
+      Leaderboard: вкладки/секции Speed и Total; загрузка без краша; ключ доски соответствует настройкам игры.
+    must_if:
+      - paths: ["**/presentation/leaderboard/**", "**/LeaderboardView*", "**/LeaderboardComponent*"]
+    should_if:
+      - paths: ["**/data/leaderboard/**", "**/LeaderboardBoardKey*", "**/FirestoreLeaderboard*"]
+
+  LB-SCORE:
+    title: Score / board key
+    steps: |
+      После perfect run: score/board key считаются ожидаемо (см. docs/leaderboard-score.md);
+      сравнение speed не ломает Result.
+    must_if:
+      - paths: ["**/LeaderboardBoardKey*", "**/LeaderboardRatingConfig*", "**/LeaderboardSpeedComparison*"]
+      - paths: ["**/data/leaderboard/**"]
+        diff_any: ["score", "rating", "BoardKey", "submit", "backfill"]
+    should_if:
+      - paths: ["**/ResultComponent*", "**/LeaderboardSubmitDialog*"]
+
+  S-SETTINGS:
+    title: Settings (nickname)
+    steps: |
+      Settings: задать/сменить nickname; сохранить; значение видно при повторном входе (для leaderboard).
+    must_if:
+      - paths: ["**/presentation/settings/**", "**/SettingsView*", "**/SettingsComponent*"]
+    should_if:
+      - paths: ["**/LeaderboardPreferences*", "**/data/storage/**"]
+
+  # --- Remote config / analytics (narrow) ---
+  RC-FLAGS:
+    title: Feature flags defaults
+    steps: |
+      Локальные defaults: leaderboard/equations_dimension/purchases off как задумано;
+      затронутый флаг включает/скрывает UI без краша.
+    must_if:
+      - paths: ["**/FeatureFlags*", "**/LocalRemoteConfigDefaults*", "**/RemoteConfigKeys*"]
+    should_if:
+      - paths: ["**/FirebaseRemoteConfig*", "**/RemoteConfigProvider*"]
+
+  A-EVENTS:
+    title: Analytics events (smoke)
+    steps: |
+      Пройти затронутый сценарий в debug: приложение не падает на trackEvent (отправка может быть off).
+    must_if:
+      - paths: ["**/analytics/Event*"]
+        diff_any: ["data object", "data class", "Button", "Logic", "Screen"]
+    should_if:
+      - paths: ["**/analytics/**"]

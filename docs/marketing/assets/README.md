@@ -1,4 +1,4 @@
-# Google Play — креативы Numbers
+# Google Play — креативы Numbers / Числа
 
 Шаблоны для листинга Google Play и UAC-рекламы. Исходники в SVG — можно править в Figma, Inkscape или Illustrator.
 

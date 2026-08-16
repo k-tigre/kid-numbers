@@ -49,6 +49,22 @@ def enabled_screenshots(config: dict) -> list[dict]:
     return [item for item in config["screenshots"] if not item.get("disabled")]
 
 
+def brand_name(brand: dict, locale: str) -> str:
+    key: str = f"name{locale.capitalize()}"
+    return brand.get(key, brand.get("nameEn", "Numbers"))
+
+
+def feature_title(feature_graphic: dict, locale: str) -> str:
+    key: str = f"title{locale.capitalize()}"
+    return feature_graphic.get(key, feature_graphic.get("titleEn", feature_graphic.get("title", "Numbers")))
+
+
+def banner_tagline(locale: str) -> str:
+    if locale == "ru":
+        return "Бесплатно · Без рекламы · RU/EN"
+    return "Free · No ads · RU/EN"
+
+
 def remove_disabled_screenshot_assets(config: dict) -> None:
     for item in config["screenshots"]:
         if not item.get("disabled"):
@@ -99,7 +115,7 @@ def placeholder_svg(x: int, y: int, width: int, height: int, label: str) -> str:
     """
 
 
-def phone_frame_svg(brand: dict, screenshot_file: str, is_banner: bool) -> str:
+def phone_frame_svg(brand: dict, screenshot_file: str, is_banner: bool, app_name: str, banner_tagline: str) -> str:
     px: int = PHONE["x"]
     py: int = PHONE["y"]
     pw: int = PHONE["width"]
@@ -126,10 +142,10 @@ def phone_frame_svg(brand: dict, screenshot_file: str, is_banner: bool) -> str:
               rx="{screen_radius}" fill="{brand['accent']}"/>
         <text x="{screen_x + screen_w // 2}" y="{screen_y + screen_h // 2 - 40}"
               text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-              font-size="72" font-weight="bold" fill="{brand['accentDark']}">Numbers</text>
+              font-size="72" font-weight="bold" fill="{brand['accentDark']}">{escape(app_name)}</text>
         <text x="{screen_x + screen_w // 2}" y="{screen_y + screen_h // 2 + 50}"
               text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-              font-size="40" fill="{brand['text']}">Free · No ads · RU/EN</text>
+              font-size="40" fill="{brand['text']}">{escape(banner_tagline)}</text>
         """
     else:
         screen_content = placeholder_svg(screen_x, screen_y, screen_w, screen_h, screenshot_file)
@@ -183,6 +199,8 @@ def build_screenshot_svg(
     screenshot_file: str,
     brand: dict,
     is_banner: bool,
+    app_name: str,
+    banner_tagline: str,
 ) -> str:
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
@@ -191,7 +209,7 @@ def build_screenshot_svg(
   <!-- layer: caption -->
   {caption_block(caption, brand)}
   <!-- layer: phone -->
-  {phone_frame_svg(brand, screenshot_file, is_banner)}
+  {phone_frame_svg(brand, screenshot_file, is_banner, app_name, banner_tagline)}
 </svg>
 """
 
@@ -292,6 +310,8 @@ def generate_svg_sources(config: dict) -> list[Path]:
     generated: list[Path] = []
     for locale, caption_key in [("ru", "captionRu"), ("en", "captionEn")]:
         locale_dir: Path = SOURCES / "screenshots" / locale
+        app_name: str = brand_name(brand, locale)
+        tagline: str = banner_tagline(locale)
         for item in enabled_screenshots(config):
             screenshot_file: str = f"{locale}/{item['file']}"
             svg_content: str = build_screenshot_svg(
@@ -299,6 +319,8 @@ def generate_svg_sources(config: dict) -> list[Path]:
                 screenshot_file=screenshot_file,
                 brand=brand,
                 is_banner=item.get("isBanner", False),
+                app_name=app_name,
+                banner_tagline=tagline,
             )
             path: Path = locale_dir / f"{item['id']}.svg"
             save_svg(svg_content, path)
@@ -310,7 +332,13 @@ def generate_svg_sources(config: dict) -> list[Path]:
     ]:
         path = SOURCES / "feature-graphic" / f"feature-graphic-{locale}.svg"
         save_svg(
-            build_feature_graphic_svg(fg["title"], fg[subtitle_key], fg[badge_key], brand, icon_path),
+            build_feature_graphic_svg(
+                feature_title(fg, locale),
+                fg[subtitle_key],
+                fg[badge_key],
+                brand,
+                icon_path,
+            ),
             path,
         )
         generated.append(path)

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Numbers</string>
+
     <string name="main_manu_learn">Practice %s</string>
     <string name="main_menu_history">History</string>
     <string name="main_menu_challenges">Challenges</string>

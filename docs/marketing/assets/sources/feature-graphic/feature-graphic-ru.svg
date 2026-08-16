@@ -19,7 +19,7 @@
   <image href="file:///H:/work/my/kids/numbers/docs/marketing/assets/sources/icon.png" x="72" y="100" width="200" height="200"
          clip-path="url(#iconClip)" filter="url(#iconShadow)"/>
   <text x="296" y="206" font-family="Segoe UI, Arial, sans-serif"
-        font-size="96" font-weight="bold" fill="#494949">Numbers</text>
+        font-size="96" font-weight="bold" fill="#494949">Числа</text>
   <text x="296" y="276" font-family="Segoe UI, Arial, sans-serif"
         font-size="44" fill="#494949">Тренажёр арифметики</text>
 </svg>

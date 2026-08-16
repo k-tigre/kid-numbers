@@ -1,7 +1,8 @@
 object Application {
     const val id: String = "by.tigre.numbers"
     val version: Version = Version(1, 5, 0)
-    const val name: String = "Numbers" // TODO move to xml
+    /** Default/EN brand; localized launcher names live in res values strings. */
+    const val name: String = "Numbers"
 
     const val SDK_COMPILE = 36
     const val SDK_MINIMUM = 26

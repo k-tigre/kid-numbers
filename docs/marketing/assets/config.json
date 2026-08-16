@@ -1,5 +1,7 @@
 {
   "brand": {
+    "nameEn": "Numbers",
+    "nameRu": "Числа",
     "background": "#FCF8F8",
     "text": "#494949",
     "accent": "#F6BE14",
@@ -68,7 +70,8 @@
     }
   ],
   "featureGraphic": {
-    "title": "Numbers",
+    "titleEn": "Numbers",
+    "titleRu": "Числа",
     "subtitleRu": "Тренажёр арифметики",
     "subtitleEn": "Math Trainer",
     "badgeRu": "Бесплатно · Без рекламы",
@@ -83,7 +86,7 @@
       {
         "screenshot": "01-main-menu.png",
         "durationSec": 3.2,
-        "subtitleRu": "Numbers — тренажёр арифметики"
+        "subtitleRu": "Числа — тренажёр арифметики"
       },
       {
         "screenshot": "04-challenges.png",
@@ -131,7 +134,7 @@
       "id": "02-trainer",
       "screenshot": "03-feedback.png",
       "headlineRu": "Тренажёр арифметики",
-      "headlineEn": "Math Trainer for Kids",
+      "headlineEn": "Math Trainer",
       "subtitleRu": "5 типов задач · Испытания · Рейтинг",
       "subtitleEn": "5 task types · Challenges · Leaderboard",
       "ctaRu": "Скачать бесплатно",

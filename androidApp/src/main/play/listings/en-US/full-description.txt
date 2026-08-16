@@ -1,13 +1,25 @@
-Numbers is a free math trainer for kids aged 6–12. No ads. No subscriptions.
+Numbers is a free math trainer for arithmetic practice: addition, subtraction, multiplication, division, and equations. No ads. No subscriptions.
 
-What's inside:
+Build mental math skills and multiplication facts at your own pace — with a timer, instant answer feedback, and clear progress. Great for elementary learners and anyone who wants quick, focused arithmetic drills.
+
+What's inside
 • 5 task types: addition, subtraction, multiplication, division, equations
-• 3 difficulty levels
+• 3 difficulty levels — from simple counting to tougher problems
 • Timed practice with instant feedback
-• Challenges — task sets with deadlines from 10 minutes to 1 week
-• Statistics and result history
+• Challenges with deadlines from 10 minutes to 1 week
+• Statistics and result history over 7 and 30 days
 • Online leaderboard — compete for perfect runs
 
-For parents who want ad-free math practice with visible progress. For teachers — homework drills.
+For parents
+Ad-free math practice with visible progress — no banners, no paywall.
 
-Download, complete one training session, and check your stats.
+For teachers
+Short homework drills: mental math, multiplication tables, and basic equations.
+
+Why Numbers
+• Completely free
+• No ads
+• English and Russian
+• Open source (GPL)
+
+Download Numbers, complete one math training session, and check your stats.

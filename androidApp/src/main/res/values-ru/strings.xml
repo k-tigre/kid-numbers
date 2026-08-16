@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Числа</string>
+
     <string name="main_manu_learn">Практиковать %s</string>
     <string name="main_menu_history">История</string>
     <string name="main_menu_challenges">Испытания</string>

@@ -15,6 +15,22 @@ UAC_LAYOUT = {
 }
 
 
+def brand_name(brand: dict, locale: str) -> str:
+    key: str = f"name{locale.capitalize()}"
+    return brand.get(key, brand.get("nameEn", "Numbers"))
+
+
+def feature_title(feature_graphic: dict, locale: str) -> str:
+    key: str = f"title{locale.capitalize()}"
+    return feature_graphic.get(key, feature_graphic.get("titleEn", feature_graphic.get("title", "Numbers")))
+
+
+def banner_tagline(locale: str) -> str:
+    if locale == "ru":
+        return "Бесплатно · Без рекламы · RU/EN"
+    return "Free · No ads · RU/EN"
+
+
 PHONE = {
     "x": 90,
     "y": 280,
@@ -362,6 +378,8 @@ def draw_phone_frame(
     screenshot_file: str,
     screenshots_dir: Path,
     is_banner: bool,
+    app_name: str,
+    banner_tagline_text: str,
 ) -> None:
     px: int = PHONE["x"]
     py: int = PHONE["y"]
@@ -393,8 +411,8 @@ def draw_phone_frame(
         paste_screenshot(canvas, screenshot_path, screen_box, PHONE["screen_radius"])
     elif is_banner:
         rounded_rectangle(draw, screen_box, radius=PHONE["screen_radius"], fill=accent)
-        draw_centered_text(draw, "Numbers", (screen_box[0] + screen_box[2]) // 2, screen_box[1] + screen_box[3] // 2 - 60, load_font(72, True), accent_dark)
-        draw_centered_text(draw, "Free · No ads · RU/EN", (screen_box[0] + screen_box[2]) // 2, screen_box[1] + screen_box[3] // 2 + 30, load_font(40), text_color)
+        draw_centered_text(draw, app_name, (screen_box[0] + screen_box[2]) // 2, screen_box[1] + screen_box[3] // 2 - 60, load_font(72, True), accent_dark)
+        draw_centered_text(draw, banner_tagline_text, (screen_box[0] + screen_box[2]) // 2, screen_box[1] + screen_box[3] // 2 + 30, load_font(40), text_color)
     else:
         draw_placeholder(draw, screen_box, screenshot_file, hex_to_rgb("#747878"), hex_to_rgb("#F1EDEC"))
 
@@ -421,6 +439,8 @@ def render_screenshot_png(
     screenshots_dir: Path,
     output_path: Path,
     is_banner: bool = False,
+    app_name: str = "Numbers",
+    banner_tagline_text: str = "Free · No ads · RU/EN",
 ) -> None:
     background: tuple[int, int, int] = hex_to_rgb(brand["background"])
     text_color: tuple[int, int, int] = hex_to_rgb(brand["text"])
@@ -440,9 +460,20 @@ def render_screenshot_png(
         radius=3,
         fill=accent,
     )
-    draw_phone_frame(canvas, draw, brand, screenshot_file, screenshots_dir, is_banner)
+    draw_phone_frame(
+        canvas,
+        draw,
+        brand,
+        screenshot_file,
+        screenshots_dir,
+        is_banner,
+        app_name,
+        banner_tagline_text,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.convert("RGB").save(output_path, "PNG")
+    temp_path: Path = output_path.with_suffix(".tmp.png")
+    canvas.convert("RGB").save(temp_path, "PNG")
+    temp_path.replace(output_path)
 
 
 def render_feature_graphic_png(
@@ -550,6 +581,8 @@ def render_all_from_config(
     icon_path: Path = ensure_icon_png(sources_dir)
     rendered: list[Path] = []
     for locale, caption_key in [("ru", "captionRu"), ("en", "captionEn")]:
+        app_name: str = brand_name(brand, locale)
+        tagline: str = banner_tagline(locale)
         for item in config["screenshots"]:
             if item.get("disabled"):
                 continue
@@ -561,6 +594,8 @@ def render_all_from_config(
                 screenshots_dir=screenshots_dir,
                 output_path=output_path,
                 is_banner=item.get("isBanner", False),
+                app_name=app_name,
+                banner_tagline_text=tagline,
             )
             rendered.append(output_path)
     fg: dict = config["featureGraphic"]
@@ -570,7 +605,7 @@ def render_all_from_config(
     ]:
         output_path = output_dir / "feature-graphic" / f"feature-graphic-{locale}.png"
         render_feature_graphic_png(
-            title=fg["title"],
+            title=feature_title(fg, locale),
             subtitle=fg[subtitle_key],
             badge=fg[badge_key],
             brand=brand,

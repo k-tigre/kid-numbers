@@ -1,6 +1,6 @@
 object Application {
     const val id: String = "by.tigre.numbers"
-    val version: Version = Version(1, 5, 0)
+    val version: Version = Version(1, 6, 0)
     /** Default/EN brand; localized launcher names live in res values strings. */
     const val name: String = "Numbers"
 

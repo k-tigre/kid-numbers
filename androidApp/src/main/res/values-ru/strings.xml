@@ -128,6 +128,10 @@
     <string name="result_hero_perfect">Идеально!</string>
     <string name="result_hero_good">Молодец!</string>
     <string name="result_hero_retry">Попробуй ещё раз</string>
+    <string name="result_stat_time">Время</string>
+    <string name="result_stat_correct">Верно</string>
+    <string name="result_stat_wrong">Ошибки</string>
+    <string name="result_section_answers">Ответы</string>
     <string name="screen_game_result_total_questions">Результат ответов на %d вопросов</string>
     <string name="screen_game_result_total_correct_answers">Всего правильных ответов: %d</string>
     <string name="screen_game_result_total_wrong_answers">Всего НЕ правильных ответов: %d</string>

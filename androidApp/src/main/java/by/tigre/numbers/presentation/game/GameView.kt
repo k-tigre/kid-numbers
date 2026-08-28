@@ -50,6 +50,7 @@ import by.tigre.numbers.R
 import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameOptions.Question.Operation
 import by.tigre.numbers.presentation.game.GameComponent.TimeState
+import by.tigre.numbers.presentation.game.settings.gameSettingsConfirmButtonColors
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ComposableView
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
@@ -142,14 +143,18 @@ class GameView(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 8.dp),
-            text = stringResource(R.string.screen_game_current_question, state.current, state.total)
+            text = stringResource(R.string.screen_game_current_question, state.current, state.total),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 8.dp),
-            text = stringResource(R.string.screen_game_correct_answers, state.correctCount)
+            text = stringResource(R.string.screen_game_correct_answers, state.correctCount),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 
@@ -247,7 +252,8 @@ class GameView(
                             .align(Alignment.Center)
                             .padding(top = 28.dp),
                         onClick = component::onEnterClicked,
-                        enabled = component.isEnterEnabled.collectAsState().value
+                        enabled = component.isEnterEnabled.collectAsState().value,
+                        colors = gameSettingsConfirmButtonColors(),
                     ) {
                         Text(text = stringResource(R.string.screen_game_button_submit_answer))
                     }
@@ -287,6 +293,7 @@ class GameView(
                             .align(Alignment.CenterHorizontally)
                             .padding(horizontal = 32.dp, vertical = 4.dp),
                         onClick = component::onNextClicked,
+                        colors = gameSettingsConfirmButtonColors(),
                     ) {
                         Text(text = stringResource(R.string.screen_game_next_question))
                     }

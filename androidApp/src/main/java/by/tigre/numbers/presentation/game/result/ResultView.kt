@@ -1,22 +1,12 @@
 package by.tigre.numbers.presentation.game.result
 
-import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,27 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.entity.Difficult
-import by.tigre.numbers.entity.GameOptions.Question.Equation
-import by.tigre.numbers.entity.GameOptions.Question.Operation
-import by.tigre.numbers.entity.GameResult
-import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.LeaderboardSpeedComparison
 import by.tigre.numbers.presentation.leaderboard.toLeaderboardBoardLabel
-import by.tigre.numbers.presentation.utils.TIME_FORMAT
-import by.tigre.tools.tools.platform.compose.AppTheme
-import by.tigre.tools.tools.platform.compose.ColorFamily
-import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class ResultView(
     private val component: ResultComponent,
@@ -65,44 +40,7 @@ class ResultView(
         val result by component.results.collectAsState()
         val dialogState by component.leaderboardDialog.collectAsState()
         DrawLeaderboardDialog(dialogState)
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-        ) {
-            ResultHeroHeadline(band = result.scoreBand())
-            Text(
-                modifier = Modifier.padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.time)),
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_questions, result.totalCount)
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_correct_answers, result.correctCount),
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_wrong_answers, result.inCorrectCount),
-                color = MaterialTheme.colorScheme.error,
-            )
-            LazyVerticalGrid(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                columns = GridCells.Adaptive(180.dp),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                result.results.forEach {
-                    item {
-                        DrawItem(it)
-                    }
-                }
-            }
-        }
+        ResultScreenContent(result = result, innerPadding = innerPadding)
     }
 
     @Composable
@@ -158,97 +96,5 @@ class ResultView(
         is LeaderboardSpeedComparison.FasterThanBest -> stringResource(R.string.screen_leaderboard_submit_speed_faster, seconds)
         is LeaderboardSpeedComparison.BehindBest -> stringResource(R.string.screen_leaderboard_submit_speed_behind, seconds)
         LeaderboardSpeedComparison.MatchedBest -> stringResource(R.string.screen_leaderboard_submit_speed_matched)
-    }
-
-    @Composable
-    private fun DrawItem(result: GameResult.Result) {
-        val colors = when {
-            !result.countsForScore -> ColorFamily(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                onColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                colorContainer = MaterialTheme.colorScheme.surfaceVariant,
-                onColorContainer = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            result.isCorrect -> LocalGameColorsPalette.current.gameSuccess
-            else -> LocalGameColorsPalette.current.gameFailed
-        }
-        Card(
-            modifier = Modifier,
-            colors = CardDefaults.cardColors().copy(
-                containerColor = colors.colorContainer
-            )
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
-                text = when (result.question) {
-                    is Equation.Double -> result.question.title
-                    is Equation.Single -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
-                    is Operation -> result.question.title.format(if (result.answer != null) result.question.x.toString() else "***")
-                },
-                color = colors.onColorContainer
-            )
-            Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
-                style = MaterialTheme.typography.titleSmall,
-                text = when (result.question) {
-                    is Equation.Double -> stringResource(
-                        R.string.screen_game_result_item_user_answer_xy,
-                        result.answer?.toString() ?: "-",
-                        result.answerY?.toString() ?: "-",
-                    )
-                    else -> stringResource(R.string.screen_game_result_item_user_answer, result.answer ?: "-")
-                },
-                color = colors.onColorContainer
-            )
-        }
-    }
-}
-
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, device = Devices.NEXUS_10)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun Preview() {
-    val component = object : ResultComponent {
-        override val results: StateFlow<GameResult> = MutableStateFlow(
-            GameResult(
-                results = (1..4).map {
-                    listOf(
-                        GameResult.Result(
-                            isCorrect = it % 2 == 0,
-                            question = Operation.Multiplication(it, 2),
-                            answer = 19434
-                        ),
-                        GameResult.Result(
-                            isCorrect = it % 2 == 0,
-                            question = Operation.Additional(it, 2),
-                            answer = 109
-                        ),
-                        GameResult.Result(
-                            isCorrect = it % 2 == 0,
-                            question = Equation.Single(4, "1 + 2 * %s = 3"),
-                            answer = null
-                        ),
-                        GameResult.Result(
-                            isCorrect = it % 2 == 0,
-                            question = Equation.Single(4, "1 + 2 * %s = 3"),
-                            answer = 2
-                        )
-                    )
-                }.flatten(),
-                time = 23823,
-                difficult = Difficult.Easy,
-                type = GameType.Multiplication
-            )
-        )
-        override fun onClose() = Unit
-        override val leaderboardDialog = MutableStateFlow<LeaderboardSubmitDialogState?>(null)
-        override fun onSubmitScore(nickname: String) = Unit
-        override fun onSkipLeaderboardSubmit() = Unit
-    }
-    AppTheme {
-        Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-            ResultView(component = component).Draw(Modifier)
-        }
     }
 }

@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,14 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
-import by.tigre.numbers.presentation.game.result.ResultHeroHeadline
-import by.tigre.numbers.presentation.game.result.resolveResultScoreBand
+import by.tigre.numbers.presentation.game.result.ResultStatItem
+import by.tigre.numbers.presentation.game.result.ResultSummaryCard
 import by.tigre.numbers.presentation.game.result.ResultView
+import by.tigre.numbers.presentation.game.result.resolveResultScoreBand
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
+import by.tigre.tools.tools.platform.compose.Dimens
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
+import by.tigre.tools.tools.platform.compose.view.SectionHeader
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 
 class ChallengeResultView(
@@ -76,52 +79,38 @@ class ChallengeResultView(
                             Column(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp)
+                                    .padding(horizontal = Dimens.md),
                             ) {
                                 val perfectTasks: Int = challenge.items.count { it.correctCount == it.totalCount }
-                                ResultHeroHeadline(
+                                val accentColor = if (challenge.isSuccess) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.error
+                                }
+                                ResultSummaryCard(
                                     band = resolveResultScoreBand(
                                         correctCount = perfectTasks,
                                         totalCount = challenge.items.size,
                                     ),
-                                )
-                                val color = if (challenge.isSuccess) {
-                                    LocalGameColorsPalette.current.gameSuccess
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    LocalGameColorsPalette.current.gameFailed
-                                    MaterialTheme.colorScheme.error
-                                }
-
-                                Text(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp),
-                                    color = color,
-                                    text = stringResource(
-                                        R.string.screen_challenge_result_duration,
-                                        TIME_FORMAT.format(challenge.endDate - challenge.startDate)
-                                    )
-                                )
-
-                                Text(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp),
-                                    color = color,
-                                    text = stringResource(
-                                        R.string.screen_challenge_result_total_task,
-                                        challenge.items.size
+                                    stats = listOf(
+                                        ResultStatItem(
+                                            label = stringResource(R.string.result_stat_time),
+                                            value = TIME_FORMAT.format(challenge.endDate - challenge.startDate),
+                                            valueColor = accentColor,
+                                        ),
+                                        ResultStatItem(
+                                            label = stringResource(R.string.result_stat_correct),
+                                            value = perfectTasks.toString(),
+                                            valueColor = MaterialTheme.colorScheme.primary,
+                                        ),
+                                        ResultStatItem(
+                                            label = stringResource(R.string.result_stat_wrong),
+                                            value = (challenge.items.size - perfectTasks).toString(),
+                                            valueColor = MaterialTheme.colorScheme.error,
+                                        ),
                                     ),
                                 )
-
-                                Text(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp),
-                                    color = color,
-                                    text = stringResource(
-                                        R.string.screen_challenge_result_correct_task,
-                                        challenge.items.count { it.totalCount == it.correctCount }
-                                    ),
-                                )
+                                SectionHeader(title = stringResource(R.string.screen_challenge_result_total_task, challenge.items.size))
                             }
                         }
 
@@ -154,41 +143,44 @@ class ChallengeResultView(
         } else {
             LocalGameColorsPalette.current.gameFailed
         }
-        Card(
+        ElevatedCard(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(horizontal = Dimens.md, vertical = Dimens.sm)
                 .fillMaxWidth(),
-            colors = CardDefaults.cardColors().copy(
-                containerColor = colors.colorContainer
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = colors.colorContainer,
             ),
-            onClick = { component.onItemClicked(result) }
+            onClick = { component.onItemClicked(result) },
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.duration)),
-            )
-
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_questions, result.totalCount)
-            )
-
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
-                text = stringResource(R.string.screen_game_result_total_correct_answers, result.correctCount),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            if (result.totalCount - result.correctCount > 0) {
+            Column(modifier = Modifier.padding(Dimens.md)) {
                 Text(
-                    modifier = Modifier
-                        .padding(horizontal = 32.dp),
-                    text = stringResource(R.string.screen_game_result_total_wrong_answers, result.totalCount - result.correctCount),
-                    color = MaterialTheme.colorScheme.error,
+                    text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.duration)),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = colors.onColorContainer,
                 )
+                Text(
+                    modifier = Modifier.padding(top = Dimens.xs),
+                    text = stringResource(R.string.screen_game_result_total_questions, result.totalCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onColorContainer.copy(alpha = 0.85f),
+                )
+                Text(
+                    modifier = Modifier.padding(top = Dimens.xs),
+                    text = stringResource(R.string.screen_game_result_total_correct_answers, result.correctCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                if (result.totalCount - result.correctCount > 0) {
+                    Text(
+                        modifier = Modifier.padding(top = Dimens.xs),
+                        text = stringResource(
+                            R.string.screen_game_result_total_wrong_answers,
+                            result.totalCount - result.correctCount,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
         }
     }

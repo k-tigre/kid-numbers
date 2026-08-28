@@ -14,11 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.GameResult
-import by.tigre.tools.tools.platform.compose.Dimens
 
 enum class ResultScoreBand {
     Perfect,
@@ -42,6 +43,8 @@ fun resolveResultScoreBand(correctCount: Int, totalCount: Int): ResultScoreBand 
 fun ResultHeroHeadline(
     band: ResultScoreBand,
     modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.headlineMedium,
+    color: Color? = null,
 ) {
     var started: Boolean by remember(band) { mutableStateOf(false) }
     LaunchedEffect(band) { started = true }
@@ -55,18 +58,17 @@ fun ResultHeroHeadline(
         ResultScoreBand.Good -> R.string.result_hero_good
         ResultScoreBand.Retry -> R.string.result_hero_retry
     }
-    val color = when (band) {
+    val textColor: Color = color ?: when (band) {
         ResultScoreBand.Perfect, ResultScoreBand.Good -> MaterialTheme.colorScheme.primary
         ResultScoreBand.Retry -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     Text(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Dimens.lg, vertical = Dimens.md)
             .scale(scale),
         text = stringResource(textRes),
-        style = MaterialTheme.typography.headlineMedium,
-        color = color,
+        style = style,
+        color = textColor,
         textAlign = TextAlign.Center,
     )
 }

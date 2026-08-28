@@ -1,6 +1,8 @@
 package by.tigre.tools.tools.platform.compose
 
+import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -11,6 +13,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -361,20 +364,23 @@ fun AppTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    val highContrast = remember(context) { context.isHighContrastTextEnabled() }
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
+        highContrast && darkTheme -> highContrastDarkColorScheme
+        highContrast -> highContrastLightColorScheme
         darkTheme -> darkScheme
         else -> lightScheme
     }
-
-    // logic for which custom palette to use
-    val customColorsPalette =
-        if (darkTheme) extendedDark
-        else extendedLight
+    val customColorsPalette = when {
+        highContrast && darkTheme -> extendedDarkHighContrast
+        highContrast -> extendedLightHighContrast
+        darkTheme -> extendedDark
+        else -> extendedLight
+    }
 
     // here is the important point, where you will expose custom objects
     CompositionLocalProvider(
@@ -391,5 +397,14 @@ fun AppTheme(
             content = content
         )
     }
+}
+
+private fun Context.isHighContrastTextEnabled(): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false
+    return Settings.Secure.getInt(
+        contentResolver,
+        "high_text_contrast_enabled",
+        0,
+    ) == 1
 }
 

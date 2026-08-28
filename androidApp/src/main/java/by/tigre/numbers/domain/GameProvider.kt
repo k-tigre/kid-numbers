@@ -40,19 +40,7 @@ interface GameProvider {
             val allQuestions = settings.selectedNumbers
                 .flatMap { first ->
                     val questions = (1..10).map { second ->
-                        if (settings.isPositive) {
-                            if (settings.difficult == Difficult.Hard) {
-                                if (Random.nextBoolean()) {
-                                    Operation.Multiplication(first = second, second = first)
-                                } else {
-                                    Operation.Multiplication(first = first, second = second)
-                                }
-                            } else {
-                                Operation.Multiplication(first = first, second = second)
-                            }
-                        } else {
-                            Operation.Division(x = second, second = first)
-                        }
+                        multiplicationOperation(settings, first, second)
                     }
                     when (settings.difficult) {
                         Difficult.Easy -> questions.shuffled()
@@ -60,9 +48,7 @@ interface GameProvider {
                         Difficult.Hard -> (questions + questions).shuffled()
                     }
                 }
-                .shuffled()
-
-
+                .shuffledWithoutConsecutive()
             return GameOptions(
                 questions = allQuestions,
                 duration = durationProvider.provide(settings),
@@ -79,18 +65,16 @@ interface GameProvider {
             }
 
             val range = settings.range
-            val allQuestions = (1..count).map {
+            val allQuestions = buildQuestionsPreferUnique(count) {
                 val x = randomNonSame(range.min + range.min, range.max, 0, 1)
                 val a = randomNonSame(range.min, x - range.min, 0, 2)
                 val b = x - a
-
                 if (settings.isPositive) {
                     Operation.Additional(a = a, b = b)
                 } else {
                     Operation.Subtraction(x = a, b = b)
                 }
-            }
-                .shuffled(Random)
+            }.shuffledWithoutConsecutive(Random)
 
             return GameOptions(
                 questions = allQuestions,
@@ -147,29 +131,23 @@ interface GameProvider {
                 min = 0
                 max = range.max
             }
-            val questions = (1..count).map {
+            return buildQuestionsPreferUnique(count) {
                 val x: Int
                 val c: Int
                 val b: Int = randomNonSame(min = min / 2, max = max / 2, target = 0, fraction = 10)
                 val a: Int = randomNonSame(min = min, max = max, target = 0, fraction = if (range.withNegative) 2 else 10)
-
-
                 fun x(deep: Int = 0): Int {
                     val cTmp = randomNonSame(min = min, max = max, target = a, fraction = 1)
                     val xTmp = ((cTmp - a).toFloat() / b).coerceIn(range.min.toFloat(), range.max.toFloat()).roundToInt()
                     return if ((xTmp == 1 || xTmp == 0) && deep < 5) x(deep + 1) else xTmp
                 }
-
                 x = x()
                 c = a + b * x
-
                 GameOptions.Question.Equation.Single(
                     x = x,
                     title = "$a ${if (b > 0) "+" else "-"} ${abs(b)} * X = $c\nX = %s"
                 )
-            }
-
-            return questions.shuffled()
+            }.shuffledWithoutConsecutive()
         }
 
         private fun generateSingleEquationsQuestionsForAdditional(
@@ -180,20 +158,16 @@ interface GameProvider {
             val min: Int = range.min
             val max: Int = range.max
 
-            val questions = (1..count).map {
+            return buildQuestionsPreferUnique(count) {
                 val x: Int
                 val a: Int = randomNonSame(min = min, max = if (range.withNegative) max else max / 2, target = 0, fraction = 3)
-
                 val c = randomNonSame(min = if (range.withNegative) min else a, max = (max - a).coerceAtMost(max), target = a, fraction = 1)
                 x = c - a
-
                 GameOptions.Question.Equation.Single(
                     x = x,
                     title = "$a + X = $c\nX = %s"
                 )
-            }
-
-            return questions.shuffled()
+            }.shuffledWithoutConsecutive()
         }
 
         private fun generateSingleEquationsQuestionsForMultiplication(
@@ -204,20 +178,16 @@ interface GameProvider {
             val min: Int = range.min
             val max: Int = range.max
 
-            val questions = (1..count).map {
+            return buildQuestionsPreferUnique(count) {
                 val b = randomNonSame(min = min / 2, max = max / 2, target = 0, fraction = 3)
-
                 val cTmp = randomNonSame(min = min, max = max, target = min, fraction = 1)
                 val x = (cTmp.toFloat() / b).coerceIn(min.toFloat(), range.max.toFloat()).roundToInt()
                 val c = b * x
-
                 GameOptions.Question.Equation.Single(
                     x = x,
                     title = "$b * X = $c\nX = %s"
                 )
-            }
-
-            return questions.shuffled()
+            }.shuffledWithoutConsecutive()
         }
 
         private fun generateDoubleEquationsQuestions(
@@ -230,7 +200,7 @@ interface GameProvider {
             val min = ranges.min
             val max = ranges.max
 
-            val questions = (1..count).map {
+            return buildQuestionsPreferUnique(count) {
                 val system = generateDoubleEquationSystem(type, min, max, ranges.withNegative)
                 GameOptions.Question.Equation.Double(
                     x = system.x,
@@ -238,9 +208,101 @@ interface GameProvider {
                     title = "${formatDoubleEquation(system.eq1.a, system.eq1.b, system.eq1.c, system.d1)}\n" +
                             formatDoubleEquation(system.eq2.a, system.eq2.b, system.eq2.c, system.d2)
                 )
-            }
+            }.shuffledWithoutConsecutive()
+        }
 
-            return questions.shuffled()
+        private fun multiplicationOperation(
+            settings: GameSettings.Multiplication,
+            first: Int,
+            second: Int,
+        ): Operation = if (settings.isPositive) {
+            if (settings.difficult == Difficult.Hard && Random.nextBoolean()) {
+                Operation.Multiplication(first = second, second = first)
+            } else {
+                Operation.Multiplication(first = first, second = second)
+            }
+        } else {
+            Operation.Division(x = second, second = first)
+        }
+
+        private inline fun <Q : GameOptions.Question> buildUniqueQuestions(
+            count: Int,
+            maxAttempts: Int = count * 100,
+            crossinline generate: () -> Q,
+        ): List<Q> {
+            val result = ArrayList<Q>(count)
+            val seenTitles = HashSet<String>(count)
+            var attempts = 0
+            while (result.size < count && attempts < maxAttempts) {
+                attempts++
+                val question = try {
+                    generate()
+                } catch (_: IllegalArgumentException) {
+                    continue
+                }
+                if (seenTitles.add(question.title)) {
+                    result.add(question)
+                }
+            }
+            return result
+        }
+
+        private inline fun <Q : GameOptions.Question> buildQuestionsPreferUnique(
+            count: Int,
+            maxAttempts: Int = count * 100,
+            crossinline generate: () -> Q,
+        ): List<Q> {
+            val uniqueQuestions = buildUniqueQuestions(count, maxAttempts, generate)
+            if (uniqueQuestions.size >= count) {
+                return uniqueQuestions
+            }
+            val result = uniqueQuestions.toMutableList()
+            while (result.size < count) {
+                val question = try {
+                    generate()
+                } catch (_: IllegalArgumentException) {
+                    continue
+                }
+                result.add(question)
+            }
+            return result
+        }
+
+        private fun <Q : GameOptions.Question> List<Q>.shuffledWithoutConsecutive(
+            random: Random = Random,
+        ): List<Q> {
+            if (size <= 1) {
+                return this
+            }
+            val shuffled = shuffled(random).toMutableList()
+            if (!shuffled.hasConsecutiveDuplicates()) {
+                return shuffled
+            }
+            return shuffled.reorderedWithoutConsecutive()
+        }
+
+        private fun <Q : GameOptions.Question> List<Q>.hasConsecutiveDuplicates(): Boolean =
+            zipWithNext().any { (previous, current) -> previous.title == current.title }
+
+        private fun <Q : GameOptions.Question> MutableList<Q>.reorderedWithoutConsecutive(): List<Q> {
+            val remaining = groupBy { it.title }
+                .mapValues { (_, items) -> ArrayDeque(items) }
+                .toMutableMap()
+            val result = ArrayList<Q>(size)
+            var lastTitle: String? = null
+            repeat(size) {
+                val nextEntry = remaining.entries
+                    .filter { (title, queue) -> queue.isNotEmpty() && title != lastTitle }
+                    .maxByOrNull { (_, queue) -> queue.size }
+                val entry = nextEntry ?: remaining.entries.first { (_, queue) -> queue.isNotEmpty() }
+                val question = entry.value.removeFirst()
+                if (entry.value.isEmpty()) {
+                    remaining.remove(entry.key)
+                }
+                result.add(question)
+                lastTitle = question.title
+            }
+            return result
         }
 
         private data class LinearEquation(val a: Int, val b: Int, val c: Int)

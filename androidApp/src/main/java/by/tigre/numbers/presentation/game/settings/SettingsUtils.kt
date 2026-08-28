@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -251,3 +253,9 @@ object SettingsUtils {
         val index: Int,
     )
 }
+
+@Composable
+fun gameSettingsConfirmButtonColors(): ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+)

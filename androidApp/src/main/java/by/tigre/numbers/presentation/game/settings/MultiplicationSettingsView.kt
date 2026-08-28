@@ -80,7 +80,8 @@ class MultiplicationSettingsView(
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
                 onClick = component::onConfirmClicked,
-                enabled = component.isStartEnabled.collectAsState().value
+                enabled = component.isStartEnabled.collectAsState().value,
+                colors = gameSettingsConfirmButtonColors(),
             ) {
                 Text(text = confirmTitle)
             }

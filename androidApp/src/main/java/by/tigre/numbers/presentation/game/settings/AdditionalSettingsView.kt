@@ -93,7 +93,8 @@ class AdditionalSettingsView(
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
                 onClick = component::onConfirmClicked,
-                enabled = true
+                enabled = true,
+                colors = gameSettingsConfirmButtonColors(),
             ) {
                 Text(text = confirmTitle)
             }

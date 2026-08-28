@@ -109,7 +109,7 @@ interface RootComponent {
 
         private fun completeOnboarding() {
             launch(dispatchers.main) {
-                pagesNavigation.replaceAll { listOf(MenuPagesConfig.Menu) }
+                pagesNavigation.replaceAll(MenuPagesConfig.Menu)
             }
         }
 

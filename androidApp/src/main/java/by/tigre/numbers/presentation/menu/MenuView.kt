@@ -1,28 +1,30 @@
 package by.tigre.numbers.presentation.menu
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
+import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ComposableView
+import by.tigre.tools.tools.platform.compose.view.MenuCard
+import by.tigre.tools.tools.platform.compose.view.SectionHeader
 
 class MenuView(
     private val component: MenuComponent,
@@ -35,92 +37,80 @@ class MenuView(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.Center)
+                    .align(Alignment.TopCenter)
                     .heightIn(max = maxHeight)
                     .verticalScroll(rememberScrollState())
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                DrawChallengeItem()
-                component.gameTypes.forEach { type ->
-                    DrawItem(
-                        title = stringResource(R.string.main_manu_learn, type.toLabel()),
-                        action = { component.onGameClicked(type) },
-                    )
-                }
-                if (leaderboardEnabled) {
-                    DrawItem(
-                        title = stringResource(R.string.main_menu_leaderboard),
-                        action = component::onLeaderboardClicked,
-                    )
-                    DrawItem(
-                        title = stringResource(R.string.main_menu_settings),
-                        action = component::onSettingsClicked,
-                    )
-                }
-                DrawItem(
-                    title = stringResource(R.string.main_menu_statistic),
-                    action = component::onStatisticClicked,
-                )
-                DrawItem(
-                    title = stringResource(R.string.main_menu_history),
-                    action = component::onHistoryClicked,
-                )
-            }
-        }
-    }
-
-    @Composable
-    private fun DrawItem(modifier: Modifier = Modifier, title: String, action: () -> Unit) {
-        Button(
-            modifier = modifier.fillMaxWidth(),
-            onClick = action
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-
-    @Composable
-    private fun DrawChallengeItem(modifier: Modifier = Modifier) {
-        val hasActiveChallenge = component.hasActiveChallenge.collectAsState().value
-        Button(
-            modifier = modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            ),
-            onClick = component::onChallengeClicked
-        ) {
-            if (hasActiveChallenge) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(R.string.main_menu_challenges),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                    )
-                    Text(
-                        text = stringResource(R.string.main_menu_challenges_active),
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            } else {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.main_menu_challenges),
+                    text = stringResource(R.string.main_menu_app_title),
                     style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = stringResource(R.string.main_menu_tagline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                SectionHeader(title = stringResource(R.string.main_menu_section_practice))
+                component.gameTypes.forEach { type ->
+                    MenuCard(
+                        title = type.toLabel(),
+                        icon = painterResource(gameTypeIcon(type)),
+                        onClick = { component.onGameClicked(type) },
+                    )
+                }
+                SectionHeader(title = stringResource(R.string.main_menu_section_compete))
+                DrawChallengeItem()
+                if (leaderboardEnabled) {
+                    MenuCard(
+                        title = stringResource(R.string.main_menu_leaderboard),
+                        icon = painterResource(R.drawable.ic_menu_leaderboard),
+                        onClick = component::onLeaderboardClicked,
+                    )
+                    MenuCard(
+                        title = stringResource(R.string.main_menu_settings),
+                        icon = painterResource(R.drawable.ic_menu_settings),
+                        onClick = component::onSettingsClicked,
+                    )
+                }
+                SectionHeader(title = stringResource(R.string.main_menu_section_progress))
+                MenuCard(
+                    title = stringResource(R.string.main_menu_statistic),
+                    icon = painterResource(R.drawable.ic_menu_statistic),
+                    onClick = component::onStatisticClicked,
+                )
+                MenuCard(
+                    title = stringResource(R.string.main_menu_history),
+                    icon = painterResource(R.drawable.ic_menu_history),
+                    onClick = component::onHistoryClicked,
                 )
             }
         }
+    }
+
+    @Composable
+    private fun DrawChallengeItem() {
+        val hasActiveChallenge = component.hasActiveChallenge.collectAsState().value
+        MenuCard(
+            title = stringResource(R.string.main_menu_challenges),
+            subtitle = if (hasActiveChallenge) {
+                stringResource(R.string.main_menu_challenges_active)
+            } else {
+                null
+            },
+            icon = painterResource(R.drawable.ic_menu_challenge),
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            onClick = component::onChallengeClicked,
+        )
+    }
+
+    @DrawableRes
+    private fun gameTypeIcon(type: GameType): Int = when (type) {
+        GameType.Additional -> R.drawable.ic_menu_add
+        GameType.Subtraction -> R.drawable.ic_menu_subtract
+        GameType.Multiplication -> R.drawable.ic_menu_multiply
+        GameType.Division -> R.drawable.ic_menu_divide
+        GameType.Equations -> R.drawable.ic_menu_equation
     }
 }

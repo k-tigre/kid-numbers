@@ -3,6 +3,11 @@
     <string name="app_name">Numbers</string>
 
     <string name="main_manu_learn">Practice %s</string>
+    <string name="main_menu_app_title">Numbers</string>
+    <string name="main_menu_tagline">Math practice without ads</string>
+    <string name="main_menu_section_practice">Practice</string>
+    <string name="main_menu_section_compete">Compete</string>
+    <string name="main_menu_section_progress">Progress</string>
     <string name="main_menu_history">History</string>
     <string name="main_menu_challenges">Challenges</string>
     <string name="main_menu_challenges_active">Active</string>

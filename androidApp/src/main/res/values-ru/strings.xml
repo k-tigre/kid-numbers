@@ -3,6 +3,11 @@
     <string name="app_name">Числа</string>
 
     <string name="main_manu_learn">Практиковать %s</string>
+    <string name="main_menu_app_title">Numbers</string>
+    <string name="main_menu_tagline">Математика без рекламы</string>
+    <string name="main_menu_section_practice">Учиться</string>
+    <string name="main_menu_section_compete">Соревноваться</string>
+    <string name="main_menu_section_progress">Прогресс</string>
     <string name="main_menu_history">История</string>
     <string name="main_menu_challenges">Испытания</string>
     <string name="main_menu_challenges_active">Активные</string>

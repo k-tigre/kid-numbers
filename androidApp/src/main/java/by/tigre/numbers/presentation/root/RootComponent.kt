@@ -107,6 +107,12 @@ interface RootComponent {
             }
         }
 
+        private fun completeOnboarding() {
+            launch(dispatchers.main) {
+                pagesNavigation.replaceAll { listOf(MenuPagesConfig.Menu) }
+            }
+        }
+
         override val pages: Value<ChildStack<*, PageChild>> =
             appChildStack(
                 source = pagesNavigation,
@@ -126,7 +132,7 @@ interface RootComponent {
                         OnboardingComponentImpl(
                             context = componentContext,
                             onboardingRepository = gameDependencies.onboardingRepository,
-                            onComplete = { pagesNavigation.replaceAll { listOf(MenuPagesConfig.Menu) } },
+                            onComplete = ::completeOnboarding,
                         )
                     )
 

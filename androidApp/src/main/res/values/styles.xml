@@ -1,5 +1,6 @@
 <resources>
 
+    <!-- Compose AppTheme owns in-app colors; splash uses ic_launcher_background. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

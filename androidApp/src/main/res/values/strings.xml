@@ -101,6 +101,7 @@
     <string name="screen_challenge_result_correct_task">Total tasks: %d</string>
 
     <string name="screen_game_result_duration">Execution time: %s</string>
+    <string name="screen_game_result_title">Results</string>
     <string name="screen_game_result_total_questions">Result of answers to %d questions</string>
     <string name="screen_game_result_total_correct_answers">Total correct answers: %d</string>
     <string name="screen_game_result_total_wrong_answers">Total NOT correct answers: %d</string>

@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,55 +42,53 @@ import by.tigre.numbers.presentation.leaderboard.toLeaderboardBoardLabel
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ColorFamily
-import by.tigre.tools.tools.platform.compose.ComposableView
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
+import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ResultView(
     private val component: ResultComponent,
-) : ComposableView {
+) : ScreenComposableView(
+    ToolbarConfig(
+        title = { stringResource(R.string.screen_game_result_title) },
+        navigationIcon = ToolbarConfig.NavigationIconAction(
+            vector = Icons.Default.Close,
+            action = component::onClose,
+        ),
+    ),
+) {
 
     @Composable
-    override fun Draw(modifier: Modifier) {
-        Column(modifier.fillMaxSize()) {
-            val result by component.results.collectAsState()
-            val dialogState by component.leaderboardDialog.collectAsState()
-            DrawLeaderboardDialog(dialogState)
-
-            IconButton(onClick = component::onClose, modifier = Modifier.align(Alignment.End)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_close_24), contentDescription = "")
-            }
-
+    override fun DrawContent(innerPadding: PaddingValues) {
+        val result by component.results.collectAsState()
+        val dialogState by component.leaderboardDialog.collectAsState()
+        DrawLeaderboardDialog(dialogState)
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+        ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.time)),
             )
-
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.screen_game_result_total_questions, result.totalCount)
             )
-
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.screen_game_result_total_correct_answers, result.correctCount),
                 color = MaterialTheme.colorScheme.primary
             )
-
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.screen_game_result_total_wrong_answers, result.inCorrectCount),
                 color = MaterialTheme.colorScheme.error,
             )
-
             LazyVerticalGrid(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
                 columns = GridCells.Adaptive(180.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -188,7 +185,6 @@ class ResultView(
                 },
                 color = colors.onColorContainer
             )
-
             Text(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
                 style = MaterialTheme.typography.titleSmall,
@@ -243,23 +239,14 @@ private fun Preview() {
                 type = GameType.Multiplication
             )
         )
-
-        override fun onClose() {
-            TODO("Not yet implemented")
-        }
-
+        override fun onClose() = Unit
         override val leaderboardDialog = MutableStateFlow<LeaderboardSubmitDialogState?>(null)
-
         override fun onSubmitScore(nickname: String) = Unit
-
         override fun onSkipLeaderboardSubmit() = Unit
     }
-
     AppTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-            ResultView(
-                component = component,
-            ).Draw(Modifier)
+            ResultView(component = component).Draw(Modifier)
         }
     }
 }

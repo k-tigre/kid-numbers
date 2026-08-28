@@ -167,6 +167,7 @@
     <string name="screen_leaderboard_empty">Пока нет результатов. Пройди тренировку без ошибок!</string>
     <string name="screen_leaderboard_load_error">Не удалось загрузить доску почёта</string>
     <string name="screen_leaderboard_item">%1$d. %2$s — %3$d очк.</string>
+    <string name="screen_leaderboard_points">%d очк.</string>
     <string name="screen_leaderboard_item_games">%d игр</string>
     <string name="screen_leaderboard_backfill_done">Из истории начислено идеальных игр: %d</string>
     <string name="screen_leaderboard_submit_title">Добавить очки в доску почёта?</string>

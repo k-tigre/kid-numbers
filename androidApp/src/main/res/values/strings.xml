@@ -166,6 +166,7 @@
     <string name="screen_leaderboard_empty">No scores yet. Complete a perfect training run!</string>
     <string name="screen_leaderboard_load_error">Failed to load leaderboard</string>
     <string name="screen_leaderboard_item">%1$d. %2$s — %3$d pts</string>
+    <string name="screen_leaderboard_points">%d pts</string>
     <string name="screen_leaderboard_item_games">%d games</string>
     <string name="screen_leaderboard_backfill_done">Imported %d perfect games from your history</string>
     <string name="screen_leaderboard_submit_title">Add score to leaderboard?</string>

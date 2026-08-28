@@ -85,6 +85,7 @@ object MarketingScreenshotFixtures {
                 totalEntries = totalEntries,
                 isLoading = false,
                 errorMessage = null,
+                currentNickname = "Player",
             )
         )
         override fun onBack() = Unit

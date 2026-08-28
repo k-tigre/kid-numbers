@@ -32,6 +32,7 @@ data class LeaderboardUiState(
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val backfillSubmittedCount: Int? = null,
+    val currentNickname: String? = null,
 )
 
 class LeaderboardComponentImpl(
@@ -46,6 +47,9 @@ class LeaderboardComponentImpl(
     override val uiState: StateFlow<LeaderboardUiState> = _uiState.asStateFlow()
 
     init {
+        _uiState.value = _uiState.value.copy(
+            currentNickname = leaderboardPreferences.loadNickname(default = DEFAULT_NICKNAME),
+        )
         launch {
             leaderboardHistoryBackfill.runIfNeeded(defaultNickname = DEFAULT_NICKNAME)
                 .onSuccess { count ->

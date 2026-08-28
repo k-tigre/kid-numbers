@@ -22,6 +22,7 @@ import by.tigre.numbers.presentation.game.RootChallengeGameView
 import by.tigre.numbers.presentation.game.RootGameView
 import by.tigre.numbers.presentation.history.HistoryView
 import by.tigre.numbers.presentation.leaderboard.LeaderboardView
+import by.tigre.numbers.presentation.onboarding.OnboardingView
 import by.tigre.numbers.presentation.menu.MenuView
 import by.tigre.numbers.presentation.settings.SettingsView
 import by.tigre.numbers.presentation.statistic.StatisticView
@@ -56,6 +57,7 @@ class RootView(
             animation = stackAnimation(animator = fade())
         ) {
             when (val child = it.instance) {
+                is RootComponent.PageChild.Onboarding -> OnboardingView(child.component)
                 is RootComponent.PageChild.Menu -> MenuView(child.component)
                 is RootComponent.PageChild.Game -> RootGameView(child.component)
                 is RootComponent.PageChild.History -> HistoryView(child.component)

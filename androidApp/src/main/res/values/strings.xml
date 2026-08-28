@@ -29,6 +29,16 @@
     <string name="content_desc_menu_settings">Settings</string>
     <string name="content_desc_menu_statistic">Statistics</string>
     <string name="content_desc_menu_history">History</string>
+
+    <string name="onboarding_page1_title">Pick a game</string>
+    <string name="onboarding_page1_body">Addition, multiplication, equations — start in one tap</string>
+    <string name="onboarding_page2_title">Set difficulty</string>
+    <string name="onboarding_page2_body">Timer and level match your child\'s pace</string>
+    <string name="onboarding_page3_title">Join the leaderboard</string>
+    <string name="onboarding_page3_body">Add a nickname to compare scores — optional</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
     <string name="button_continue">Continue</string>
     <string name="button_start">Start</string>
 

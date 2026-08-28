@@ -15,6 +15,7 @@ import by.tigre.numbers.presentation.game.RootChallengeGameComponent
 import by.tigre.numbers.presentation.game.RootGameComponent
 import by.tigre.numbers.presentation.history.HistoryComponent
 import by.tigre.numbers.presentation.leaderboard.LeaderboardComponentImpl
+import by.tigre.numbers.presentation.onboarding.OnboardingComponentImpl
 import by.tigre.numbers.presentation.menu.MenuComponent
 import by.tigre.numbers.presentation.settings.SettingsComponentImpl
 import by.tigre.numbers.presentation.statistic.StatisticComponent
@@ -30,6 +31,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
+import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,6 +49,7 @@ interface RootComponent {
     fun onReminderLaterClicked(withChallenge: Boolean)
 
     sealed interface PageChild {
+        class Onboarding(val component: by.tigre.numbers.presentation.onboarding.OnboardingComponent) : PageChild
         class Menu(val component: MenuComponent) : PageChild
         class History(val component: HistoryComponent) : PageChild
         class Statistic(val component: StatisticComponent) : PageChild
@@ -107,12 +110,26 @@ interface RootComponent {
         override val pages: Value<ChildStack<*, PageChild>> =
             appChildStack(
                 source = pagesNavigation,
-                initialStack = { listOf(MenuPagesConfig.Menu) },
+                initialStack = {
+                    if (gameDependencies.onboardingRepository.isCompleted()) {
+                        listOf(MenuPagesConfig.Menu)
+                    } else {
+                        listOf(MenuPagesConfig.Onboarding)
+                    }
+                },
                 key = "pages",
                 handleBackButton = true,
                 serializer = MenuPagesConfig.serializer()
             ) { config, componentContext ->
                 when (config) {
+                    MenuPagesConfig.Onboarding -> PageChild.Onboarding(
+                        OnboardingComponentImpl(
+                            context = componentContext,
+                            onboardingRepository = gameDependencies.onboardingRepository,
+                            onComplete = { pagesNavigation.replaceAll { listOf(MenuPagesConfig.Menu) } },
+                        )
+                    )
+
                     MenuPagesConfig.Menu -> PageChild.Menu(
                         MenuComponent.Impl(
                             context = componentContext,
@@ -210,6 +227,7 @@ interface RootComponent {
             launch {
                 pages.trackScreens<MenuPagesConfig>(screenAnalytics, "MenuPagesConfig") {
                     when (it) {
+                        MenuPagesConfig.Onboarding -> Event.Screen.Onboarding
                         MenuPagesConfig.Menu -> Event.Screen.MainMenu
                         MenuPagesConfig.History -> Event.Screen.History
                         MenuPagesConfig.Statistic -> Event.Screen.Statistic
@@ -272,6 +290,10 @@ interface RootComponent {
 
         @Serializable
         private sealed interface MenuPagesConfig {
+            @Serializable
+            @SerialName("MenuPagesConfig_Onboarding")
+            data object Onboarding : MenuPagesConfig
+
             @Serializable
             @SerialName("MenuPagesConfig_Menu")
             data object Menu : MenuPagesConfig

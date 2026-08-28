@@ -30,6 +30,16 @@
     <string name="content_desc_menu_settings">Настройки</string>
     <string name="content_desc_menu_statistic">Статистика</string>
     <string name="content_desc_menu_history">История</string>
+
+    <string name="onboarding_page1_title">Выберите игру</string>
+    <string name="onboarding_page1_body">Сложение, умножение, уравнения — начните в один тап</string>
+    <string name="onboarding_page2_title">Выберите сложность</string>
+    <string name="onboarding_page2_body">Таймер и уровень под темп ребёнка</string>
+    <string name="onboarding_page3_title">Таблица лидеров</string>
+    <string name="onboarding_page3_body">Ник для сравнения результатов — необязательно</string>
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_get_started">Начать</string>
     <string name="button_continue">Продолжить</string>
 
     <string name="screen_history_title">История</string>

@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import by.tigre.tools.tools.platform.compose.Dimens
 
 @Composable
 fun LeaderboardRow(
@@ -41,9 +41,9 @@ fun LeaderboardRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = Dimens.md, vertical = Dimens.sm + Dimens.xs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.sm + Dimens.xs),
         ) {
             Text(
                 text = rank.toString(),

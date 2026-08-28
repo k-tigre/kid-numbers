@@ -18,11 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.ComposableView
+import by.tigre.tools.tools.platform.compose.Dimens
 import by.tigre.tools.tools.platform.compose.view.MenuCard
 import by.tigre.tools.tools.platform.compose.view.SectionHeader
 
@@ -40,8 +40,8 @@ class MenuView(
                     .align(Alignment.TopCenter)
                     .heightIn(max = maxHeight)
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(start = Dimens.md, top = Dimens.lg, end = Dimens.md, bottom = Dimens.md),
+                verticalArrangement = Arrangement.spacedBy(Dimens.sm),
             ) {
                 Text(
                     text = stringResource(R.string.main_menu_app_title),

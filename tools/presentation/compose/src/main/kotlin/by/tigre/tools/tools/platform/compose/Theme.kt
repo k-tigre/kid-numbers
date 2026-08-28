@@ -3,6 +3,7 @@ package by.tigre.tools.tools.platform.compose
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -381,7 +382,12 @@ fun AppTheme(
         LocalGameColorsPalette provides customColorsPalette // our custom palette
     ) {
         MaterialTheme(
-            colorScheme = colorScheme, // the MaterialTheme still uses the "normal" palette
+            colorScheme = colorScheme,
+            shapes = Shapes(
+                small = AppShapes.small,
+                medium = AppShapes.medium,
+                large = AppShapes.large,
+            ),
             typography = Typography(),
             content = content
         )

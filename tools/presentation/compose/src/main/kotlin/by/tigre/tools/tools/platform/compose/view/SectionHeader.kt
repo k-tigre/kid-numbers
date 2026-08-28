@@ -7,8 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import by.tigre.tools.tools.platform.compose.AppTheme
+import by.tigre.tools.tools.platform.compose.Dimens
 
 @Composable
 fun SectionHeader(
@@ -19,7 +19,7 @@ fun SectionHeader(
         text = title,
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 24.dp, bottom = 8.dp),
+            .padding(top = Dimens.lg, bottom = Dimens.sm),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -31,7 +31,7 @@ private fun SectionHeaderPreviewLight() {
     AppTheme(darkTheme = false) {
         SectionHeader(
             title = "Practice",
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = Dimens.md),
         )
     }
 }
@@ -42,7 +42,7 @@ private fun SectionHeaderPreviewDark() {
     AppTheme(darkTheme = true) {
         SectionHeader(
             title = "Practice",
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = Dimens.md),
         )
     }
 }

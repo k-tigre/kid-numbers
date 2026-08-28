@@ -23,8 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import by.tigre.tools.tools.platform.compose.AppShapes
 import by.tigre.tools.tools.platform.compose.AppTheme
+import by.tigre.tools.tools.platform.compose.Dimens
 
 @Composable
 fun MenuCard(
@@ -38,23 +39,24 @@ fun MenuCard(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp),
+            .heightIn(min = Dimens.menuCardMinHeight),
+        shape = AppShapes.menuCard,
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
         onClick = onClick,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = Dimens.md, vertical = Dimens.sm + Dimens.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 painter = icon,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(Dimens.lg),
                 tint = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Dimens.md))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
@@ -86,7 +88,7 @@ private fun MenuCardPreviewLight() {
             subtitle = "Practice sums",
             icon = rememberVectorPainter(Icons.Filled.Star),
             onClick = {},
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(Dimens.md),
         )
     }
 }
@@ -99,7 +101,7 @@ private fun MenuCardPreviewDark() {
             title = "Addition",
             icon = rememberVectorPainter(Icons.Filled.Star),
             onClick = {},
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(Dimens.md),
         )
     }
 }

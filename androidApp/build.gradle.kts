@@ -104,6 +104,7 @@ roborazzi {
 
 dependencies {
     implementation(Library.AndroidXCore)
+    implementation(Library.AndroidXSplash)
     implementation(Library.AndroidXAppcompat)
     implementation(Library.CoroutinesAndroid)
     implementation(Library.KotlinSerializationJson)

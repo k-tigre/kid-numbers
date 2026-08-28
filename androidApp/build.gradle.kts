@@ -129,7 +129,6 @@ dependencies {
     implementation(Logger.InternalStore)
 
     // debugImplementation because LeakCanary should only run in debug builds.
-    debugImplementation(Library.Leakcanary)
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
     testDebugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
 

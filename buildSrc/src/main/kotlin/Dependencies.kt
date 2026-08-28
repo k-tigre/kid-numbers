@@ -23,8 +23,6 @@ enum class Library(group: String, artifact: String, version: Version) {
     SQLDelightCoroutines("app.cash.sqldelight", "coroutines-extensions", Version.SQLDelight),
     SQLDelightApapter("app.cash.sqldelight", "primitive-adapters", Version.SQLDelight),
 
-    Leakcanary("com.squareup.leakcanary", "leakcanary-android", Version.Leakcanary),
-
     ComposeUI("androidx.compose.ui", "ui", Version.Compose),
     ComposeUIToolkit("androidx.compose.ui", "ui-tooling", Version.Compose),
     ComposeFoundation("androidx.compose.foundation", "foundation", Version.ComposeFoundation),
@@ -72,7 +70,6 @@ enum class Library(group: String, artifact: String, version: Version) {
         Coroutines("1.10.2"),
         KotlinSerializationJson("1.9.0"),
         SQLDelight("2.0.2"),
-        Leakcanary("2.14"),
         Compose("1.8.3"),
         ComposeFoundation("1.8.3"),
         ComposeMaterial3("1.3.2"),

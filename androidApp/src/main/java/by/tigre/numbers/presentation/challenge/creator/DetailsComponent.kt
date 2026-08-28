@@ -5,6 +5,7 @@ import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.analytics.ScreenAnalytics
 import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.di.ChallengesDependencies
+import by.tigre.numbers.domain.ChallengeTaskSplitter
 import by.tigre.numbers.domain.GameDurationProvider
 import by.tigre.numbers.entity.Challenge
 import by.tigre.numbers.entity.GameSettings
@@ -51,6 +52,7 @@ interface DetailsComponent {
     fun onEditClicked()
     fun onTaskTypeSelected(type: GameType)
     fun onChallengeDurationSelected(duration: Challenge.Duration)
+    fun onShuffleTasksClicked()
 
     sealed interface PageChild {
         data object TaskList : PageChild
@@ -98,7 +100,10 @@ interface DetailsComponent {
         )
 
         private fun onConfirmSettings(settings: GameSettings) {
-            tasks.tryEmit(tasks.value + Challenge.Task(id = -1, gameSettings = settings, isCompleted = false))
+            val newTasks: List<Challenge.Task> = ChallengeTaskSplitter.split(settings).map { gameSettings ->
+                Challenge.Task(id = -1, gameSettings = gameSettings, isCompleted = false)
+            }
+            tasks.tryEmit(tasks.value + newTasks)
             pagesNavigation.popTo(0)
         }
 
@@ -263,6 +268,13 @@ interface DetailsComponent {
         override fun onChallengeDurationSelected(duration: Challenge.Duration) {
             dialogsNavigation.dismiss()
             durations.tryEmit(durations.value.copy(selected = duration))
+        }
+
+        override fun onShuffleTasksClicked() {
+            val currentTasks: List<Challenge.Task> = tasks.value
+            if (currentTasks.size >= 2) {
+                tasks.tryEmit(currentTasks.shuffled())
+            }
         }
 
         @Serializable

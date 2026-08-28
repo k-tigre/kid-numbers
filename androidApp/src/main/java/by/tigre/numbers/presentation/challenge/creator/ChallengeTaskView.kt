@@ -258,6 +258,19 @@ class ChallengeTaskView(private val component: DetailsComponent) : ScreenComposa
 
                 DrawDurations()
 
+                if (isEditMode && tasks.size >= 2) {
+                    Box(Modifier.fillMaxWidth()) {
+                        TextButton(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .align(Alignment.CenterEnd),
+                            onClick = component::onShuffleTasksClicked,
+                        ) {
+                            Text(stringResource(R.string.screen_challenge_creator_shuffle_tasks))
+                        }
+                    }
+                }
+
                 LazyColumn(Modifier) {
                     tasks.forEachIndexed { index, task ->
                         item { DrawTaskItem(task, isFirst = index == 0, isEditMode = isEditMode) }

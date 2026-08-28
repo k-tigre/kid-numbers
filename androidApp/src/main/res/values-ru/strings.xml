@@ -149,6 +149,7 @@
     <string name="screen_challenge_creator_select_duration_title">Выберете продолжительность</string>
     <string name="screen_challenge_creator_add_task_button">Добавить задание</string>
     <string name="screen_challenge_creator_add_more_button">Добавить еще</string>
+    <string name="screen_challenge_creator_shuffle_tasks">Перемешать задачи</string>
     <string name="screen_challenge_creator_selected_duration">Выбранная продолжительность: %1$s</string>
     <string name="screen_challenge_creator_tasks_duration">Заданий на: %1$s</string>
     <string name="screen_challenge_list_title">Ваши испытания</string>

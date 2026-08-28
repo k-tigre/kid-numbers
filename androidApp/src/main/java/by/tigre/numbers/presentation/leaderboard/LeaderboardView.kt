@@ -12,13 +12,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,8 +28,6 @@ import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import by.tigre.tools.tools.platform.compose.view.EmptyScreen
 import by.tigre.tools.tools.platform.compose.view.ErrorScreen
-import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
-import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
 
 class LeaderboardView(
     private val component: LeaderboardComponent,
@@ -51,6 +50,7 @@ class LeaderboardView(
     )
 ) {
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun DrawContent(innerPadding: PaddingValues) {
         val state by component.uiState.collectAsState()
@@ -100,68 +100,79 @@ class LeaderboardView(
                     .weight(1f)
                     .fillMaxWidth(),
             ) {
-                when {
-                    state.isLoading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            ProgressIndicator(size = ProgressIndicatorSize.LARGE)
+                val entriesEmpty: Boolean = when (state.selectedTab) {
+                    LeaderboardTab.Speed -> state.speedEntries.isEmpty()
+                    LeaderboardTab.Total -> state.totalEntries.isEmpty()
+                }
+                val showSkeleton: Boolean = state.isLoading && entriesEmpty && state.errorMessage == null
+                val isRefreshing: Boolean = state.isLoading && entriesEmpty.not()
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = component::onRefresh,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    when {
+                        state.errorMessage != null -> {
+                            ErrorScreen(
+                                title = stringResource(R.string.screen_leaderboard_load_error),
+                                message = state.errorMessage ?: stringResource(R.string.screen_state_error_network_message),
+                                actionTitle = stringResource(R.string.screen_state_retry),
+                                retryAction = component::onRefresh,
+                            )
                         }
-                    }
-                    state.errorMessage != null -> {
-                        ErrorScreen(
-                            title = stringResource(R.string.screen_leaderboard_load_error),
-                            message = state.errorMessage ?: stringResource(R.string.screen_state_error_network_message),
-                            actionTitle = stringResource(R.string.screen_state_retry),
-                            retryAction = component::onRefresh,
-                        )
-                    }
-                    state.selectedTab == LeaderboardTab.Speed && state.speedBoardSettings == null -> {
-                        EmptyScreen(
-                            message = stringResource(R.string.screen_leaderboard_speed_no_board),
-                        )
-                    }
-                    state.selectedTab == LeaderboardTab.Speed && state.speedEntries.isEmpty() -> {
-                        EmptyScreen(
-                            title = stringResource(R.string.screen_state_empty_leaderboard_title),
-                            message = stringResource(R.string.screen_state_empty_leaderboard_message),
-                        )
-                    }
-                    state.selectedTab == LeaderboardTab.Total && state.totalEntries.isEmpty() -> {
-                        EmptyScreen(
-                            title = stringResource(R.string.screen_state_empty_leaderboard_title),
-                            message = stringResource(R.string.screen_state_empty_leaderboard_message),
-                        )
-                    }
-                    else -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            when (state.selectedTab) {
-                                LeaderboardTab.Speed -> itemsIndexed(state.speedEntries) { index, entry ->
-                                    LeaderboardRow(
-                                        rank = index + 1,
-                                        nickname = entry.nickname,
-                                        score = TIME_FORMAT.format(entry.bestTimeSeconds * 1000L),
-                                        timeLabel = if (entry.mistakes > 0) {
-                                            stringResource(R.string.screen_leaderboard_speed_item_mistakes, entry.mistakes)
-                                        } else {
-                                            null
-                                        },
-                                        isCurrentUser = entry.nickname == state.currentNickname,
-                                    )
-                                }
-                                LeaderboardTab.Total -> itemsIndexed(state.totalEntries) { index, entry ->
-                                    LeaderboardRow(
-                                        rank = index + 1,
-                                        nickname = entry.nickname,
-                                        score = stringResource(R.string.screen_leaderboard_points, entry.totalScore),
-                                        timeLabel = stringResource(R.string.screen_leaderboard_item_games, entry.gamesCount),
-                                        isCurrentUser = entry.nickname == state.currentNickname,
-                                    )
+                        showSkeleton -> {
+                            LeaderboardSkeleton(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                        state.selectedTab == LeaderboardTab.Speed && state.speedBoardSettings == null -> {
+                            EmptyScreen(
+                                message = stringResource(R.string.screen_leaderboard_speed_no_board),
+                            )
+                        }
+                        state.selectedTab == LeaderboardTab.Speed && state.speedEntries.isEmpty() -> {
+                            EmptyScreen(
+                                title = stringResource(R.string.screen_state_empty_leaderboard_title),
+                                message = stringResource(R.string.screen_state_empty_leaderboard_message),
+                            )
+                        }
+                        state.selectedTab == LeaderboardTab.Total && state.totalEntries.isEmpty() -> {
+                            EmptyScreen(
+                                title = stringResource(R.string.screen_state_empty_leaderboard_title),
+                                message = stringResource(R.string.screen_state_empty_leaderboard_message),
+                            )
+                        }
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                when (state.selectedTab) {
+                                    LeaderboardTab.Speed -> itemsIndexed(state.speedEntries) { index, entry ->
+                                        LeaderboardRow(
+                                            rank = index + 1,
+                                            nickname = entry.nickname,
+                                            score = TIME_FORMAT.format(entry.bestTimeSeconds * 1000L),
+                                            timeLabel = if (entry.mistakes > 0) {
+                                                stringResource(R.string.screen_leaderboard_speed_item_mistakes, entry.mistakes)
+                                            } else {
+                                                null
+                                            },
+                                            isCurrentUser = entry.nickname == state.currentNickname,
+                                        )
+                                    }
+                                    LeaderboardTab.Total -> itemsIndexed(state.totalEntries) { index, entry ->
+                                        LeaderboardRow(
+                                            rank = index + 1,
+                                            nickname = entry.nickname,
+                                            score = stringResource(R.string.screen_leaderboard_points, entry.totalScore),
+                                            timeLabel = stringResource(R.string.screen_leaderboard_item_games, entry.gamesCount),
+                                            isCurrentUser = entry.nickname == state.currentNickname,
+                                        )
+                                    }
                                 }
                             }
                         }

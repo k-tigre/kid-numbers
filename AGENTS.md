@@ -39,6 +39,7 @@ Do not touch: `androidApp/build/`, generated SQLDelight output, `keys/`.
 | Coding rules, strings, minimal diff | [docs/agents/conventions.md](docs/agents/conventions.md) |
 | Build, tests, CI, releases | [docs/agents/build-and-ci.md](docs/agents/build-and-ci.md) |
 | "Where do I change X?" | [docs/agents/common-tasks.md](docs/agents/common-tasks.md) |
+| Premium UI polish spec | [docs/superpowers/specs/2026-08-28-premium-ui-polish-design.md](docs/superpowers/specs/2026-08-28-premium-ui-polish-design.md) |
 
 **Skills** (use when the task matches — do not re-read full docs):
 

@@ -8,6 +8,9 @@
 | Game time limits | `domain/GameDurationProvider.kt`, `data/remoteconfig/GameDurationConfig.kt`, `entity/Difficult.kt` |
 | Post-game result screen | `presentation/game/result/` |
 | Main menu | `presentation/menu/` |
+| Onboarding (first run) | `presentation/onboarding/` |
+| Shared UI tokens (Dimens, MenuCard) | `tools/presentation/compose/.../Dimens.kt`, `view/MenuCard.kt`, `view/SectionHeader.kt` |
+| Game result hero headline | `presentation/game/result/ResultHeroHeadline.kt` |
 | Challenge list / creator | `presentation/challenge/` |
 | History | `presentation/history/`, `data/history/` |
 | Statistics | `presentation/statistic/` |

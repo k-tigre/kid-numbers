@@ -70,6 +70,7 @@ class ResultView(
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
+            ResultHeroHeadline(band = result.scoreBand())
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.screen_game_result_duration, TIME_FORMAT.format(result.time)),

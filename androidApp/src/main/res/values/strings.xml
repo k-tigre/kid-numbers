@@ -125,6 +125,9 @@
 
     <string name="screen_game_result_duration">Execution time: %s</string>
     <string name="screen_game_result_title">Results</string>
+    <string name="result_hero_perfect">Perfect!</string>
+    <string name="result_hero_good">Well done!</string>
+    <string name="result_hero_retry">Try again next time</string>
     <string name="screen_game_result_total_questions">Result of answers to %d questions</string>
     <string name="screen_game_result_total_correct_answers">Total correct answers: %d</string>
     <string name="screen_game_result_total_wrong_answers">Total NOT correct answers: %d</string>

@@ -125,6 +125,9 @@
 
     <string name="screen_game_result_duration">Время выполнения: %s</string>
     <string name="screen_game_result_title">Результаты</string>
+    <string name="result_hero_perfect">Идеально!</string>
+    <string name="result_hero_good">Молодец!</string>
+    <string name="result_hero_retry">Попробуй ещё раз</string>
     <string name="screen_game_result_total_questions">Результат ответов на %d вопросов</string>
     <string name="screen_game_result_total_correct_answers">Всего правильных ответов: %d</string>
     <string name="screen_game_result_total_wrong_answers">Всего НЕ правильных ответов: %d</string>

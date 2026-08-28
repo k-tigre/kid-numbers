@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
+import by.tigre.numbers.presentation.game.result.ResultHeroHeadline
+import by.tigre.numbers.presentation.game.result.resolveResultScoreBand
 import by.tigre.numbers.presentation.game.result.ResultView
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
@@ -76,7 +78,13 @@ class ChallengeResultView(
                                     .fillMaxWidth()
                                     .padding(top = 8.dp)
                             ) {
-
+                                val perfectTasks: Int = challenge.items.count { it.correctCount == it.totalCount }
+                                ResultHeroHeadline(
+                                    band = resolveResultScoreBand(
+                                        correctCount = perfectTasks,
+                                        totalCount = challenge.items.size,
+                                    ),
+                                )
                                 val color = if (challenge.isSuccess) {
                                     LocalGameColorsPalette.current.gameSuccess
                                     MaterialTheme.colorScheme.primary

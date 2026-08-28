@@ -159,6 +159,10 @@
     <string name="screen_settings_saved">Saved</string>
 
     <string name="screen_leaderboard_title">Leaderboard</string>
+    <string name="screen_state_empty_leaderboard_title">No scores yet</string>
+    <string name="screen_state_empty_leaderboard_message">Complete a perfect run to appear here</string>
+    <string name="screen_state_error_network_message">Check your connection and try again</string>
+    <string name="screen_state_retry">Retry</string>
     <string name="screen_leaderboard_empty">No scores yet. Complete a perfect training run!</string>
     <string name="screen_leaderboard_load_error">Failed to load leaderboard</string>
     <string name="screen_leaderboard_item">%1$d. %2$s — %3$d pts</string>

@@ -58,6 +58,7 @@ import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.LocalGameColorsPalette
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
+import by.tigre.tools.tools.platform.compose.view.EmptyScreen
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -203,25 +204,16 @@ class HistoryView(
 
     @Composable
     private fun DrawEmptyState(withFilter: Boolean, isChallenge: Boolean) {
-        Box(
-            Modifier
-                .fillMaxSize()
-        ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 24.dp),
-                text = stringResource(
-                    when {
-                        isChallenge && withFilter -> R.string.screen_history_empty_filter_challenges
-                        isChallenge -> R.string.screen_history_empty_challenges
-                        withFilter -> R.string.screen_history_empty_filter_tasks
-                        else -> R.string.screen_history_empty_tasks
-                    }
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
+        EmptyScreen(
+            message = stringResource(
+                when {
+                    isChallenge && withFilter -> R.string.screen_history_empty_filter_challenges
+                    isChallenge -> R.string.screen_history_empty_challenges
+                    withFilter -> R.string.screen_history_empty_filter_tasks
+                    else -> R.string.screen_history_empty_tasks
+                }
+            ),
+        )
     }
 
     @Composable

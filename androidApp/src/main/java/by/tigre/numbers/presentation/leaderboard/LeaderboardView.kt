@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.numbers.presentation.utils.TIME_FORMAT
 import by.tigre.tools.tools.platform.compose.ComposableView
+import by.tigre.tools.tools.platform.compose.view.EmptyScreen
+import by.tigre.tools.tools.platform.compose.view.ErrorScreen
 
 class LeaderboardView(
     private val component: LeaderboardComponent,
@@ -95,29 +98,37 @@ class LeaderboardView(
                     )
                 }
                 state.errorMessage != null -> {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = state.errorMessage ?: stringResource(R.string.screen_leaderboard_load_error),
-                        color = MaterialTheme.colorScheme.error,
-                    )
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        ErrorScreen(
+                            title = stringResource(R.string.screen_leaderboard_load_error),
+                            message = state.errorMessage ?: stringResource(R.string.screen_state_error_network_message),
+                            actionTitle = stringResource(R.string.screen_state_retry),
+                            retryAction = component::onRefresh,
+                        )
+                    }
                 }
                 state.selectedTab == LeaderboardTab.Speed && state.speedBoardSettings == null -> {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = stringResource(R.string.screen_leaderboard_speed_no_board),
-                    )
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        EmptyScreen(
+                            message = stringResource(R.string.screen_leaderboard_speed_no_board),
+                        )
+                    }
                 }
                 state.selectedTab == LeaderboardTab.Speed && state.speedEntries.isEmpty() -> {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = stringResource(R.string.screen_leaderboard_empty),
-                    )
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        EmptyScreen(
+                            title = stringResource(R.string.screen_state_empty_leaderboard_title),
+                            message = stringResource(R.string.screen_state_empty_leaderboard_message),
+                        )
+                    }
                 }
                 state.selectedTab == LeaderboardTab.Total && state.totalEntries.isEmpty() -> {
-                    Text(
-                        modifier = Modifier.padding(16.dp),
-                        text = stringResource(R.string.screen_leaderboard_empty),
-                    )
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        EmptyScreen(
+                            title = stringResource(R.string.screen_state_empty_leaderboard_title),
+                            message = stringResource(R.string.screen_state_empty_leaderboard_message),
+                        )
+                    }
                 }
                 else -> {
                     LazyColumn(

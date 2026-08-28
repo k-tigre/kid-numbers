@@ -160,6 +160,10 @@
     <string name="screen_settings_saved">Сохранено</string>
 
     <string name="screen_leaderboard_title">Доска почёта</string>
+    <string name="screen_state_empty_leaderboard_title">Пока нет результатов</string>
+    <string name="screen_state_empty_leaderboard_message">Пройдите игру без ошибок, чтобы попасть в таблицу</string>
+    <string name="screen_state_error_network_message">Проверьте интернет и попробуйте снова</string>
+    <string name="screen_state_retry">Повторить</string>
     <string name="screen_leaderboard_empty">Пока нет результатов. Пройди тренировку без ошибок!</string>
     <string name="screen_leaderboard_load_error">Не удалось загрузить доску почёта</string>
     <string name="screen_leaderboard_item">%1$d. %2$s — %3$d очк.</string>

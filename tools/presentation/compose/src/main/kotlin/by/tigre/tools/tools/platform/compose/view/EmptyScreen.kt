@@ -24,47 +24,48 @@ import by.tigre.tools.tools.platform.compose.AppTheme
 fun EmptyScreen(
     modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.screen_state_empty_title),
-    message: String,
-    actionTitle: String = stringResource(R.string.reload_action),
-    reloadAction: () -> Unit
+    message: String? = null,
+    actionTitle: String? = null,
+    reloadAction: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Icon(
-            painter = painterResource(R.drawable.ic_baseline_error_outline_24),
-            contentDescription = "error",
+            painter = painterResource(R.drawable.ic_baseline_inbox_24),
+            contentDescription = null,
             modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-
         Text(
             text = title,
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )
-
-        Text(
-            text = message,
-            modifier = Modifier.padding(top = 16.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-
-        OutlinedButton(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
-            onClick = reloadAction,
-        ) {
+        if (message != null) {
             Text(
-                text = actionTitle,
+                text = message,
+                modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 24.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
+        }
+        if (actionTitle != null && reloadAction != null) {
+            OutlinedButton(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                onClick = reloadAction,
+            ) {
+                Text(
+                    text = actionTitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -74,20 +75,21 @@ fun EmptyScreen(
 private fun EmptyScreenPreview() {
     AppTheme {
         EmptyScreen(
-            title = "Ничего не удалось найти",
-            message = "Попробуйте повторить",
-            reloadAction = {}
+            title = "Nothing to show",
+            message = "Try again later",
+            actionTitle = "Reload",
+            reloadAction = {},
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun EmptyScreenPreview2() {
+private fun EmptyScreenPreviewNoAction() {
     AppTheme {
         EmptyScreen(
-            reloadAction = {},
-            message = "Попробуйте повторить",
+            title = "No scores yet",
+            message = "Complete a perfect run to appear here",
         )
     }
 }

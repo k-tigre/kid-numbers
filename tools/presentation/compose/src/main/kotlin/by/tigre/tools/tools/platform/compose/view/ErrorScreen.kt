@@ -25,6 +25,7 @@ fun ErrorScreen(
     modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.screen_state_error_something_went_wrong_title),
     message: String? = null,
+    actionTitle: String? = null,
     retryAction: () -> Unit
 ) {
     Column(
@@ -62,7 +63,7 @@ fun ErrorScreen(
             onClick = retryAction,
         ) {
             Text(
-                text = stringResource(R.string.retry_action),
+                text = actionTitle ?: stringResource(R.string.retry_action),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )

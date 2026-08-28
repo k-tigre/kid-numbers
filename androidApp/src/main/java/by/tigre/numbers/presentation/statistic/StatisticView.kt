@@ -36,6 +36,7 @@ import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import java.util.Locale
+import by.tigre.tools.tools.platform.compose.view.EmptyScreen
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicator
 import by.tigre.tools.tools.platform.compose.view.ProgressIndicatorSize
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,16 +83,9 @@ class StatisticView(
 
     @Composable
     private fun DrawEmpty() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                text = stringResource(R.string.screen_statistic_empty),
-                textAlign = TextAlign.Center
-            )
-        }
+        EmptyScreen(
+            message = stringResource(R.string.screen_statistic_empty),
+        )
     }
 
     @Composable

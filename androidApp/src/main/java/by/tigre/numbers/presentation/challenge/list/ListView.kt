@@ -30,6 +30,7 @@ import by.tigre.numbers.entity.Challenge
 import by.tigre.numbers.entity.ChallengeWithCount
 import by.tigre.numbers.presentation.challenge.list.ListComponent.ChallengeItem
 import by.tigre.numbers.presentation.utils.toLabel
+import by.tigre.tools.tools.platform.compose.view.EmptyScreen
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,27 +72,14 @@ class ListView(
                 }
             }
         } else {
-            Column(
+            EmptyScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    text = stringResource(R.string.screen_challenge_list_empty_title)
-                )
-
-                Button(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    onClick = component::onCreateClicked
-                ) {
-                    Text(stringResource(R.string.screen_challenge_list_empty_add_button))
-                }
-            }
+                title = stringResource(R.string.screen_challenge_list_empty_title),
+                actionTitle = stringResource(R.string.screen_challenge_list_empty_add_button),
+                reloadAction = component::onCreateClicked,
+            )
         }
     }
 

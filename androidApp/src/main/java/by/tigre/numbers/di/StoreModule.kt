@@ -16,6 +16,8 @@ import by.tigre.numbers.data.history.ResultStore
 import by.tigre.numbers.data.history.StoreDifficultAdapter
 import by.tigre.numbers.data.history.StoreGameTypeAdapter
 import by.tigre.numbers.data.storage.Preferences
+import by.tigre.numbers.domain.OnboardingRepository
+import by.tigre.numbers.domain.OnboardingRepositoryImpl
 import by.tigre.numbers.db.Challenges
 import by.tigre.numbers.db.History
 import by.tigre.tools.tools.coroutines.CoroutineModule
@@ -24,6 +26,7 @@ interface StoreModule {
     val resultStore: ResultStore
     val challengesStore: ChallengesStore
     val preferences: Preferences
+    val onboardingRepository: OnboardingRepository
 
     class Impl(
         context: Context,
@@ -109,5 +112,6 @@ interface StoreModule {
         }
 
         override val preferences: Preferences = Preferences.Impl(context, "main")
+        override val onboardingRepository: OnboardingRepository = OnboardingRepositoryImpl(preferences)
     }
 }

@@ -6,6 +6,7 @@ import by.tigre.numbers.data.challenges.ChallengesStore
 import by.tigre.numbers.data.history.ResultStore
 import by.tigre.numbers.data.platform.DateFormatter
 import by.tigre.numbers.domain.GameProvider
+import by.tigre.numbers.domain.OnboardingRepository
 import by.tigre.numbers.domain.reminder.ReminderChallengeGenerator
 import by.tigre.numbers.domain.reminder.ReminderController
 import by.tigre.tools.tools.coroutines.CoreDispatchers
@@ -25,4 +26,5 @@ interface GameDependencies {
     val featureFlags: by.tigre.numbers.data.remoteconfig.FeatureFlags
     val leaderboardPreferences: by.tigre.numbers.data.storage.LeaderboardPreferences
     val leaderboardHistoryBackfill: by.tigre.numbers.data.leaderboard.LeaderboardHistoryBackfill
+    val onboardingRepository: OnboardingRepository
 }

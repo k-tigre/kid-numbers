@@ -185,6 +185,10 @@
     <string name="screen_settings_leaderboard_nickname_hint">Ник, который отображается в доске почёта.</string>
     <string name="screen_settings_save">Сохранить</string>
     <string name="screen_settings_saved">Сохранено</string>
+    <string name="settings_about_title">О приложении</string>
+    <string name="settings_about_version">Версия %1$s</string>
+    <string name="settings_about_github">Исходный код на GitHub</string>
+    <string name="settings_about_notifications">Настройки уведомлений</string>
 
     <string name="screen_leaderboard_title">Доска почёта</string>
     <string name="screen_state_empty_leaderboard_title">Пока нет результатов</string>

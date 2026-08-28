@@ -1,5 +1,6 @@
 package by.tigre.numbers.presentation.settings
 
+import by.tigre.numbers.BuildConfig
 import by.tigre.numbers.data.storage.LeaderboardPreferences
 import by.tigre.tools.presentation.base.BaseComponentContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ interface SettingsComponent {
 
 data class SettingsUiState(
     val nickname: String = "",
+    val versionName: String = "",
     val error: SettingsError? = null,
     val saved: Boolean = false,
 ) {
@@ -30,7 +32,10 @@ class SettingsComponentImpl(
 ) : SettingsComponent, BaseComponentContext by context {
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(
-        SettingsUiState(nickname = leaderboardPreferences.loadNickname(default = DEFAULT_NICKNAME)),
+        SettingsUiState(
+            nickname = leaderboardPreferences.loadNickname(default = DEFAULT_NICKNAME),
+            versionName = BuildConfig.VERSION_NAME,
+        ),
     )
     override val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 

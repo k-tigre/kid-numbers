@@ -1,5 +1,7 @@
 package by.tigre.numbers.presentation.settings
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +19,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import by.tigre.numbers.R
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
+import by.tigre.tools.tools.platform.compose.view.SectionHeader
 
 class SettingsView(
     private val component: SettingsComponent,
@@ -39,6 +44,8 @@ class SettingsView(
         val state by component.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         val savedMessage = stringResource(R.string.screen_settings_saved)
+        val uriHandler = LocalUriHandler.current
+        val context = LocalContext.current
         LaunchedEffect(state.saved) {
             if (state.saved) {
                 snackbarHostState.showSnackbar(savedMessage)
@@ -83,7 +90,32 @@ class SettingsView(
                 ) {
                     Text(stringResource(R.string.screen_settings_save))
                 }
+                SectionHeader(title = stringResource(R.string.settings_about_title))
+                Text(
+                    text = stringResource(R.string.settings_about_version, state.versionName),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                TextButton(
+                    onClick = { uriHandler.openUri(GITHUB_REPO_URL) },
+                ) {
+                    Text(stringResource(R.string.settings_about_github))
+                }
+                TextButton(
+                    onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            },
+                        )
+                    },
+                ) {
+                    Text(stringResource(R.string.settings_about_notifications))
+                }
             }
         }
+    }
+
+    private companion object {
+        const val GITHUB_REPO_URL: String = "https://github.com/k-tigre/kid-numbers"
     }
 }

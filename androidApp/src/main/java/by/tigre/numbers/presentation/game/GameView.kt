@@ -1,5 +1,6 @@
 package by.tigre.numbers.presentation.game
 
+import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -35,6 +36,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -250,6 +253,15 @@ class GameView(
                     }
                 }
             } else {
+                val haptic = LocalHapticFeedback.current
+                LaunchedEffect(result) {
+                    val feedbackType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        if (result) HapticFeedbackType.Confirm else HapticFeedbackType.Reject
+                    } else {
+                        HapticFeedbackType.LongPress
+                    }
+                    haptic.performHapticFeedback(feedbackType)
+                }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     val feedbackColor = when {
                         isPracticeMode -> MaterialTheme.colorScheme.onSurfaceVariant

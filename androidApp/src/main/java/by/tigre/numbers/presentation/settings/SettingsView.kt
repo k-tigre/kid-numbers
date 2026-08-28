@@ -27,7 +27,10 @@ class SettingsView(
 ) : ScreenComposableView(
     ToolbarConfig(
         title = { stringResource(R.string.screen_settings_title) },
-        navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onCloseClicked),
+        navigationIcon = ToolbarConfig.NavigationIconAction(
+            contentDescription = { stringResource(R.string.content_desc_back) },
+            action = component::onCloseClicked,
+        ),
     ),
 ) {
 

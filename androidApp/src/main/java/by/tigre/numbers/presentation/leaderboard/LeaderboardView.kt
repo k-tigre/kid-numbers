@@ -35,11 +35,15 @@ class LeaderboardView(
 ) : ScreenComposableView(
     ToolbarConfig(
         title = { stringResource(R.string.screen_leaderboard_title) },
-        navigationIcon = ToolbarConfig.NavigationIconAction(action = component::onBack),
+        navigationIcon = ToolbarConfig.NavigationIconAction(
+            contentDescription = { stringResource(R.string.content_desc_back) },
+            action = component::onBack,
+        ),
         actions = {
             listOf(
                 ToolbarConfig.Action.Icon(
                     vector = Icons.Default.Refresh,
+                    contentDescription = { stringResource(R.string.content_desc_refresh) },
                     action = component::onRefresh,
                 )
             )

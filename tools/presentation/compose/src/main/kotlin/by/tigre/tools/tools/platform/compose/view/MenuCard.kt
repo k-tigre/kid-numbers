@@ -31,6 +31,7 @@ import by.tigre.tools.tools.platform.compose.Dimens
 fun MenuCard(
     title: String,
     icon: Painter,
+    iconContentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -52,7 +53,7 @@ fun MenuCard(
         ) {
             Icon(
                 painter = icon,
-                contentDescription = null,
+                contentDescription = iconContentDescription,
                 modifier = Modifier.size(Dimens.lg),
                 tint = MaterialTheme.colorScheme.onSurface,
             )
@@ -87,6 +88,7 @@ private fun MenuCardPreviewLight() {
             title = "Addition",
             subtitle = "Practice sums",
             icon = rememberVectorPainter(Icons.Filled.Star),
+            iconContentDescription = "Addition",
             onClick = {},
             modifier = Modifier.padding(Dimens.md),
         )
@@ -100,6 +102,7 @@ private fun MenuCardPreviewDark() {
         MenuCard(
             title = "Addition",
             icon = rememberVectorPainter(Icons.Filled.Star),
+            iconContentDescription = "Addition",
             onClick = {},
             modifier = Modifier.padding(Dimens.md),
         )

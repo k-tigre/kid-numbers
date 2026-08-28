@@ -57,6 +57,7 @@ class MenuView(
                     MenuCard(
                         title = type.toLabel(),
                         icon = painterResource(gameTypeIcon(type)),
+                        iconContentDescription = stringResource(gameTypeContentDescription(type)),
                         onClick = { component.onGameClicked(type) },
                     )
                 }
@@ -66,11 +67,13 @@ class MenuView(
                     MenuCard(
                         title = stringResource(R.string.main_menu_leaderboard),
                         icon = painterResource(R.drawable.ic_menu_leaderboard),
+                        iconContentDescription = stringResource(R.string.content_desc_menu_leaderboard),
                         onClick = component::onLeaderboardClicked,
                     )
                     MenuCard(
                         title = stringResource(R.string.main_menu_settings),
                         icon = painterResource(R.drawable.ic_menu_settings),
+                        iconContentDescription = stringResource(R.string.content_desc_menu_settings),
                         onClick = component::onSettingsClicked,
                     )
                 }
@@ -78,11 +81,13 @@ class MenuView(
                 MenuCard(
                     title = stringResource(R.string.main_menu_statistic),
                     icon = painterResource(R.drawable.ic_menu_statistic),
+                    iconContentDescription = stringResource(R.string.content_desc_menu_statistic),
                     onClick = component::onStatisticClicked,
                 )
                 MenuCard(
                     title = stringResource(R.string.main_menu_history),
                     icon = painterResource(R.drawable.ic_menu_history),
+                    iconContentDescription = stringResource(R.string.content_desc_menu_history),
                     onClick = component::onHistoryClicked,
                 )
             }
@@ -100,6 +105,7 @@ class MenuView(
                 null
             },
             icon = painterResource(R.drawable.ic_menu_challenge),
+            iconContentDescription = stringResource(R.string.content_desc_menu_challenge),
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             onClick = component::onChallengeClicked,
         )
@@ -112,5 +118,13 @@ class MenuView(
         GameType.Multiplication -> R.drawable.ic_menu_multiply
         GameType.Division -> R.drawable.ic_menu_divide
         GameType.Equations -> R.drawable.ic_menu_equation
+    }
+
+    private fun gameTypeContentDescription(type: GameType): Int = when (type) {
+        GameType.Additional -> R.string.content_desc_menu_add
+        GameType.Subtraction -> R.string.content_desc_menu_subtract
+        GameType.Multiplication -> R.string.content_desc_menu_multiply
+        GameType.Division -> R.string.content_desc_menu_divide
+        GameType.Equations -> R.string.content_desc_menu_equation
     }
 }

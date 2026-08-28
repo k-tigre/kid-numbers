@@ -16,6 +16,19 @@
     <string name="main_menu_settings">Settings</string>
 
     <string name="button_close">Close</string>
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_close">Close</string>
+    <string name="content_desc_refresh">Refresh</string>
+    <string name="content_desc_menu_add">Addition</string>
+    <string name="content_desc_menu_subtract">Subtraction</string>
+    <string name="content_desc_menu_multiply">Multiplication</string>
+    <string name="content_desc_menu_divide">Division</string>
+    <string name="content_desc_menu_equation">Equations</string>
+    <string name="content_desc_menu_challenge">Challenges</string>
+    <string name="content_desc_menu_leaderboard">Leaderboard</string>
+    <string name="content_desc_menu_settings">Settings</string>
+    <string name="content_desc_menu_statistic">Statistics</string>
+    <string name="content_desc_menu_history">History</string>
     <string name="button_continue">Continue</string>
     <string name="button_start">Start</string>
 

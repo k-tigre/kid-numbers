@@ -54,6 +54,7 @@ class ResultView(
         title = { stringResource(R.string.screen_game_result_title) },
         navigationIcon = ToolbarConfig.NavigationIconAction(
             vector = Icons.Default.Close,
+            contentDescription = { stringResource(R.string.content_desc_close) },
             action = component::onClose,
         ),
     ),

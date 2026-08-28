@@ -17,6 +17,19 @@
 
     <string name="button_start">Начать</string>
     <string name="button_close">Закрыть</string>
+    <string name="content_desc_back">Назад</string>
+    <string name="content_desc_close">Закрыть</string>
+    <string name="content_desc_refresh">Обновить</string>
+    <string name="content_desc_menu_add">Сложение</string>
+    <string name="content_desc_menu_subtract">Вычитание</string>
+    <string name="content_desc_menu_multiply">Умножение</string>
+    <string name="content_desc_menu_divide">Деление</string>
+    <string name="content_desc_menu_equation">Уравнения</string>
+    <string name="content_desc_menu_challenge">Испытания</string>
+    <string name="content_desc_menu_leaderboard">Доска почёта</string>
+    <string name="content_desc_menu_settings">Настройки</string>
+    <string name="content_desc_menu_statistic">Статистика</string>
+    <string name="content_desc_menu_history">История</string>
     <string name="button_continue">Продолжить</string>
 
     <string name="screen_history_title">История</string>

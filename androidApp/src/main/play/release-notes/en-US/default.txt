@@ -1,1 +1,4 @@
-• On Russian-language devices the app is now called «Числа»
+• Refreshed UI: main menu, leaderboard, result screens, and new app icon
+• Short onboarding on first launch; haptic feedback on answers
+• Shuffle challenge tasks; About section in Settings
+• Fixed crashes after onboarding and consecutive duplicate questions

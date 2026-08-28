@@ -9,6 +9,19 @@
 
 ### EN
 
+## [1.7.0] - 2026-08-28
+### RU
+- Обновлённый интерфейс: главное меню, доска почёта, экраны результатов и новая иконка
+- Короткое знакомство при первом запуске; вибрация при ответах
+- В испытаниях — перемешивание задач; раздел «О приложении» в настройках
+- Исправлены сбои после знакомства и повторяющиеся задания подряд
+
+### EN
+- Refreshed UI: main menu, leaderboard, result screens, and new app icon
+- Short onboarding on first launch; haptic feedback on answers
+- Shuffle challenge tasks; About section in Settings
+- Fixed crashes after onboarding and consecutive duplicate questions
+
 ## [1.6.0] - 2026-08-16
 ### RU
 - На русском языке приложение теперь называется «Числа»

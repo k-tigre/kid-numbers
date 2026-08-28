@@ -11,6 +11,8 @@ import by.tigre.numbers.presentation.game.settings.MultiplicationSettingsView
 import by.tigre.tools.tools.platform.compose.ComposableView
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootDetailsView(
@@ -22,7 +24,7 @@ class RootDetailsView(
         Children(
             modifier = modifier,
             stack = component.pages,
-            animation = stackAnimation(animator = fade())
+            animation = stackAnimation(animator = slide() + fade())
         ) {
             when (val child = it.instance) {
                 is DetailsComponent.PageChild.TaskList -> ChallengeTaskView(component)

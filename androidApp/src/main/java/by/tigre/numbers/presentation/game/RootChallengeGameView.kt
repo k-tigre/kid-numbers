@@ -22,6 +22,8 @@ import by.tigre.numbers.presentation.game.result.ResultView
 import by.tigre.tools.tools.platform.compose.ComposableView
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootChallengeGameView(
@@ -36,7 +38,7 @@ class RootChallengeGameView(
             Children(
                 modifier = Modifier,
                 stack = component.pages,
-                animation = stackAnimation(animator = fade())
+                animation = stackAnimation(animator = slide() + fade())
             ) {
                 when (val child = it.instance) {
                     is RootChallengeGameComponent.PageChild.Game -> GameView(child.component)

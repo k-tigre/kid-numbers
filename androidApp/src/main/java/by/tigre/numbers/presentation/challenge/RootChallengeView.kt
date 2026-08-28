@@ -8,6 +8,8 @@ import by.tigre.numbers.presentation.challenge.list.ListView
 import by.tigre.tools.tools.platform.compose.ComposableView
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
+import com.arkivanov.decompose.extensions.compose.stack.animation.slide
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 
 class RootChallengeView(
@@ -19,7 +21,7 @@ class RootChallengeView(
         Children(
             modifier = modifier,
             stack = component.pages,
-            animation = stackAnimation(animator = fade())
+            animation = stackAnimation(animator = slide() + fade())
         ) {
             when (val child = it.instance) {
                 is RootChallengeComponent.PageChild.List -> ListView(child.component)

@@ -23,6 +23,11 @@ class HistoryItemView(
     @Composable
     override fun DrawContent(innerPadding: PaddingValues) {
         val result by component.results.collectAsState()
-        ResultScreenContent(result = result, innerPadding = innerPadding)
+        ResultScreenContent(
+            result = result,
+            innerPadding = innerPadding,
+            weakFactLabels = component.weakFactLabels,
+            onDoneClicked = component::onClose,
+        )
     }
 }

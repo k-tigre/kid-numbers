@@ -18,7 +18,10 @@ import by.tigre.numbers.presentation.leaderboard.LeaderboardComponentImpl
 import by.tigre.numbers.presentation.onboarding.OnboardingComponentImpl
 import by.tigre.numbers.presentation.menu.MenuComponent
 import by.tigre.numbers.presentation.settings.SettingsComponentImpl
+import by.tigre.numbers.presentation.smart.RootSmartGameComponent
+import by.tigre.numbers.presentation.smart.SmartPracticeComponent
 import by.tigre.numbers.presentation.statistic.StatisticComponent
+import by.tigre.numbers.entity.SmartPracticeSettings
 import by.tigre.tools.presentation.base.BaseComponentContext
 import by.tigre.tools.presentation.base.appChildSlot
 import by.tigre.tools.presentation.base.appChildStack
@@ -56,6 +59,8 @@ interface RootComponent {
         class Leaderboard(val component: by.tigre.numbers.presentation.leaderboard.LeaderboardComponent) : PageChild
         class Settings(val component: by.tigre.numbers.presentation.settings.SettingsComponent) : PageChild
         class Game(val component: RootGameComponent) : PageChild
+        class SmartPractice(val component: SmartPracticeComponent) : PageChild
+        class SmartGame(val component: RootSmartGameComponent) : PageChild
         class Challenge(val component: RootChallengeComponent) : PageChild
         class GameChallenge(val component: RootChallengeGameComponent) : PageChild
     }
@@ -84,6 +89,10 @@ interface RootComponent {
         private val mainMenuRouter = object : MenuComponent.Router {
             override fun showGameSettings(type: GameType) {
                 pagesNavigation.pushNew(MenuPagesConfig.Game(type))
+            }
+
+            override fun showSmartPractice() {
+                pagesNavigation.pushNew(MenuPagesConfig.SmartPractice)
             }
 
             override fun showHistory() {
@@ -142,6 +151,8 @@ interface RootComponent {
                             router = mainMenuRouter,
                             challengesDependencies = challengesDependencies,
                             featureFlags = gameDependencies.featureFlags,
+                            factStore = gameDependencies.factStore,
+                            dispatchers = gameDependencies.dispatchers,
                         )
                     )
 
@@ -153,6 +164,34 @@ interface RootComponent {
                             analytics = analytics,
                             onClose = { pagesNavigation.pop() },
                             screenAnalytics = screenAnalytics
+                        )
+                    )
+
+                    MenuPagesConfig.SmartPractice -> PageChild.SmartPractice(
+                        SmartPracticeComponent.Impl(
+                            context = componentContext,
+                            featureFlags = gameDependencies.featureFlags,
+                            smartPracticePreferences = gameDependencies.smartPracticePreferences,
+                            router = object : SmartPracticeComponent.Router {
+                                override fun startSmartGame(settings: SmartPracticeSettings) {
+                                    pagesNavigation.pushNew(MenuPagesConfig.SmartGame(settings))
+                                }
+
+                                override fun close() {
+                                    pagesNavigation.pop()
+                                }
+                            },
+                        )
+                    )
+
+                    is MenuPagesConfig.SmartGame -> PageChild.SmartGame(
+                        RootSmartGameComponent.Impl(
+                            context = componentContext,
+                            settings = config.settings,
+                            dependencies = gameDependencies,
+                            analytics = analytics,
+                            screenAnalytics = screenAnalytics,
+                            onClose = { pagesNavigation.replaceAll(MenuPagesConfig.Menu) },
                         )
                     )
 
@@ -172,6 +211,8 @@ interface RootComponent {
                         StatisticComponent.Impl(
                             context = componentContext,
                             resultStore = gameDependencies.resultStore,
+                            factStore = gameDependencies.factStore,
+                            dispatchers = gameDependencies.dispatchers,
                             onClose = { pagesNavigation.pop() }
                         )
                     )
@@ -242,6 +283,8 @@ interface RootComponent {
                         MenuPagesConfig.Challenge -> Event.Screen.RootChallenge
                         is MenuPagesConfig.ChallengeGame -> Event.Screen.RootGameChallenge
                         is MenuPagesConfig.Game -> Event.Screen.RootGame
+                        MenuPagesConfig.SmartPractice -> Event.Screen.MainMenu
+                        is MenuPagesConfig.SmartGame -> Event.Screen.RootGame
                     }
                 }
             }
@@ -330,6 +373,14 @@ interface RootComponent {
                 @SerialName("GameType")
                 val type: GameType
             ) : MenuPagesConfig
+
+            @Serializable
+            @SerialName("MenuPagesConfig_SmartPractice")
+            data object SmartPractice : MenuPagesConfig
+
+            @Serializable
+            @SerialName("MenuPagesConfig_SmartGame")
+            data class SmartGame(val settings: SmartPracticeSettings) : MenuPagesConfig
 
             @Serializable
             @SerialName("MenuPagesConfig_ChallengeGame")

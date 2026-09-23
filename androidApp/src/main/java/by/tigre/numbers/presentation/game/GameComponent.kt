@@ -49,18 +49,21 @@ interface GameComponent {
     @OptIn(FlowPreview::class)
     class Impl(
         context: BaseComponentContext,
-        private val settings: GameSettings,
-        provider: GameProvider,
+        private val settings: GameSettings? = null,
+        provider: GameProvider? = null,
+        gameOptions: GameOptions? = null,
+        private val isSmartPractice: Boolean = false,
         private val reminderController: ReminderController,
         private val analytics: EventAnalytics,
         private val onFinish: (GameResult) -> Unit
     ) : GameComponent, BaseComponentContext by context {
 
-        private val gameOption = provider.provide(settings)
+        private val gameOption: GameOptions = gameOptions ?: provider!!.provide(settings!!)
 
         private val resultQuestions = mutableListOf<GameResult.Result>()
         private val allQuestions = gameOption.questions
         private val nextButtonClicks = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        private var questionShownAtMs: Long = System.currentTimeMillis()
 
         private val time = tickerFlow(1000, 0)
             .map { it * 1000 }
@@ -141,6 +144,7 @@ interface GameComponent {
                             )
                             answerX.emit("")
                             answerY.emit("")
+                            questionShownAtMs = System.currentTimeMillis()
                         }
                     }
             }
@@ -203,6 +207,7 @@ interface GameComponent {
                     difficult = gameOption.difficult,
                     type = gameOption.type,
                     settings = settings,
+                    isSmartPractice = isSmartPractice,
                 )
             )
 
@@ -223,12 +228,14 @@ interface GameComponent {
                 is GameOptions.Question.Equation.Single -> answerX == question.x
                 is GameOptions.Question.Operation -> answerX == question.x
             }
+            val nowMs: Long = System.currentTimeMillis()
             val result = GameResult.Result(
                 isCorrect = isCorrect,
                 question = question,
                 answer = answerX,
                 answerY = if (question is GameOptions.Question.Equation.Double) answerY else null,
                 countsForScore = scoringEnabled,
+                timeMs = (nowMs - questionShownAtMs).coerceAtLeast(0),
             )
             resultQuestions.add(result)
             answerResult.tryEmit(isCorrect)

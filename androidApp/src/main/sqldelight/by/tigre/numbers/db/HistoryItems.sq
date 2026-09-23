@@ -17,3 +17,10 @@ SELECT historyId, count(historyId) FROM HistoryItem GROUP BY historyId ORDER BY 
 
 drop:
 DELETE FROM  HistoryItem WHERE historyId = ?;
+
+selectRecentWithData:
+SELECT h.id, h.date, hi.data
+FROM HistoryItem hi
+INNER JOIN History h ON h.id = hi.historyId
+ORDER BY h.id DESC
+LIMIT :limit;

@@ -14,6 +14,17 @@
     <string name="main_menu_statistic">Статистика</string>
     <string name="main_menu_leaderboard">Доска почёта</string>
     <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_smart_practice">Умная тренировка</string>
+    <string name="main_menu_smart_practice_subtitle">Подтянем слабые примеры</string>
+    <string name="main_menu_smart_practice_due_subtitle">Пора повторить: %d</string>
+    <string name="smart_practice_title">Умная тренировка</string>
+    <string name="smart_practice_section_ops">Что тренируем</string>
+    <string name="smart_practice_op_add">Сложение</string>
+    <string name="smart_practice_op_sub">Вычитание</string>
+    <string name="smart_practice_op_mul">Умножение</string>
+    <string name="smart_practice_op_div">Деление</string>
+    <string name="smart_practice_start">Начать</string>
+    <string name="content_desc_menu_smart_practice">Умная тренировка</string>
 
     <string name="button_start">Начать</string>
     <string name="button_close">Закрыть</string>
@@ -69,6 +80,11 @@
     <string name="screen_statistic_correct_percent">Правильных</string>
     <string name="screen_statistic_percent_value">%1$d (%2$s%%)</string>
     <string name="screen_statistic_empty">Тут пока ничего нет, пройди тренировку и статистика появится</string>
+    <string name="screen_statistic_mastery_title">Освоение фактов</string>
+    <string name="screen_statistic_mastery_progress">%1$d / %2$d</string>
+    <string name="screen_statistic_mastery_weak_title">Слабые примеры</string>
+    <string name="screen_statistic_mastery_weak_empty">Пока нет</string>
+    <string name="screen_statistic_mastery_due_today">Сегодня повторить: %d</string>
 
     <string name="screen_game_time_left">Осталось %s</string>
     <string name="screen_game_current_question">Вопрос %1$d из %2$d</string>
@@ -132,6 +148,16 @@
     <string name="result_stat_correct">Верно</string>
     <string name="result_stat_wrong">Ошибки</string>
     <string name="result_section_answers">Ответы</string>
+    <string name="result_answers_expand">Показать ответы</string>
+    <string name="result_answers_collapse">Скрыть ответы</string>
+    <string name="result_smart_no_leaderboard">Тренировка — без рейтинга</string>
+    <string name="result_weak_facts_title">Стоит повторить</string>
+    <string name="result_done_button">Хорошо</string>
+    <string name="result_error_insight_neighbor_fact">Часто путаешь с соседними примерами</string>
+    <string name="result_error_insight_off_by_one">Часто ошибаешься на единицу</string>
+    <string name="result_error_insight_wrong_operation">Иногда путаешь действие</string>
+    <string name="result_error_insight_off_by_ten">Часто ошибаешься на десять</string>
+    <string name="result_error_insight_sign_error">Следи за порядком в вычитании</string>
     <string name="screen_game_result_total_questions">Результат ответов на %d вопросов</string>
     <string name="screen_game_result_total_correct_answers">Всего правильных ответов: %d</string>
     <string name="screen_game_result_total_wrong_answers">Всего НЕ правильных ответов: %d</string>

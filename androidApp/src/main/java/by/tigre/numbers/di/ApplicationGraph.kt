@@ -42,7 +42,8 @@ class ApplicationGraph(
                 analyticsModule = analyticsModule
             )
             val gameModule = GameModule.Impl(
-                analyticsModule = analyticsModule
+                analyticsModule = analyticsModule,
+                factStore = storeModule.factStore,
             )
             val leaderboardModule: LeaderboardModule = LeaderboardModule.Impl(
                 storeModule = storeModule,

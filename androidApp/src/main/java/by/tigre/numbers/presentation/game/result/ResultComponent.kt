@@ -5,6 +5,7 @@ import by.tigre.numbers.data.leaderboard.LeaderboardRepository
 import by.tigre.numbers.data.leaderboard.LeaderboardSpeedComparisonCalculator
 import by.tigre.numbers.data.remoteconfig.FeatureFlags
 import by.tigre.numbers.data.storage.LeaderboardPreferences
+import by.tigre.numbers.entity.ErrorType
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.LeaderboardSpeedSubmit
@@ -18,6 +19,8 @@ import kotlinx.coroutines.launch
 interface ResultComponent {
 
     val results: StateFlow<GameResult>
+    val weakFactLabels: List<String>
+    val errorInsightType: ErrorType?
     val leaderboardDialog: StateFlow<LeaderboardSubmitDialogState?>
 
     fun onClose()
@@ -34,6 +37,11 @@ interface ResultComponent {
     ) : ResultComponent, BaseComponentContext by context {
 
         override val results: StateFlow<GameResult> = MutableStateFlow(result)
+        override val errorInsightType: ErrorType? = computeDominantErrorType(result)
+        override val weakFactLabels: List<String> = computeWeakFactLabels(
+            result = result,
+            preferErrorType = errorInsightType,
+        )
         private val _leaderboardDialog = MutableStateFlow<LeaderboardSubmitDialogState?>(null)
         override val leaderboardDialog: StateFlow<LeaderboardSubmitDialogState?> = _leaderboardDialog.asStateFlow()
 
@@ -41,6 +49,7 @@ interface ResultComponent {
             val settings: GameSettings? = result.settings
             if (
                 settings != null &&
+                !result.isSmartPractice &&
                 featureFlags.isLeaderboardEnabled.value &&
                 result.isPerfectRun &&
                 result.totalCount > 0

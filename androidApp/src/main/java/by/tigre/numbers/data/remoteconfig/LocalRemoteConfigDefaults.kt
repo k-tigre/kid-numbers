@@ -7,5 +7,7 @@ object LocalRemoteConfigDefaults {
         RemoteConfigKeys.PURCHASES_ENABLED to false,
         RemoteConfigKeys.EQUATIONS_DIMENSION_ENABLED to false,
         RemoteConfigKeys.GAME_DURATION_JSON to GameDurationConfig.DEFAULT_JSON,
+        RemoteConfigKeys.SMART_PRACTICE_ENABLED to FeatureFlagsImpl.DEFAULT_SMART_PRACTICE_ENABLED,
+        RemoteConfigKeys.SMART_OPS_ENABLED to FeatureFlagsImpl.DEFAULT_SMART_OPS,
     )
 }

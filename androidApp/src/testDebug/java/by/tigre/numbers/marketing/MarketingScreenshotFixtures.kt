@@ -7,6 +7,8 @@ import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.GameSettings
 import by.tigre.numbers.entity.LeaderboardEntry
 import by.tigre.numbers.entity.LeaderboardSpeedEntry
+import by.tigre.numbers.domain.facts.FactMasterySnapshot
+import by.tigre.numbers.entity.FactKey
 import by.tigre.numbers.entity.StatisticData
 import by.tigre.numbers.presentation.challenge.list.ListComponent
 import by.tigre.numbers.presentation.challenge.list.ListComponent.ChallengeItem
@@ -24,12 +26,15 @@ object MarketingScreenshotFixtures {
         override val gameTypes: List<GameType> = GameType.entries
         override val hasActiveChallenge: StateFlow<Boolean> = MutableStateFlow(true)
         override val isLeaderboardEnabled: StateFlow<Boolean> = MutableStateFlow(false)
+        override val isSmartPracticeEnabled: StateFlow<Boolean> = MutableStateFlow(false)
+        override val smartPracticeDueCount: StateFlow<Int> = MutableStateFlow(0)
         override fun onGameClicked(type: GameType) = Unit
         override fun onHistoryClicked() = Unit
         override fun onChallengeClicked() = Unit
         override fun onStatisticClicked() = Unit
         override fun onLeaderboardClicked() = Unit
         override fun onSettingsClicked() = Unit
+        override fun onSmartPracticeClicked() = Unit
     }
     fun challengesComponent(): ListComponent = object : ListComponent {
         override val challenges: StateFlow<List<ChallengeItem>> = MutableStateFlow(challengeItems())
@@ -120,6 +125,17 @@ object MarketingScreenshotFixtures {
                     GameType.Additional,
                     GameType.Division,
                     GameType.Subtraction,
+                ),
+                mastery = FactMasterySnapshot(
+                    opProgress = FactKey.Op.entries.map { op ->
+                        FactMasterySnapshot.OpProgress(op = op, mastered = 18, total = 24)
+                    },
+                    weakFactKeys = listOf(
+                        FactKey(FactKey.Op.MUL, 7, 8),
+                        FactKey(FactKey.Op.DIV, 56, 7),
+                        FactKey(FactKey.Op.ADD, 6, 7),
+                    ),
+                    dueTodayCount = 8,
                 ),
             )
         )

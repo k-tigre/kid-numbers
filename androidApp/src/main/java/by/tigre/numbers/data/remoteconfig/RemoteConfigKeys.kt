@@ -6,4 +6,6 @@ object RemoteConfigKeys {
     const val PURCHASES_ENABLED: String = "purchases_enabled"
     const val EQUATIONS_DIMENSION_ENABLED: String = "equations_dimension_enabled"
     const val GAME_DURATION_JSON: String = "game_duration_json"
+    const val SMART_PRACTICE_ENABLED: String = "smart_practice_enabled"
+    const val SMART_OPS_ENABLED: String = "smart_ops_enabled"
 }

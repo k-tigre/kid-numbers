@@ -15,6 +15,8 @@ data class GameResult(
     val difficult: Difficult,
     @SerialName("settings")
     val settings: GameSettings? = null,
+    @SerialName("is_smart_practice")
+    val isSmartPractice: Boolean = false,
 ) {
     val correctCount by lazy { results.count { it.countsForScore && it.isCorrect } }
     val inCorrectCount by lazy { results.count { it.countsForScore && it.isCorrect.not() } }
@@ -30,5 +32,7 @@ data class GameResult(
         val answerY: Int? = null,
         @SerialName("counts_for_score")
         val countsForScore: Boolean = true,
+        @SerialName("time_ms")
+        val timeMs: Long? = null,
     )
 }

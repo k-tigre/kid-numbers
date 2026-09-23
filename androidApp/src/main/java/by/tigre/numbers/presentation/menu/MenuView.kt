@@ -33,6 +33,8 @@ class MenuView(
     @Composable
     override fun Draw(modifier: Modifier) {
         val leaderboardEnabled = component.isLeaderboardEnabled.collectAsState().value
+        val smartPracticeEnabled = component.isSmartPracticeEnabled.collectAsState().value
+        val smartPracticeDueCount = component.smartPracticeDueCount.collectAsState().value
         BoxWithConstraints(modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -59,6 +61,19 @@ class MenuView(
                         icon = painterResource(gameTypeIcon(type)),
                         iconContentDescription = stringResource(gameTypeContentDescription(type)),
                         onClick = { component.onGameClicked(type) },
+                    )
+                }
+                if (smartPracticeEnabled) {
+                    MenuCard(
+                        title = stringResource(R.string.main_menu_smart_practice),
+                        subtitle = if (smartPracticeDueCount > 0) {
+                            stringResource(R.string.main_menu_smart_practice_due_subtitle, smartPracticeDueCount)
+                        } else {
+                            stringResource(R.string.main_menu_smart_practice_subtitle)
+                        },
+                        icon = painterResource(R.drawable.ic_menu_smart),
+                        iconContentDescription = stringResource(R.string.content_desc_menu_smart_practice),
+                        onClick = component::onSmartPracticeClicked,
                     )
                 }
                 SectionHeader(title = stringResource(R.string.main_menu_section_compete))

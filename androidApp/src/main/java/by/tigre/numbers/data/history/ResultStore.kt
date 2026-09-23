@@ -3,8 +3,12 @@ package by.tigre.numbers.data.history
 import by.tigre.numbers.analytics.Event
 import by.tigre.numbers.analytics.EventAnalytics
 import by.tigre.numbers.core.data.storage.DatabaseNumbers
+import by.tigre.numbers.data.facts.FactStore
+import by.tigre.numbers.domain.facts.ErrorClassifier
 import by.tigre.numbers.entity.ChallengeCompleted
 import by.tigre.numbers.entity.Difficult
+import by.tigre.numbers.entity.FactKey
+import by.tigre.numbers.entity.GameOptions
 import by.tigre.numbers.entity.GameResult
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.HistoryGameResult
@@ -27,7 +31,8 @@ interface ResultStore {
     class Impl(
         private val database: DatabaseNumbers,
         scope: CoroutineScope,
-        private val analytics: EventAnalytics
+        private val analytics: EventAnalytics,
+        private val factStore: FactStore,
     ) : ResultStore {
 
         private val json = Json
@@ -63,6 +68,7 @@ interface ResultStore {
                 historyData = data,
                 challengeId = challengeId
             )
+            applyFactUpdates(result.results, factStore, System.currentTimeMillis())
         }
 
         private val historyResultMapper =
@@ -194,6 +200,36 @@ interface ResultStore {
                     gameType to StatisticData.PeriodAverage(0f, 0f)
                 }
             }.toMap()
+        }
+    }
+
+    companion object {
+        internal suspend fun applyFactUpdates(
+            results: List<GameResult.Result>,
+            factStore: FactStore,
+            nowMs: Long,
+        ) {
+            results.forEach { item ->
+                if (!item.countsForScore) return@forEach
+                val operation = item.question as? GameOptions.Question.Operation ?: return@forEach
+                val key = FactKey.fromQuestion(operation) ?: return@forEach
+                val errorType: String? = if (!item.isCorrect && item.answer != null) {
+                    ErrorClassifier.classify(
+                        key = key,
+                        given = item.answer,
+                        correct = operation.x,
+                    ).name
+                } else {
+                    null
+                }
+                factStore.applyAnswer(
+                    key = key,
+                    correct = item.isCorrect,
+                    timeMs = item.timeMs,
+                    nowMs = nowMs,
+                    errorType = errorType,
+                )
+            }
         }
     }
 }

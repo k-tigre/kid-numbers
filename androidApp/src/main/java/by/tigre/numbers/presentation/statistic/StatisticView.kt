@@ -28,10 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import by.tigre.numbers.R
+import by.tigre.numbers.domain.facts.FactMasterySnapshot
+import by.tigre.numbers.entity.FactKey
 import by.tigre.numbers.entity.GameType
 import by.tigre.numbers.entity.StatisticData
 import by.tigre.numbers.entity.StatisticData.TypeStatistic
 import by.tigre.numbers.presentation.game.GameView
+import by.tigre.numbers.presentation.game.result.formatFactLabel
 import by.tigre.numbers.presentation.utils.toLabel
 import by.tigre.tools.tools.platform.compose.AppTheme
 import by.tigre.tools.tools.platform.compose.ScreenComposableView
@@ -123,7 +126,71 @@ class StatisticView(
                     )
                 }
             }
+            item {
+                DrawMasteryCard(mastery = data.mastery)
+            }
         }
+    }
+
+    @Composable
+    private fun DrawMasteryCard(mastery: FactMasterySnapshot) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.screen_statistic_mastery_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                HorizontalDivider()
+                mastery.opProgress.forEach { progress ->
+                    DrawStatRow(
+                        label = progress.op.toMasteryLabel(),
+                        value = stringResource(
+                            R.string.screen_statistic_mastery_progress,
+                            progress.mastered,
+                            progress.total,
+                        ),
+                    )
+                }
+                HorizontalDivider()
+                Text(
+                    text = stringResource(R.string.screen_statistic_mastery_weak_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (mastery.weakFactKeys.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.screen_statistic_mastery_weak_empty),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    mastery.weakFactKeys.forEach { key ->
+                        Text(
+                            text = formatFactLabel(key),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+                HorizontalDivider()
+                Text(
+                    text = stringResource(R.string.screen_statistic_mastery_due_today, mastery.dueTodayCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun FactKey.Op.toMasteryLabel(): String = when (this) {
+        FactKey.Op.ADD -> stringResource(R.string.smart_practice_op_add)
+        FactKey.Op.SUB -> stringResource(R.string.smart_practice_op_sub)
+        FactKey.Op.MUL -> stringResource(R.string.smart_practice_op_mul)
+        FactKey.Op.DIV -> stringResource(R.string.smart_practice_op_div)
     }
 
     @Composable
@@ -228,7 +295,17 @@ private fun PreviewDrawStatisticCard() {
                     avg7DaysByType = mapOf(GameType.Multiplication to StatisticData.PeriodAverage(19f, 29f)),
                     avg30DaysByType = mapOf(GameType.Multiplication to StatisticData.PeriodAverage(19f, 29f)),
                 ),
-                gameTypes = listOf(GameType.Multiplication)
+                gameTypes = listOf(GameType.Multiplication),
+                mastery = FactMasterySnapshot(
+                    opProgress = FactKey.Op.entries.map { op ->
+                        FactMasterySnapshot.OpProgress(op = op, mastered = 12, total = 20)
+                    },
+                    weakFactKeys = listOf(
+                        FactKey(FactKey.Op.MUL, 7, 8),
+                        FactKey(FactKey.Op.ADD, 6, 7),
+                    ),
+                    dueTodayCount = 5,
+                ),
             )
         )
 

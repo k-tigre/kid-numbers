@@ -1,0 +1,35 @@
+import kotlin.Int;
+import kotlin.Long;
+import kotlin.Float;
+
+CREATE TABLE Fact(
+  key TEXT NOT NULL PRIMARY KEY,
+  op TEXT NOT NULL,
+  a INTEGER AS Int NOT NULL,
+  b INTEGER AS Int NOT NULL,
+  p REAL AS Float NOT NULL DEFAULT 0.5,
+  avgTimeMs INTEGER AS Int NOT NULL DEFAULT 0,
+  attempts INTEGER AS Int NOT NULL DEFAULT 0,
+  correct INTEGER AS Int NOT NULL DEFAULT 0,
+  streak INTEGER AS Int NOT NULL DEFAULT 0,
+  lastSeenMs INTEGER AS Long NOT NULL DEFAULT 0,
+  intervalDays INTEGER AS Int NOT NULL DEFAULT 0,
+  dueAtMs INTEGER AS Long NOT NULL DEFAULT 0,
+  lastErrorType TEXT
+);
+
+selectByOp:
+SELECT * FROM Fact WHERE op = :op;
+
+selectDue:
+SELECT * FROM Fact WHERE op = :op AND dueAtMs <= :nowMs ORDER BY dueAtMs ASC;
+
+selectWeak:
+SELECT * FROM Fact WHERE op = :op AND attempts > 0 AND p < 0.6 ORDER BY p ASC;
+
+upsertFact:
+INSERT OR REPLACE INTO Fact(key, op, a, b, p, avgTimeMs, attempts, correct, streak, lastSeenMs, intervalDays, dueAtMs, lastErrorType)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectByKey:
+SELECT * FROM Fact WHERE key = :key;

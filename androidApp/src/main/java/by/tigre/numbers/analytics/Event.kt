@@ -48,6 +48,38 @@ sealed class Event(val name: String) {
                     )
                 }
             }
+
+            data class SmartPracticeStarted(
+                private val enabledOps: String,
+                private val factCount: Int,
+                private val openBands: String,
+            ) : Logic("SmartPracticeStarted"), WithPayload {
+                override val payload: Map<String, String> by lazy {
+                    mapOf(
+                        "enabledOps" to enabledOps,
+                        "factCount" to factCount.toString(),
+                        "openBands" to openBands,
+                    )
+                }
+            }
+
+            data class SmartPracticeFinished(
+                private val correct: Int,
+                private val total: Int,
+                private val durationMs: Long,
+                private val weakCount: Int,
+                private val opsUsed: String,
+            ) : Logic("SmartPracticeFinished"), WithPayload {
+                override val payload: Map<String, String> by lazy {
+                    mapOf(
+                        "correct" to correct.toString(),
+                        "total" to total.toString(),
+                        "durationMs" to durationMs.toString(),
+                        "weakCount" to weakCount.toString(),
+                        "opsUsed" to opsUsed,
+                    )
+                }
+            }
         }
     }
 

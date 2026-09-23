@@ -40,7 +40,16 @@ class ResultView(
         val result by component.results.collectAsState()
         val dialogState by component.leaderboardDialog.collectAsState()
         DrawLeaderboardDialog(dialogState)
-        ResultScreenContent(result = result, innerPadding = innerPadding)
+        val errorInsight: String? = component.errorInsightType
+            ?.let { errorInsightStringRes(it) }
+            ?.let { stringResource(it) }
+        ResultScreenContent(
+            result = result,
+            innerPadding = innerPadding,
+            weakFactLabels = component.weakFactLabels,
+            errorInsight = errorInsight,
+            onDoneClicked = component::onClose,
+        )
     }
 
     @Composable

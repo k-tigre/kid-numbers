@@ -152,8 +152,8 @@ sqldelight {
 }
 
 play {
-    track.set("alpha")
-    userFraction.set(0.5)
+    track.set("internal")
+    userFraction.set(1.0)
     releaseStatus.set(ReleaseStatus.COMPLETED)
 }
 

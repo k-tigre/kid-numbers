@@ -1,4 +1,3 @@
-• Refreshed UI: main menu, leaderboard, result screens, and new app icon
-• Short onboarding on first launch; haptic feedback on answers
-• Shuffle challenge tasks; About section in Settings
-• Fixed crashes after onboarding and consecutive duplicate questions
+• Smart practice: focuses on weak facts in addition, subtraction, multiplication, and division
+• After a game, see which facts are worth revisiting
+• Statistics now show fact mastery progress and weak facts

@@ -9,6 +9,17 @@
 
 ### EN
 
+## [1.8.0] - 2026-09-26
+### RU
+- Умная тренировка: подтягивает слабые примеры по сложению, вычитанию, умножению и делению
+- После игры видно, какие примеры стоит повторить
+- В статистике — прогресс освоения фактов и список слабых примеров
+
+### EN
+- Smart practice: focuses on weak facts in addition, subtraction, multiplication, and division
+- After a game, see which facts are worth revisiting
+- Statistics now show fact mastery progress and weak facts
+
 ## [1.7.0] - 2026-08-28
 ### RU
 - Обновлённый интерфейс: главное меню, доска почёта, экраны результатов и новая иконка
